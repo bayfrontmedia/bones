@@ -1,0 +1,10 @@
+# OS
+[Tt]humbs.db
+.DS_Store
+
+# PHPStorm
+/.idea
+
+# Composer
+/vendor
+composer.lock
