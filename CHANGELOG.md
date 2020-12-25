@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.0.1] - 2020.12.25
+
+### Fixed
+
+- Updated `Bayfront\Bones\App::start()` method to check if file exists before attempting to load environment variables from the `.env` file.
+
 ## [1.0.0] - 2020.12.05
 
 ### Added

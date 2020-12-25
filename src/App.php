@@ -171,7 +171,9 @@ class App
 
         // -------------------- Load environment variables --------------------
 
-        Dotenv::createImmutable(APP_ROOT_PATH)->load();
+        if (file_exists(APP_ROOT_PATH . '/.env')) {
+            Dotenv::createImmutable(APP_ROOT_PATH)->load();
+        }
 
         // -------------------- Bones constants --------------------
 
