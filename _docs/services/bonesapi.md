@@ -318,7 +318,7 @@ public function getItems(array $request): array
 
     return [
         'results' => $query->get(),
-        'rows' => $query->getTotalRows()
+        'total' => $query->getTotalRows()
     ];
 
 }
