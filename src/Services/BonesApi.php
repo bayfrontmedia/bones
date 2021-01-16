@@ -4,7 +4,7 @@
  * @package bones
  * @link https://github.com/bayfrontmedia/bones
  * @author John Robinson <john@bayfrontmedia.com>
- * @copyright 2020 Bayfront Media
+ * @copyright 2020-2021 Bayfront Media
  */
 
 namespace Bayfront\Bones\Services;
@@ -321,6 +321,121 @@ class BonesApi
         }
 
         return $body;
+
+    }
+
+    /**
+     * Parse the query string from the request to extract values needed to build a database query.
+     *
+     * The query string is parsed according to the JSON:API v1.0 spec
+     * https://jsonapi.org/format/#fetching
+     *
+     * The following parameters are analyzed from the query:
+     *
+     * - fields
+     * - filter
+     * - sort
+     * - page
+     *
+     * This method returns an array with the following keys:
+     *
+     * - fields
+     * - filters
+     * - order_by
+     * - limit
+     * - offset
+     *
+     * For more information, see:
+     * https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md
+     *
+     * @param array $query (Query string as an array of values)
+     * @param int $page_size (Default page size to return)
+     *
+     * @return array
+     *
+     * @throws HttpException
+     */
+
+    public function parseQuery(array $query, int $page_size = 10): array
+    {
+
+        // Fields
+
+        $fields = Arr::get($query, 'fields', []);
+
+        if (!is_array($fields)) {
+            throw new HttpException('Malformed request: invalid field key(s)');
+        }
+
+        foreach ($fields as $k => $v) {
+
+            if (!is_string($v)) {
+                throw new HttpException('Malformed request: invalid field value(s)');
+            }
+
+            if (strpos($v, ' ') !== false) { // Contains space
+                throw new HttpException('Malformed request: invalid field value(s)');
+            }
+
+            $fields[$k] = explode(',', $v);
+
+        }
+
+        // Filter
+
+        $filters = Arr::get($query, 'filter', []);
+
+        if (!is_array($filters)) {
+            throw new HttpException('Malformed request: invalid filter type');
+        }
+
+        foreach ($filters as $filter) {
+
+            if (!is_array($filter)) {
+                throw new HttpException('Malformed request: invalid filter value');
+            }
+
+        }
+
+        // Sort
+
+        $sort = Arr::get($query, 'sort', '');
+
+        if (!is_string($sort)) {
+            throw new HttpException('Malformed request: invalid sort type');
+        }
+
+        if ($sort != '') {
+
+            if (strpos($sort, ' ') !== false) { // Contains space
+                throw new HttpException('Malformed request: invalid sort value(s)');
+            }
+
+            $order = explode(',', $sort);
+
+        } else {
+            $order = [];
+        }
+
+        // Page
+
+        $limit = (int)Arr::get($query, 'page.size', $page_size);
+
+        $page_number = (int)Arr::get($query, 'page.number', 1);
+
+        if ($limit < 1 || $page_number < 1) {
+
+            throw new HttpException('Malformed request: invalid page value(s)');
+
+        }
+
+        return [
+            'fields' => $fields,
+            'filters' => $filters,
+            'order_by' => $order,
+            'limit' => $limit,
+            'offset' => $limit * ($page_number - 1)
+        ];
 
     }
 

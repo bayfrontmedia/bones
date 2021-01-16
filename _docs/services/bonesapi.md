@@ -42,6 +42,7 @@ get_service('BonesApi', [
 - [enforceRateLimit](#enforceratelimit)
 - [resetRateLimit](#resetratelimit)
 - [getBody](#getbody)
+- [parseQuery](#parsequery)
 
 <hr />
 
@@ -197,3 +198,128 @@ Checks request body is valid JSON with optional required properties, or aborts w
 - `Bayfront\Bones\Exceptions\HttpException`
 - `Bayfront\Container\NotFoundException`
 - `Bayfront\HttpResponse\InvalidStatusCodeException`
+
+<hr />
+
+### parseQuery
+
+**Description:**
+
+Parse the query string from the request to extract values needed to build a database query.
+
+The query string is parsed according to the [JSON:API v1.0 spec](https://jsonapi.org/format/#fetching).
+
+The following parameters are analyzed from the query:
+
+- `fields`
+- `filter`
+- `sort`
+- `page`
+
+This method returns an array with the following keys:
+
+- `fields`
+- `filters`
+- `order_by`
+- `limit`
+- `offset`
+
+For more information, see: [Simple PDO query builder](https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md).
+
+**Parameters:**
+
+- `$query` (array)
+- `$page_size = 10` (int)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\Bones\Exceptions\HttpException`
+
+**Example:**
+
+Request query string:
+
+```
+?fields[items]=name,color,quantity&filter[price][gt]=20.00&sort=-name&page[size]=5&page[number]=4
+```
+
+Example usage in the controller, assuming `$this->api` is an instance of the `BonesApi` service:
+
+```
+use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\HttpRequest\Request;
+
+try {
+    $request = $this->api->parseQuery(Request::getQuery());
+} catch (HttpException $e) {
+    abort(400, $e->getMessage());
+}
+```
+
+In the above example, the `$request` array would be:
+
+```
+[
+    `fields` => [
+        `items` => [
+            'name',
+            'color',
+            'quantity'
+        ]
+    ],
+    `filters` => [
+        `price` => [
+            'gt' => '20.00'
+        ]
+    ],
+    'order_by' => [
+        '-name'
+    ],
+    'limit' => '5',
+    'offset' => '15'
+]
+```
+
+That array can then be passed to the model and used to build the query:
+
+```
+$items = $this->model->getItems($request);
+```
+
+From the model, assuming `$this->db` is an instance of Simple PDO (see [Models](https://github.com/bayfrontmedia/bones/blob/master/_docs/models.md)):
+
+```
+use Bayfront\PDO\Query;
+
+public function getItems(array $request): array
+{
+
+    $query = new Query($this->db);
+
+    $query->table('items')
+        ->select(Arr::get($request, 'fields.items', ['*']))
+        ->limit($request['limit'])
+        ->offset($request['offset'])
+        ->orderBy($request['order_by']);
+
+    foreach ($request['filters'] as $column => $filter) {
+
+        foreach ($filter as $operator => $value) {
+
+            $query->where($column, $operator, $value);
+
+        }
+
+    }
+
+    return [
+        'results' => $query->get(),
+        'rows' => $query->getTotalRows()
+    ];
+
+}
+```
