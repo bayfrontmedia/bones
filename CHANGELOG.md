@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.1.1] - 2021.01.19
+
+### Added
+
+- Added `$check_accept` parameter to the `BonesApi` service `start` method.
+
 ## [1.1.0] - 2021.01.15
 
 ### Changed

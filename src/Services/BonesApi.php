@@ -44,11 +44,12 @@ class BonesApi
      * Checks for maintenance mode and aborts with a "503 Service Unavailable" HTTP status
      * and sets "Retry-After" header if "api.maintenance_until" config is set.
      *
-     * Forces HTTPS and proper "Accept" header, or aborts with a
+     * Forces HTTPS and proper "Accept" header (optional), or aborts with a
      * "406 Not Acceptable" HTTP status.
      *
      * Defines the "IS_API" constant which can be used throughout the app, if needed.
      *
+     * @param bool $check_accept (Check for a valid Accept header)
      * @return void
      *
      * @throws HttpException
@@ -56,7 +57,7 @@ class BonesApi
      * @throws NotFoundException
      */
 
-    public function start(): void
+    public function start(bool $check_accept = true): void
     {
 
         header_remove('X-Powered-By');
@@ -103,7 +104,9 @@ class BonesApi
 
         // Check valid Accept header
 
-        if (Arr::get($this->config, 'accept_header') && Request::getHeader('Accept') != Arr::get($this->config, 'accept_header')) {
+        if (true === $check_accept
+            && Arr::get($this->config, 'accept_header')
+            && Request::getHeader('Accept') != Arr::get($this->config, 'accept_header')) {
 
             abort(406, 'Required header is missing or invalid: Accept');
 

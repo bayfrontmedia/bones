@@ -56,13 +56,13 @@ Removes the `X-Powered-By` header, and sets `X-Content-Type-Options`, `X-XSS-Pro
 
 Checks for maintenance mode and aborts with a `503 Service Unavailable` HTTP status and sets `Retry-After` header if `api.maintenance_until` config is set.
 
-Forces HTTPS and proper `Accept` header, or aborts with a `406 Not Acceptable` HTTP status.
+Forces HTTPS and proper `Accept` header (optional), or aborts with a `406 Not Acceptable` HTTP status.
 
 Defines the `IS_API` constant which can be used throughout the app, if needed.
 
 **Parameters:**
 
-- (None)
+- `$check_accept = true` (bool): Check for a valid `Accept` header
 
 **Returns:**
 
