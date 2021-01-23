@@ -59,7 +59,7 @@ function add_event(string $name, callable $function, $priority = 5): void
 
 function do_event(string $name, ...$arg): void
 {
-    get_hooks()->doEvent($name, $arg);
+    get_hooks()->doEvent($name, ...$arg);
 }
 
 /**
