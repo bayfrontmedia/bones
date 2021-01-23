@@ -264,15 +264,15 @@ In the above example, the `$request` array would be:
 
 ```
 [
-    `fields` => [
-        `items` => [
+    'fields' => [
+        'items' => [
             'name',
             'color',
             'quantity'
         ]
     ],
-    `filters` => [
-        `price` => [
+    'filters' => [
+        'price' => [
             'gt' => '20.00'
         ]
     ],
