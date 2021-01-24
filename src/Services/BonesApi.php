@@ -380,7 +380,7 @@ class BonesApi
                 throw new HttpException('Malformed request: invalid field value(s)');
             }
 
-            $fields[$k] = explode(',', $v);
+            $fields[$k] = array_unique(explode(',', $v)); // Remove duplicate values
 
         }
 
