@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.1.4]- 2021.02.03
+
+### Changed
+
+- Updated the exceptions thrown by the `BonesApi` service `parseQuery` method.
+
 ## [1.1.3]- 2021.01.29
 
 ### Changed

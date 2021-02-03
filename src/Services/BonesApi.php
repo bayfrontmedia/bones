@@ -50,6 +50,7 @@ class BonesApi
      * Defines the "IS_API" constant which can be used throughout the app, if needed.
      *
      * @param bool $check_accept (Check for a valid Accept header)
+     *
      * @return void
      *
      * @throws HttpException
@@ -357,6 +358,8 @@ class BonesApi
      * @return array
      *
      * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
      */
 
     public function parseQuery(array $query, int $page_size = 10): array
@@ -367,17 +370,19 @@ class BonesApi
         $fields = Arr::get($query, 'fields', []);
 
         if (!is_array($fields)) {
-            throw new HttpException('Malformed request: invalid field key(s)');
+
+            abort(400, 'Malformed request: invalid field key(s)');
+
         }
 
         foreach ($fields as $k => $v) {
 
             if (!is_string($v)) {
-                throw new HttpException('Malformed request: invalid field value(s)');
+                abort(400, 'Malformed request: invalid field value(s)');
             }
 
             if (strpos($v, ' ') !== false) { // Contains space
-                throw new HttpException('Malformed request: invalid field value(s)');
+                abort(400, 'Malformed request: invalid field value(s)');
             }
 
             $fields[$k] = array_unique(explode(',', $v)); // Remove duplicate values
@@ -389,13 +394,13 @@ class BonesApi
         $filters = Arr::get($query, 'filter', []);
 
         if (!is_array($filters)) {
-            throw new HttpException('Malformed request: invalid filter type');
+            abort(400, 'Malformed request: invalid filter type');
         }
 
         foreach ($filters as $filter) {
 
             if (!is_array($filter)) {
-                throw new HttpException('Malformed request: invalid filter value');
+                abort(400, 'Malformed request: invalid filter value');
             }
 
         }
@@ -405,13 +410,13 @@ class BonesApi
         $sort = Arr::get($query, 'sort', '');
 
         if (!is_string($sort)) {
-            throw new HttpException('Malformed request: invalid sort type');
+            abort(400, 'Malformed request: invalid sort type');
         }
 
         if ($sort != '') {
 
             if (strpos($sort, ' ') !== false) { // Contains space
-                throw new HttpException('Malformed request: invalid sort value(s)');
+                abort(400, 'Malformed request: invalid sort value(s)');
             }
 
             $order = explode(',', $sort);
@@ -427,9 +432,7 @@ class BonesApi
         $page_number = (int)Arr::get($query, 'page.number', 1);
 
         if ($limit < 1 || $page_number < 1) {
-
-            throw new HttpException('Malformed request: invalid page value(s)');
-
+            abort(400, 'Malformed request: invalid page value(s)');
         }
 
         return [
