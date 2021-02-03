@@ -353,7 +353,8 @@ class BonesApi
      * https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md
      *
      * @param array $query (Query string as an array of values)
-     * @param int $page_size (Default page size to return)
+     * @param int $default_page_size (Default page size to return)
+     * @param int $max_page_size (Max page size to return)
      *
      * @return array
      *
@@ -362,7 +363,7 @@ class BonesApi
      * @throws NotFoundException
      */
 
-    public function parseQuery(array $query, int $page_size = 10): array
+    public function parseQuery(array $query, int $default_page_size = 10, int $max_page_size = 100): array
     {
 
         // Fields
@@ -427,12 +428,18 @@ class BonesApi
 
         // Page
 
-        $limit = (int)Arr::get($query, 'page.size', $page_size);
+        $limit = Arr::get($query, 'page.size', $default_page_size);
 
-        $page_number = (int)Arr::get($query, 'page.number', 1);
+        $page_number = Arr::get($query, 'page.number', 1);
 
-        if ($limit < 1 || $page_number < 1) {
+        if (
+            (!is_int($limit) || $limit < 1) ||
+            (!is_int($page_number) || $page_number < 1)) {
             abort(400, 'Malformed request: invalid page value(s)');
+        }
+
+        if ($limit > $max_page_size) {
+            abort(400, 'Malformed request: page size (' . $limit . ') exceeds maximum (' . $max_page_size . ')');
         }
 
         return [
