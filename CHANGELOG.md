@@ -14,13 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `put_in_container` and `set_in_container` helper methods.
+
 ### Changed
 
 - Updated the way page size is handled for the `BonesApi` service `parseQuery` method.
-
-### Changed
-
-- Updated the exceptions thrown by the `BonesApi` service `parseQuery` method.
 
 ## [1.1.4]- 2021.02.03
 

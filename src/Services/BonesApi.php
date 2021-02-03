@@ -428,9 +428,9 @@ class BonesApi
 
         // Page
 
-        $limit = Arr::get($query, 'page.size', $default_page_size);
+        $limit = (int)Arr::get($query, 'page.size', $default_page_size);
 
-        $page_number = Arr::get($query, 'page.number', 1);
+        $page_number = (int)Arr::get($query, 'page.number', 1);
 
         if (
             (!is_int($limit) || $limit < 1) ||

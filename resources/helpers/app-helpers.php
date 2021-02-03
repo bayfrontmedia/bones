@@ -13,6 +13,7 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Exceptions\ModelException;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Container\Container;
+use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 
@@ -191,6 +192,33 @@ function get_container(): Container
 function get_from_container(string $id)
 {
     return App::getFromContainer($id);
+}
+
+/**
+ * @param string $id
+ * @param object $object
+ *
+ * @return void
+ */
+
+function put_in_container(string $id, object $object): void
+{
+    App::putInContainer($id, $object);
+}
+
+/**
+ * @param string $id
+ * @param string $class
+ * @param array $params
+ *
+ * @return mixed
+ *
+ * @throws ContainerException
+ */
+
+function set_in_container(string $id, string $class, array $params = [])
+{
+    return App::setInContainer($id, $class, $params);
 }
 
 /**

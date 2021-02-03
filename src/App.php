@@ -653,6 +653,48 @@ class App
     }
 
     /**
+     * Saves a preexisting class instance into the container identified by `$id`.
+     *
+     * If another entry exists in the container with the same $id, it will be overwritten.
+     *
+     * Saving a class instance to the container using its namespaced name as the $id
+     * will allow it to be used by the container whenever another class requires it as a dependency.
+     *
+     * @param string $id
+     * @param object $object
+     *
+     * @return void
+     */
+
+    public static function putInContainer(string $id, object $object): void
+    {
+        self::$container->put($id, $object);
+    }
+
+    /**
+     * Creates a class instance using create(), and saves it into the container identified by $id.
+     * An instance of the class will be returned.
+     *
+     * If another entry exists in the container with the same $id, it will be overwritten.
+     *
+     * Saving a class instance to the container using its namespaced name as the $id
+     * will allow it to be used by the container whenever another class requires it as a dependency.
+     *
+     * @param string $id
+     * @param string $class
+     * @param array $params
+     *
+     * @return mixed
+     *
+     * @throws ContainerException
+     */
+
+    public static function setInContainer(string $id, string $class, array $params = [])
+    {
+        return self::$container->set($id, $class, $params);
+    }
+
+    /**
      * Returns a class instance using dependency injection.
      *
      * If $force_unique = false, the instance will be saved in the container if not already existing,

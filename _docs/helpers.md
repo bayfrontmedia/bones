@@ -22,6 +22,8 @@ The following helpers are automatically included by Bones:
 - [get_config](#get_config)
 - [get_container](#get_container)
 - [get_from_container](#get_from_container)
+- [put_in_container](#put_in_container)
+- [set_in_container](#set_in_container)
 - [get_model](#get_model)
 - [get_service](#get_service)
 - [use_helper](#use_helper)
@@ -308,6 +310,76 @@ Returns instance from the service container by ID.
 
 ```
 $filesystem = get_from_container('filesystem');
+```
+
+<hr />
+
+### put_in_container
+
+**Description:**
+
+Saves a preexisting class instance into the container identified by `$id`.
+
+If another entry exists in the container with the same `$id`, it will be overwritten.
+
+Saving a class instance to the container using its namespaced name as the `$id`
+will allow it to be used by the container whenever another class requires it as a dependency.
+
+**Parameters:**
+
+- `$id` (string)
+- `$object` (object)
+
+**Returns:**
+
+- (void)
+
+**Example:**
+
+```
+$class_name = new Namespace\ClassName();
+
+put_in_container('ClassName', $class_name);
+```
+
+<hr />
+
+### set_in_container
+
+**Description:**
+
+Creates a class instance and saves it into the container identified by `$id`.
+An instance of the class will be returned.
+
+If another entry exists in the container with the same `$id`, it will be overwritten.
+
+Saving a class instance to the container using its namespaced name as the `$id`
+will allow it to be used by the container whenever another class requires it as a dependency.
+
+**Parameters:**
+
+- `$id` (string)
+- `$class` (string): Fully namespaced class name
+- `$params = []` (array): Named parameters to pass to the class constructor
+
+**Returns:**
+
+- (mixed)
+
+**Throws:**
+
+- `Bayfront\Container\ContainerException`
+
+**Example:**
+
+```
+try {
+
+    $class_name = set_in_container('ClassName', 'Namespace\ClassName');
+
+} catch (ContainerException $e) {
+    die($e->getMessage());
+}
 ```
 
 <hr />
