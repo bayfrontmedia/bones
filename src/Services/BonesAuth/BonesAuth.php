@@ -13,6 +13,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\PDO\Query;
 use Bayfront\RBAC\Auth;
+use Bayfront\RBAC\Exceptions\InvalidUserException;
 use Bayfront\RBAC\Migrations\v1\Schema;
 use PDO;
 
@@ -81,7 +82,7 @@ class BonesAuth extends Auth
 
     /**
      * Create database tables, permissions, roles and grants to begin using the BonesAuth service.
-     * A default user will be created with login/password combo of: "admin".
+     * A default user will be created with a login/password combo of: "admin".
      *
      * IMPORTANT: Change the default user's credentials before using in a production environment!
      *
@@ -122,13 +123,14 @@ class BonesAuth extends Auth
      * Get all groups using query builder.
      *
      * @param array $request
+     * @param array|null $valid_group_ids (Restrict results to group ID(s))
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getGroupsCollection(array $request): array
+    public function getGroupsCollection(array $request, array $valid_group_ids = NULL): array
     {
 
         $query = new Query($this->pdo);
@@ -138,6 +140,12 @@ class BonesAuth extends Auth
             ->limit($request['limit'])
             ->offset($request['offset'])
             ->orderBy(Arr::get($request, 'order_by', ['name']));
+
+        if (is_array($valid_group_ids)) { // Restrict results to group ids
+
+            $query->where('id', 'in', implode(',', $valid_group_ids));
+
+        }
 
         foreach ($request['filters'] as $column => $filter) {
 
@@ -156,15 +164,15 @@ class BonesAuth extends Auth
     /**
      * Get all users in group using a query builder.
      *
-     * @param string $group_id
      * @param array $request
+     * @param string $group_id
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getGroupUsersCollection(string $group_id, array $request): array
+    public function getGroupUsersCollection(array $request, string $group_id): array
     {
 
         $query = new Query($this->pdo);
@@ -239,6 +247,44 @@ class BonesAuth extends Auth
 
     }
 
+    /**
+     * Get all roles with permission using a query builder.
+     *
+     * @param array $request
+     * @param string $permission_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getPermissionRolesCollection(array $request, string $permission_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_roles')
+            ->leftJoin('rbac_role_permissions', 'rbac_roles.id', 'rbac_role_permissions.roleId')
+            ->select(Arr::get($request, 'fields.roles', ['*']))
+            ->limit($request['limit'])
+            ->offset($request['offset'])
+            ->where('rbac_role_permissions.permissionId', 'eq', $permission_id)
+            ->orderBy(Arr::get($request, 'order_by', ['rbac_roles.name']));
+
+        foreach ($request['filters'] as $column => $filter) {
+
+            foreach ($filter as $operator => $value) {
+
+                $query->where($column, $operator, $value);
+
+            }
+
+        }
+
+        return $this->_getResults($query, $request);
+
+    }
+
     /*
      * ############################################################
      * Roles
@@ -249,13 +295,14 @@ class BonesAuth extends Auth
      * Get all roles using query builder.
      *
      * @param array $request
+     * @param array|null $valid_role_ids (Restrict results to role ID(s))
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getRolesCollection(array $request): array
+    public function getRolesCollection(array $request, array $valid_role_ids = NULL): array
     {
 
         $query = new Query($this->pdo);
@@ -265,6 +312,12 @@ class BonesAuth extends Auth
             ->limit($request['limit'])
             ->offset($request['offset'])
             ->orderBy(Arr::get($request, 'order_by', ['name']));
+
+        if (is_array($valid_role_ids)) { // Restrict results to role ids
+
+            $query->where('id', 'in', implode(',', $valid_role_ids));
+
+        }
 
         foreach ($request['filters'] as $column => $filter) {
 
@@ -283,15 +336,15 @@ class BonesAuth extends Auth
     /**
      * Get all permissions of role using a query builder.
      *
-     * @param string $role_id
      * @param array $request
+     * @param string $role_id
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getRolePermissionsCollection(string $role_id, array $request): array
+    public function getRolePermissionsCollection(array $request, string $role_id): array
     {
 
         $query = new Query($this->pdo);
@@ -321,15 +374,15 @@ class BonesAuth extends Auth
     /**
      * Get all users with role using a query builder.
      *
-     * @param string $role_id
      * @param array $request
+     * @param string $role_id
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getRoleUsersCollection(string $role_id, array $request): array
+    public function getRoleUsersCollection(array $request, string $role_id): array
     {
 
         $query = new Query($this->pdo);
@@ -417,17 +470,89 @@ class BonesAuth extends Auth
     }
 
     /**
-     * Get all roles of user using a query builder.
+     * Get all permissions of user using a query builder.
      *
-     * @param string $user_id
      * @param array $request
+     * @param string $user_id
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getUserRolesCollection(string $user_id, array $request): array
+    public function getUserPermissionsCollection(array $request, string $user_id): array
+    {
+
+        // Does user exist and is enabled
+
+        try {
+
+            $user = $this->getUser($user_id);
+
+        } catch (InvalidUserException $e) {
+
+            return [];
+
+        }
+
+        if ($user['enabled'] != 1) {
+
+            return [];
+
+        }
+
+        // Get user roles
+
+        $valid_roles = [];
+
+        $roles = $this->getUserRoles($user_id);
+
+        foreach ($roles as $role) {
+
+            if ($role['enabled'] == 1) {
+
+                $valid_roles[] = $role['id'];
+
+            }
+
+        }
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_permissions')
+            ->leftJoin('rbac_role_permissions', 'rbac_permissions.id', 'rbac_role_permissions.permissionId')
+            ->select(Arr::get($request, 'fields.permissions', ['*']))
+            ->limit($request['limit'])
+            ->offset($request['offset'])
+            ->where('rbac_role_permissions.roleId', 'in', implode(', ', $valid_roles))
+            ->orderBy(Arr::get($request, 'order_by', ['rbac_permissions.name']));
+
+        foreach ($request['filters'] as $column => $filter) {
+
+            foreach ($filter as $operator => $value) {
+
+                $query->where($column, $operator, $value);
+
+            }
+
+        }
+
+        return $this->_getResults($query, $request);
+
+    }
+
+    /**
+     * Get all roles of user using a query builder.
+     *
+     * @param array $request
+     * @param string $user_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getUserRolesCollection(array $request, string $user_id): array
     {
 
         $query = new Query($this->pdo);
@@ -458,15 +583,15 @@ class BonesAuth extends Auth
     /**
      * Get all groups of user using a query builder.
      *
+     * @param array $request ,
      * @param string $user_id
-     * @param array $request
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getUserGroupsCollection(string $user_id, array $request): array
+    public function getUserGroupsCollection(array $request, string $user_id): array
     {
 
         $query = new Query($this->pdo);
@@ -497,15 +622,15 @@ class BonesAuth extends Auth
     /**
      * Get all user meta using query builder.
      *
-     * @param string $user_id
      * @param array $request
+     * @param string $user_id
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getUserMetaCollection(string $user_id, array $request): array
+    public function getUserMetaCollection(array $request, string $user_id): array
     {
 
         $query = new Query($this->pdo);

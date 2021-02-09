@@ -19,3 +19,4 @@ php /path/to/resources/cli.php
 The following services are included with Bones:
 
 - [BonesApi](services/bonesapi.md)
+- [BonesAuth](services/bonesauth.md)
