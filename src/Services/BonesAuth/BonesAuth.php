@@ -7,16 +7,19 @@
  * @copyright 2021 Bayfront Media
  */
 
-namespace Bayfront\Bones\Services;
+namespace Bayfront\Bones\Services\BonesAuth;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\PDO\Query;
 use Bayfront\RBAC\Auth;
+use Bayfront\RBAC\Migrations\v1\Schema;
 use PDO;
 
 class BonesAuth extends Auth
 {
+
+    use Installation;
 
     protected $pdo;
 
@@ -67,6 +70,45 @@ class BonesAuth extends Auth
                 'page_number' => ($request['offset'] / $request['limit']) + 1
             ]
         ];
+
+    }
+
+    /*
+     * ############################################################
+     * Installation
+     * ############################################################
+     */
+
+    /**
+     * Create database tables, permissions, roles and grants to begin using the BonesAuth service.
+     * A default user will be created with login/password combo of: "admin".
+     *
+     * IMPORTANT: Change the default user's credentials before using in a production environment!
+     *
+     * @return void
+     */
+
+    public function install(): void
+    {
+
+        $schema = new Schema($this->pdo);
+
+        $schema->up();
+
+        $this->installBonesAuth();
+
+    }
+
+    /**
+     * Uninstall database tables used by the BonesAuth service.
+     */
+
+    public function uninstall(): void
+    {
+
+        $schema = new Schema($this->pdo);
+
+        $schema->down();
 
     }
 
