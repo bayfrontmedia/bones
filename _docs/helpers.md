@@ -21,6 +21,7 @@ The following helpers are automatically included by Bones:
 - [get_env](#get_env)
 - [get_config](#get_config)
 - [get_container](#get_container)
+- [in_container](#in_container)
 - [get_from_container](#get_from_container)
 - [put_in_container](#put_in_container)
 - [set_in_container](#set_in_container)
@@ -284,6 +285,30 @@ Returns instance of the service container.
 
 ```
 $container = get_container();
+```
+
+<hr />
+
+### in_container
+
+**Description:**
+
+Does container have an instance with ID.
+
+**Parameters:**
+
+- `$id` (string)
+
+**Returns:**
+
+- (bool)
+
+**Example:**
+
+```
+if (in_container('db')) {
+    // Do something
+}
 ```
 
 <hr />
