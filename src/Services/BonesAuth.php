@@ -159,14 +159,14 @@ class BonesAuth extends Auth
      * Get all permissions using query builder.
      *
      * @param array $request
-     * @param array|null $valid_permission_names (Restrict results to permission names(s))
+     * @param array|null $valid_permission_ids (Restrict results to permission ID(s))
      *
      * @return array
      *
      * @throws QueryException
      */
 
-    public function getPermissionsCollection(array $request, array $valid_permission_names = NULL): array
+    public function getPermissionsCollection(array $request, array $valid_permission_ids = NULL): array
     {
 
         $query = new Query($this->pdo);
@@ -177,9 +177,9 @@ class BonesAuth extends Auth
             ->offset($request['offset'])
             ->orderBy(Arr::get($request, 'order_by', ['name']));
 
-        if (is_array($valid_permission_names)) { // Restrict results to permission names
+        if (is_array($valid_permission_ids)) { // Restrict results to permission ids
 
-            $query->where('name', 'in', implode(',', $valid_permission_names));
+            $query->where('id', 'in', implode(',', $valid_permission_ids));
 
         }
 
