@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `in_container`
     - `put_in_container`
     - `set_in_container`
+    
+- Added the `BonesAuth` service.
 
 ### Changed
 
