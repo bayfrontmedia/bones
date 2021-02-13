@@ -198,6 +198,10 @@ trait Installation
             // User meta
 
             [
+                'name' => 'global.users.meta.create',
+                'description' => 'Create user meta'
+            ],
+            [
                 'name' => 'global.users.meta.read',
                 'description' => 'Read user meta'
             ],
@@ -210,6 +214,10 @@ trait Installation
                 'description' => 'Delete user meta'
             ],
             [
+                'name' => 'group.users.meta.create',
+                'description' => 'Create user meta of users in own groups'
+            ],
+            [
                 'name' => 'group.users.meta.read',
                 'description' => 'Read user meta of users in own groups'
             ],
@@ -220,6 +228,10 @@ trait Installation
             [
                 'name' => 'group.users.meta.delete',
                 'description' => 'Delete user meta of users in own groups'
+            ],
+            [
+                'name' => 'self.users.meta.create',
+                'description' => 'Create user meta of self'
             ],
             [
                 'name' => 'self.users.meta.read',
