@@ -28,10 +28,14 @@ use DateTimeInterface;
 class BonesApi
 {
 
+    protected $response;
+
     protected $config;
 
-    public function __construct(array $config)
+    public function __construct(Response $response, array $config)
     {
+        $this->response = $response;
+
         $this->config = $config;
     }
 
@@ -134,13 +138,15 @@ class BonesApi
 
         $methods = (array)$methods;
 
+        $this->response->setHeaders([
+            'Allow' => implode(', ', $methods)
+        ]);
+
         $request_method = Request::getMethod();
 
         if (!in_array($request_method, $methods)) {
 
-            abort(405, 'Request method (' . $request_method . ') not allowed', [
-                'Allow' => implode(', ', $methods)
-            ]);
+            abort(405, 'Request method (' . $request_method . ') not allowed');
 
         }
 
