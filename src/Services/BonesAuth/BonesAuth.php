@@ -618,7 +618,6 @@ class BonesAuth extends Auth
 
     }
 
-
     /**
      * Get all user meta using query builder.
      *

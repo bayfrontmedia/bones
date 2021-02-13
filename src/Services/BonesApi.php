@@ -67,11 +67,7 @@ class BonesApi
 
         header_remove('X-Powered-By');
 
-        /** @var Response $response */
-
-        $response = get_from_container('response');
-
-        $response->setHeaders([
+        $this->response->setHeaders([
             'X-Content-Type-Options' => 'nosniff',
             'X-XSS-Protection' => '1; mode=block',
             'X-Frame-Options' => 'DENY'
@@ -122,7 +118,10 @@ class BonesApi
     }
 
     /**
-     * Checks request method is allowed or aborts with a "405 Method Not Allowed" HTTP status.
+     * Checks request method is allowed or aborts with a "405 Method Not Allowed" HTTP status,
+     * and a list of allowed methods in the "Allow" header.
+     *
+     * Always includes the "Allow" header when the "allow_method_discovery" config key is TRUE.
      *
      * @param string|array $methods (Allowed request methods)
      *
@@ -138,15 +137,21 @@ class BonesApi
 
         $methods = (array)$methods;
 
-        $this->response->setHeaders([
-            'Allow' => implode(', ', $methods)
-        ]);
+        if (true === Arr::get($this->config, 'allow_method_discovery', false)) {
+
+            $this->response->setHeaders([
+                'Allow' => implode(', ', $methods)
+            ]);
+
+        }
 
         $request_method = Request::getMethod();
 
         if (!in_array($request_method, $methods)) {
 
-            abort(405, 'Request method (' . $request_method . ') not allowed');
+            abort(405, 'Request method (' . $request_method . ') not allowed', [
+                'Allow' => implode(', ', $methods)
+            ]);
 
         }
 
@@ -241,7 +246,7 @@ class BonesApi
 
         // Set headers
 
-        get_from_container('response')->setHeaders([
+        $this->response->setHeaders([
             'X-RateLimit-Limit' => $limit,
             'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()), // Round down
             'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty())
@@ -276,7 +281,7 @@ class BonesApi
 
         // Set headers
 
-        get_from_container('response')->setHeaders([
+        $this->response->setHeaders([
             'X-RateLimit-Limit' => $limit,
             'X-RateLimit-Remaining' => $limit,
             'X-RateLimit-Reset' => 0
