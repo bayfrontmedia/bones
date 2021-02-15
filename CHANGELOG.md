@@ -12,11 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [Unreleased]
+## [1.2.0]- 2021.02.15
 
 ### Added
 
-- Added `put_in_container` and `set_in_container` helper methods.
+- Added the following helper methods:
+    - `in_container`
+    - `put_in_container`
+    - `set_in_container`
+    
+- Added the `BonesAuth` service.
 
 ### Changed
 

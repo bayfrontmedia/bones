@@ -11,16 +11,13 @@ This service can be added to the container by creating a configuration array loc
 ```
 return [
     'maintenance_mode' => false, // Boolean (optional)
-    'maintenance_until' => new DateTime('2020-11-04 17:00:00'), // DateTimeInterface (optional)
+    'maintenance_until' => new DateTime('2099-01-01 12:00:00'), // DateTimeInterface (optional)
     'allow_http' => 'development', // app.environments to allow http (string|array) (optional)
     'accept_header' => 'application/vnd.api+json', // Required Accept header (optional)
     'content_type' => 'application/vnd.api+json', // Required Content-Type header to exist with request body (optional)
+    'allow_method_discovery' => true, // Automatically include the Accept header with all requests
     'buckets_path' => '/app/buckets', // Directory in which to store rate limit buckets from the default filesystem disk root
-    'auth_rate_limit' => 5, // Per minute rate limit for failed authentication
-    'rate_limit' => 50, // Per minute rate limit for authenticated user
-    'webhook_rate_limit' => 100, // Per minute rate limit for public webhoooks
-    'access_token_lifetime' => 86400, // 24 hours
-    'refresh_token_lifetime' => 604800 // e.g.: 604800 (7 days), 2592000 (30 days)
+    'rate_limit_auth' => 5, // Per minute (Rate limit for failed authentication)
 ];
 ```
 
@@ -42,6 +39,7 @@ get_service('BonesApi', [
 - [enforceRateLimit](#enforceratelimit)
 - [resetRateLimit](#resetratelimit)
 - [getBody](#getbody)
+- [isValidResource](#isvalidresource)
 - [parseQuery](#parsequery)
 
 <hr />
@@ -80,7 +78,10 @@ Defines the `IS_API` constant which can be used throughout the app, if needed.
 
 **Description:**
 
-Checks request method is allowed or aborts with a `405 Method Not Allowed` HTTP status.
+Checks request method is allowed or aborts with a `405 Method Not Allowed` HTTP status,
+and a list of allowed methods in the `Allow` header.
+
+Always includes the `Allow` header when the `allow_method_discovery` configuration key is `true`.
 
 **Parameters:**
 
@@ -102,7 +103,8 @@ Checks request method is allowed or aborts with a `405 Method Not Allowed` HTTP 
 
 **Description:**
 
-Checks that a valid JWT exists in the `Authorization` header or enforces the `api.auth_rate_limit` config and aborts with a `401 Unauthorized` HTTP status.
+Checks that a valid JWT exists in the `Authorization` header or enforces the `auth_rate_limit`
+configuration value and aborts with a `401 Unauthorized` HTTP status.
 
 **Parameters:**
 
@@ -181,13 +183,15 @@ Delete bucket used for rate limiting.
 
 **Description:**
 
-Checks optional required `Content-Type` header, and aborts with a `415 Unsupported Media Type` HTTP status if is missing or invalid.
+Checks optional required `Content-Type` header, and aborts with a 
+`415 Unsupported Media Type` HTTP status if is missing or invalid.
 
-Checks request body is valid JSON with optional required properties, or aborts with a `400 Bad Request` HTTP status if invalid.
+Checks request body is valid JSON with optional required properties, 
+or aborts with a `400 Bad Request` HTTP status if invalid.
 
 **Parameters:**
 
-- `$required_properties = []` (array)
+- `$required_properties = []` (array): Optional required properties
 
 **Returns:**
 
@@ -198,6 +202,36 @@ Checks request body is valid JSON with optional required properties, or aborts w
 - `Bayfront\Bones\Exceptions\HttpException`
 - `Bayfront\Container\NotFoundException`
 - `Bayfront\HttpResponse\InvalidStatusCodeException`
+
+<hr />
+
+### isValidResource
+
+**Description:**
+
+Validates array as a valid JSON:API v1.0 resource schema.
+This is helpful to validate the request body provided by a client.
+
+Ensures array only has a `data` key with an array as a value.
+
+Ensures the `data` array may contain only the following keys:
+
+- `type`
+- `id`
+- `attributes`
+
+This method also checks optional valid and required attributes 
+exists on the `attributes` array.
+
+**Parameters:**
+
+- `$array` (array)
+- `$valid_attributes = []` (array)
+- `$required_attributes = []` (array)
+
+**Returns:**
+
+- (bool)
 
 <hr />
 
@@ -238,6 +272,8 @@ For more information, see: [Simple PDO query builder](https://github.com/bayfron
 **Throws:**
 
 - `Bayfront\Bones\Exceptions\HttpException`
+- `Bayfront\HttpResponse\InvalidStatusCodeException`
+- `Bayfront\Container\NotFoundException`
 
 **Example:**
 

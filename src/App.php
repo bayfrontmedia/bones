@@ -638,6 +638,19 @@ class App
     }
 
     /**
+     * Does container have an instance with ID.
+     *
+     * @param string $id
+     *
+     * @return bool
+     */
+
+    public static function inContainer(string $id): bool
+    {
+        return self::$container->has($id);
+    }
+
+    /**
      * Returns instance from the service container by ID.
      *
      * @param string $id

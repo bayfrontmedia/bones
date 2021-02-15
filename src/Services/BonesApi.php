@@ -28,10 +28,14 @@ use DateTimeInterface;
 class BonesApi
 {
 
+    protected $response;
+
     protected $config;
 
-    public function __construct(array $config)
+    public function __construct(Response $response, array $config)
     {
+        $this->response = $response;
+
         $this->config = $config;
     }
 
@@ -63,11 +67,7 @@ class BonesApi
 
         header_remove('X-Powered-By');
 
-        /** @var Response $response */
-
-        $response = get_from_container('response');
-
-        $response->setHeaders([
+        $this->response->setHeaders([
             'X-Content-Type-Options' => 'nosniff',
             'X-XSS-Protection' => '1; mode=block',
             'X-Frame-Options' => 'DENY'
@@ -118,7 +118,10 @@ class BonesApi
     }
 
     /**
-     * Checks request method is allowed or aborts with a "405 Method Not Allowed" HTTP status.
+     * Checks request method is allowed or aborts with a "405 Method Not Allowed" HTTP status,
+     * and a list of allowed methods in the "Allow" header.
+     *
+     * Always includes the "Allow" header when the "allow_method_discovery" configuration key is TRUE.
      *
      * @param string|array $methods (Allowed request methods)
      *
@@ -134,6 +137,14 @@ class BonesApi
 
         $methods = (array)$methods;
 
+        if (true === Arr::get($this->config, 'allow_method_discovery', false)) {
+
+            $this->response->setHeaders([
+                'Allow' => implode(', ', $methods)
+            ]);
+
+        }
+
         $request_method = Request::getMethod();
 
         if (!in_array($request_method, $methods)) {
@@ -147,8 +158,8 @@ class BonesApi
     }
 
     /**
-     * Checks that a valid JWT exists in the "Authorization" header or
-     * enforces the "auth_rate_limit" and aborts with a "401 Unauthorized" HTTP status.
+     * Checks that a valid JWT exists in the "Authorization" header or enforces the "auth_rate_limit"
+     * configuration value and aborts with a "401 Unauthorized" HTTP status.
      *
      * @return array (JWT contents)
      *
@@ -172,7 +183,7 @@ class BonesApi
 
         } catch (TokenException $e) {
 
-            $this->enforceRateLimit('auth-' . Request::getIp(), get_config('api.auth_rate_limit', 5));
+            $this->enforceRateLimit('auth-' . Request::getIp(), Arr::get($this->config, 'rate_limit_auth', 5));
 
             abort(401, 'Missing or invalid Bearer token');
 
@@ -213,7 +224,7 @@ class BonesApi
 
         $filesystem = get_from_container('filesystem');
 
-        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), get_config('api.buckets_path', '/app/buckets')), [
+        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), Arr::get($this->config, 'buckets_path', '/app/buckets')), [
             'capacity' => $limit, // Total drop capacity
             'leak' => $limit // Number of drops to leak per minute
         ]);
@@ -235,7 +246,7 @@ class BonesApi
 
         // Set headers
 
-        get_from_container('response')->setHeaders([
+        $this->response->setHeaders([
             'X-RateLimit-Limit' => $limit,
             'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()), // Round down
             'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty())
@@ -261,7 +272,7 @@ class BonesApi
 
         $filesystem = get_from_container('filesystem');
 
-        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), get_config('api.buckets_path', '/app/buckets')), [
+        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), Arr::get($this->config, 'buckets_path', '/app/buckets')), [
             'capacity' => $limit, // Total drop capacity
             'leak' => $limit // Number of drops to leak per minute
         ]);
@@ -270,7 +281,7 @@ class BonesApi
 
         // Set headers
 
-        get_from_container('response')->setHeaders([
+        $this->response->setHeaders([
             'X-RateLimit-Limit' => $limit,
             'X-RateLimit-Remaining' => $limit,
             'X-RateLimit-Reset' => 0
@@ -302,7 +313,7 @@ class BonesApi
         if (Arr::get($this->config, 'content_type')
             && Request::getHeader('Content-Type') != Arr::get($this->config, 'content_type')) {
 
-            abort(415, 'Content-Type header must be: ' . get_config('api.content_type'));
+            abort(415, 'Content-Type header must be: ' . Arr::get($this->config, 'content_type'));
 
         }
 
@@ -325,6 +336,49 @@ class BonesApi
         }
 
         return $body;
+
+    }
+
+    /**
+     * Validates array as a valid JSON:API v1.0 resource schema.
+     * This is helpful to validate the request body provided by a client.
+     *
+     * Ensures array only has a "data" key with an array as a value.
+     *
+     * Ensures the "data" array may contain only the following keys:
+     *
+     *  - type
+     *  - id
+     *  - attributes
+     *
+     * This method also checks optional valid and required attributes
+     * exists on the "attributes" array.
+     *
+     * @param array $array
+     * @param array $valid_attributes
+     * @param array $required_attributes
+     *
+     * @return bool
+     */
+
+    public function isValidResource(array $array, array $valid_attributes = [], array $required_attributes = [])
+    {
+
+        if (!isset($array['data'])
+            || !is_array($array['data'])
+            || count($array) > 1 // Any other keys
+            || !empty(Arr::except($array['data'], [
+                'type',
+                'id',
+                'attributes'
+            ]))
+            || !is_array(Arr::get($array, 'data.attributes'))
+            || Arr::isMissing($array['data']['attributes'], $required_attributes) // Missing required
+            || !empty(Arr::except($array['data']['attributes'], $valid_attributes))) { // Has invalid
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -377,6 +431,14 @@ class BonesApi
         }
 
         foreach ($fields as $k => $v) {
+
+            if ($v == '') { // No fields specified
+
+                $fields[$k] = [];
+
+                continue;
+
+            }
 
             if (!is_string($v)) {
                 abort(400, 'Malformed request: invalid field value(s)');

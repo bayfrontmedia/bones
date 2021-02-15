@@ -184,6 +184,17 @@ function get_container(): Container
 /**
  * @param string $id
  *
+ * @return bool
+ */
+
+function in_container(string $id): bool
+{
+    return App::inContainer($id);
+}
+
+/**
+ * @param string $id
+ *
  * @return mixed
  *
  * @throws NotFoundException
