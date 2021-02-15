@@ -389,6 +389,14 @@ class BonesApi
 
         foreach ($fields as $k => $v) {
 
+            if ($v == '') { // No fields specified
+
+                $fields[$k] = [];
+
+                continue;
+
+            }
+
             if (!is_string($v)) {
                 abort(400, 'Malformed request: invalid field value(s)');
             }
