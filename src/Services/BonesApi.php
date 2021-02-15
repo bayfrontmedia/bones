@@ -340,6 +340,46 @@ class BonesApi
     }
 
     /**
+     * Ensures array only has a "data" key with an array as a value.
+     *
+     * Ensures the "data" array may contain only the following keys:
+     *
+     *  - type
+     *  - id
+     *  - attributes
+     *
+     * Also checks optional valid and required attributes exists
+     * on the "attributes" array.
+     *
+     * @param array $array
+     * @param array $valid_attributes
+     * @param array $required_attributes
+     *
+     * @return bool
+     */
+
+    public function isValidResource(array $array, array $valid_attributes = [], array $required_attributes = [])
+    {
+
+        if (!isset($array['data'])
+            || !is_array($array['data'])
+            || count($array) > 1 // Any other keys
+            || !empty(Arr::except($array['data'], [
+                'type',
+                'id',
+                'attributes'
+            ]))
+            || !is_array(Arr::get($array, 'data.attributes'))
+            || Arr::isMissing($array['data']['attributes'], $required_attributes) // Missing required
+            || !empty(Arr::except($array['data']['attributes'], $valid_attributes))) { // Has invalid
+            return false;
+        }
+
+        return true;
+
+    }
+
+    /**
      * Parse the query string from the request to extract values needed to build a database query.
      *
      * The query string is parsed according to the JSON:API v1.0 spec
