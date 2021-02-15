@@ -33,6 +33,8 @@ $auth = get_service('BonesAuth\\BonesAuth', [
 $auth->install();
 ```
 
+To uninstall the database tables, use the `uninstall()` method.
+
 **Example usage:**
 
 ```
@@ -49,8 +51,6 @@ get_service('BonesAuth\\BonesAuth', [
     'pepper' => get_config('app.key', '')
 ]);
 ```
-
-To uninstall the database tables, use the `uninstall()` method.
 
 ## Public methods
 

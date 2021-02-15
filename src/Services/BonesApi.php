@@ -121,7 +121,7 @@ class BonesApi
      * Checks request method is allowed or aborts with a "405 Method Not Allowed" HTTP status,
      * and a list of allowed methods in the "Allow" header.
      *
-     * Always includes the "Allow" header when the "allow_method_discovery" config key is TRUE.
+     * Always includes the "Allow" header when the "allow_method_discovery" configuration key is TRUE.
      *
      * @param string|array $methods (Allowed request methods)
      *
@@ -158,8 +158,8 @@ class BonesApi
     }
 
     /**
-     * Checks that a valid JWT exists in the "Authorization" header or
-     * enforces the "auth_rate_limit" and aborts with a "401 Unauthorized" HTTP status.
+     * Checks that a valid JWT exists in the "Authorization" header or enforces the "auth_rate_limit"
+     * configuration value and aborts with a "401 Unauthorized" HTTP status.
      *
      * @return array (JWT contents)
      *
@@ -183,7 +183,7 @@ class BonesApi
 
         } catch (TokenException $e) {
 
-            $this->enforceRateLimit('auth-' . Request::getIp(), get_config('api.auth_rate_limit', 5));
+            $this->enforceRateLimit('auth-' . Request::getIp(), Arr::get($this->config, 'rate_limit_auth', 5));
 
             abort(401, 'Missing or invalid Bearer token');
 
@@ -224,7 +224,7 @@ class BonesApi
 
         $filesystem = get_from_container('filesystem');
 
-        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), get_config('api.buckets_path', '/app/buckets')), [
+        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), Arr::get($this->config, 'buckets_path', '/app/buckets')), [
             'capacity' => $limit, // Total drop capacity
             'leak' => $limit // Number of drops to leak per minute
         ]);
@@ -272,7 +272,7 @@ class BonesApi
 
         $filesystem = get_from_container('filesystem');
 
-        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), get_config('api.buckets_path', '/app/buckets')), [
+        $bucket = new Bucket('api.ratelimit.' . $bucket_id, new Flysystem($filesystem->getDefaultDisk(), Arr::get($this->config, 'buckets_path', '/app/buckets')), [
             'capacity' => $limit, // Total drop capacity
             'leak' => $limit // Number of drops to leak per minute
         ]);
@@ -313,7 +313,7 @@ class BonesApi
         if (Arr::get($this->config, 'content_type')
             && Request::getHeader('Content-Type') != Arr::get($this->config, 'content_type')) {
 
-            abort(415, 'Content-Type header must be: ' . get_config('api.content_type'));
+            abort(415, 'Content-Type header must be: ' . Arr::get($this->config, 'content_type'));
 
         }
 
@@ -348,8 +348,8 @@ class BonesApi
      *  - id
      *  - attributes
      *
-     * Also checks optional valid and required attributes exists
-     * on the "attributes" array.
+     * This method also checks optional valid and required attributes
+     * exists on the "attributes" array.
      *
      * @param array $array
      * @param array $valid_attributes
