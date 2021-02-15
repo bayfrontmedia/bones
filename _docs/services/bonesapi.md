@@ -209,6 +209,9 @@ or aborts with a `400 Bad Request` HTTP status if invalid.
 
 **Description:**
 
+Validates array as a valid JSON:API v1.0 resource schema.
+This is helpful to validate the request body provided by a client.
+
 Ensures array only has a `data` key with an array as a value.
 
 Ensures the `data` array may contain only the following keys:
