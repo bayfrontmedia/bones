@@ -485,7 +485,7 @@ class BonesApi
             $order = explode(',', $sort);
 
         } else {
-            $order = [];
+            $order = null;
         }
 
         // Page
