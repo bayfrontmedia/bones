@@ -399,7 +399,7 @@ class BonesApi
      *
      * - fields
      * - filters
-     * - order_by
+     * - order_by (if specified)
      * - limit
      * - offset
      *
@@ -485,7 +485,7 @@ class BonesApi
             $order = explode(',', $sort);
 
         } else {
-            $order = null;
+            $order = [];
         }
 
         // Page
@@ -502,6 +502,17 @@ class BonesApi
 
         if ($limit > $max_page_size) {
             abort(400, 'Malformed request: page size (' . $limit . ') exceeds maximum (' . $max_page_size . ')');
+        }
+
+        if (empty($order)) {
+
+            return [
+                'fields' => $fields,
+                'filters' => $filters,
+                'limit' => $limit,
+                'offset' => $limit * ($page_number - 1)
+            ];
+
         }
 
         return [

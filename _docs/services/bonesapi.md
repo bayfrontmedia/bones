@@ -254,7 +254,7 @@ This method returns an array with the following keys:
 
 - `fields`
 - `filters`
-- `order_by`
+- `order_by` (if specified)
 - `limit`
 - `offset`
 
