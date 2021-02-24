@@ -67,8 +67,8 @@ class BonesAuth extends Auth
                 'count' => count($results),
                 'total' => $total,
                 'pages' => ceil($total / $request['limit']),
-                'page_size' => $request['limit'],
-                'page_number' => ($request['offset'] / $request['limit']) + 1
+                'pageSize' => $request['limit'],
+                'pageNumber' => ($request['offset'] / $request['limit']) + 1
             ]
         ];
 
