@@ -186,7 +186,7 @@ class BonesAuth extends Auth
                 'userId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -301,7 +301,7 @@ class BonesAuth extends Auth
                 'roleId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -416,7 +416,7 @@ class BonesAuth extends Auth
                 'permissionId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -483,7 +483,7 @@ class BonesAuth extends Auth
                 'userId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -662,7 +662,7 @@ class BonesAuth extends Auth
                 'permissionId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -731,7 +731,7 @@ class BonesAuth extends Auth
                 'roleId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
@@ -798,7 +798,7 @@ class BonesAuth extends Auth
                 'groupId'
             ]);
 
-        return $query->get();
+        return $this->_getResults($query, $request);
 
     }
 
