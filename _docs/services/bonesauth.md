@@ -62,15 +62,22 @@ the following methods have been added:
 - [install](#install)
 - [uninstall](#uninstall)
 - [getGroupsCollection](#getgroupscollection)
+- [getGroupUsersRelationships](#getgroupusersrelationships)
 - [getGroupUsersCollection](#getgroupuserscollection)
 - [getPermissionsCollection](#getpermissionscollection)
+- [getPermissionRolesRelationships](#getpermissionrolesrelationships)
 - [getPermissionRolesCollection](#getpermissionrolescollection)
 - [getRolesCollection](#getrolescollection)
+- [getRolePermissionsRelationships](#getrolepermissionsrelationships)
 - [getRolePermissionsCollection](#getrolepermissionscollection)
+- [getRoleUsersRelationships](#getroleusersrelationships)
 - [getRoleUsersCollection](#getroleuserscollection)
 - [getUsersCollection](#getuserscollection)
+- [getUserPermissionsRelationships](#getuserpermissionsrelationships)
 - [getUserPermissionsCollection](#getuserpermissionscollection)
+- [getUserRolesRelationships](#getuserrolesrelationships)
 - [getUserRolesCollection](#getuserrolescollection)
+- [getUserGroupsRelationships](#getusergroupsrelationships)
 - [getUserGroupsCollection](#getusergroupscollection)
 - [getUserMetaCollection](#getusermetacollection)
 
@@ -132,6 +139,26 @@ Get all groups using query builder.
 
 <hr />
 
+### getGroupUsersRelationships
+
+**Description:**
+
+Get all user ID's in group.
+
+**Parameters:**
+
+- `$group_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
 ### getGroupUsersCollection
 
 **Description:**
@@ -163,6 +190,26 @@ Get all permissions using query builder.
 
 - `$request` (array)
 - `$valid_permission_ids = NULL` (array|null): Restrict results to permission ID(s)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
+### getPermissionRolesRelationships
+
+**Description:**
+
+Get all role ID's with permission.
+
+**Parameters:**
+
+- `$permission_id` (string)
 
 **Returns:**
 
@@ -216,6 +263,26 @@ Get all roles using query builder.
 
 <hr />
 
+### getRolePermissionsRelationships
+
+**Description:**
+
+Get all permission ID's of role.
+
+**Parameters:**
+
+- `$role_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
 ### getRolePermissionsCollection
 
 **Description:**
@@ -225,6 +292,26 @@ Get all permissions of role using a query builder.
 **Parameters:**
 
 - `$request` (array)
+- `$role_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
+### getRoleUsersRelationships
+
+**Description:**
+
+Get all user ID's with role.
+
+**Parameters:**
+
 - `$role_id` (string)
 
 **Returns:**
@@ -279,6 +366,26 @@ Get all users using query builder.
 
 <hr />
 
+### getUserPermissionsRelationships
+
+**Description:**
+
+Get all permission ID's of user.
+
+**Parameters:**
+
+- `$user_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
 ### getUserPermissionsCollection
 
 **Description:**
@@ -300,6 +407,26 @@ Get all permissions of user using a query builder.
 
 <hr />
 
+### getUserRolesRelationships
+
+**Description:**
+
+Get all role ID's of user.
+
+**Parameters:**
+
+- `$user_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
 ### getUserRolesCollection
 
 **Description:**
@@ -309,6 +436,26 @@ Get all roles of user using a query builder.
 **Parameters:**
 
 - `$request` (array)
+- `$user_id` (string)
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\PDO\Exceptions\QueryException`
+
+<hr />
+
+### getUserGroupsRelationships
+
+**Description:**
+
+Get all group ID's of user.
+
+**Parameters:**
+
 - `$user_id` (string)
 
 **Returns:**

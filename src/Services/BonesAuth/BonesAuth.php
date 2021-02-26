@@ -162,6 +162,32 @@ class BonesAuth extends Auth
     }
 
     /**
+     * Get all user ID's in group.
+     *
+     * @param string $group_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getGroupUsersRelationships(string $group_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_group_users')
+            ->select('userId')
+            ->where('groupId', 'eq', $group_id)
+            ->orderBy([
+                'userId'
+            ]);
+
+        return $query->get();
+
+    }
+
+    /**
      * Get all users in group using a query builder.
      *
      * @param array $request
@@ -244,6 +270,32 @@ class BonesAuth extends Auth
         }
 
         return $this->_getResults($query, $request);
+
+    }
+
+    /**
+     * Get all role ID's with permission.
+     *
+     * @param string $permission_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getPermissionRolesRelationships(string $permission_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_role_permissions')
+            ->select('roleId')
+            ->where('permissionId', 'eq', $permission_id)
+            ->orderBy([
+                'roleId'
+            ]);
+
+        return $query->get();
 
     }
 
@@ -334,6 +386,32 @@ class BonesAuth extends Auth
     }
 
     /**
+     * Get all permission ID's of role.
+     *
+     * @param string $role_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getRolePermissionsRelationships(string $role_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_role_permissions')
+            ->select('permissionId')
+            ->where('roleId', 'eq', $role_id)
+            ->orderBy([
+                'permissionId'
+            ]);
+
+        return $query->get();
+
+    }
+
+    /**
      * Get all permissions of role using a query builder.
      *
      * @param array $request
@@ -368,6 +446,32 @@ class BonesAuth extends Auth
         }
 
         return $this->_getResults($query, $request);
+
+    }
+
+    /**
+     * Get all user ID's with role.
+     *
+     * @param string $role_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getRoleUsersRelationships(string $role_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_role_users')
+            ->select('userId')
+            ->where('roleId', 'eq', $role_id)
+            ->orderBy([
+                'userId'
+            ]);
+
+        return $query->get();
 
     }
 
@@ -470,17 +574,14 @@ class BonesAuth extends Auth
     }
 
     /**
-     * Get all permissions of user using a query builder.
+     * Get role ID's of user, checking user and roles exist and are active.
      *
-     * @param array $request
      * @param string $user_id
      *
      * @return array
-     *
-     * @throws QueryException
      */
 
-    public function getUserPermissionsCollection(array $request, string $user_id): array
+    protected function _getActiveUserRoles(string $user_id): array
     {
 
         // Does user exist and is enabled
@@ -517,6 +618,55 @@ class BonesAuth extends Auth
 
         }
 
+        return $valid_roles;
+
+    }
+
+    /**
+     * Get all permission ID's of user.
+     *
+     * @param string $user_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getUserPermissionsRelationships(string $user_id): array
+    {
+
+        $valid_roles = $this->_getActiveUserRoles($user_id);
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_role_permissions')
+            ->select('permissionId')
+            ->distinct()
+            ->where('roleId', 'in', implode(', ', $valid_roles))
+            ->orderBy([
+                'permissionId'
+            ]);
+
+        return $query->get();
+
+    }
+
+    /**
+     * Get all permissions of user using a query builder.
+     *
+     * @param array $request
+     * @param string $user_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getUserPermissionsCollection(array $request, string $user_id): array
+    {
+
+        $valid_roles = $this->_getActiveUserRoles($user_id);
+
         $query = new Query($this->pdo);
 
         $query->table('rbac_permissions')
@@ -538,6 +688,32 @@ class BonesAuth extends Auth
         }
 
         return $this->_getResults($query, $request);
+
+    }
+
+    /**
+     * Get all role ID's of user.
+     *
+     * @param string $user_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getUserRolesRelationships(string $user_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_role_users')
+            ->select('roleId')
+            ->where('userId', 'eq', $user_id)
+            ->orderBy([
+                'roleId'
+            ]);
+
+        return $query->get();
 
     }
 
@@ -579,11 +755,36 @@ class BonesAuth extends Auth
 
     }
 
+    /**
+     * Get all group ID's of user.
+     *
+     * @param string $user_id
+     *
+     * @return array
+     *
+     * @throws QueryException
+     */
+
+    public function getUserGroupsRelationships(string $user_id): array
+    {
+
+        $query = new Query($this->pdo);
+
+        $query->table('rbac_group_users')
+            ->select('groupId')
+            ->where('userId', 'eq', $user_id)
+            ->orderBy([
+                'groupId'
+            ]);
+
+        return $query->get();
+
+    }
 
     /**
      * Get all groups of user using a query builder.
      *
-     * @param array $request ,
+     * @param array $request
      * @param string $user_id
      *
      * @return array

@@ -392,6 +392,7 @@ class BonesApi
      *
      * - fields
      * - filter
+     * - include
      * - sort
      * - page
      *
@@ -399,6 +400,7 @@ class BonesApi
      *
      * - fields
      * - filters
+     * - include
      * - order_by (if specified)
      * - limit
      * - offset
@@ -468,6 +470,26 @@ class BonesApi
 
         }
 
+        // Include
+
+        $include = Arr::get($query, 'include', '');
+
+        if (!is_string($include)) {
+            abort(400, 'Malformed request: invalid include value');
+        }
+
+        if ($include != '') {
+
+            if (strpos($include, ' ') !== false) { // Contains space
+                abort(400, 'Malformed request: invalid include value(s)');
+            }
+
+            $include_arr = explode(',', $include);
+
+        } else {
+            $include_arr = [];
+        }
+
         // Sort
 
         $sort = Arr::get($query, 'sort', '');
@@ -509,6 +531,7 @@ class BonesApi
             return [
                 'fields' => $fields,
                 'filters' => $filters,
+                'include' => $include_arr,
                 'limit' => $limit,
                 'offset' => $limit * ($page_number - 1)
             ];
@@ -518,6 +541,7 @@ class BonesApi
         return [
             'fields' => $fields,
             'filters' => $filters,
+            'include' => $include_arr,
             'order_by' => $order,
             'limit' => $limit,
             'offset' => $limit * ($page_number - 1)

@@ -247,6 +247,7 @@ The following parameters are analyzed from the query:
 
 - `fields`
 - `filter`
+- `include`
 - `sort`
 - `page`
 
@@ -254,6 +255,7 @@ This method returns an array with the following keys:
 
 - `fields`
 - `filters`
+- `include`
 - `order_by` (if specified)
 - `limit`
 - `offset`
@@ -280,7 +282,7 @@ For more information, see: [Simple PDO query builder](https://github.com/bayfron
 Request query string:
 
 ```
-?fields[items]=name,color,quantity&filter[price][gt]=20.00&sort=-name&page[size]=5&page[number]=4
+?fields[items]=name,color,quantity&filter[price][gt]=20.00&include=tags&sort=-name&page[size]=5&page[number]=4
 ```
 
 Example usage in the controller, assuming `$this->api` is an instance of the `BonesApi` service:
@@ -311,6 +313,9 @@ In the above example, the `$request` array would be:
         'price' => [
             'gt' => '20.00'
         ]
+    ],
+    'include' => [
+        'tags'
     ],
     'order_by' => [
         '-name'
