@@ -147,6 +147,7 @@ Get all user ID's in group.
 
 **Parameters:**
 
+- `$request` (array)
 - `$group_id` (string)
 
 **Returns:**
@@ -209,6 +210,7 @@ Get all role ID's with permission.
 
 **Parameters:**
 
+- `$request` (array)
 - `$permission_id` (string)
 
 **Returns:**
@@ -271,6 +273,7 @@ Get all permission ID's of role.
 
 **Parameters:**
 
+- `$request` (array)
 - `$role_id` (string)
 
 **Returns:**
@@ -312,6 +315,7 @@ Get all user ID's with role.
 
 **Parameters:**
 
+- `$request` (array)
 - `$role_id` (string)
 
 **Returns:**
@@ -374,6 +378,7 @@ Get all permission ID's of user.
 
 **Parameters:**
 
+- `$request` (array)
 - `$user_id` (string)
 
 **Returns:**
@@ -415,6 +420,7 @@ Get all role ID's of user.
 
 **Parameters:**
 
+- `$request` (array)
 - `$user_id` (string)
 
 **Returns:**
@@ -456,6 +462,7 @@ Get all group ID's of user.
 
 **Parameters:**
 
+- `$request` (array)
 - `$user_id` (string)
 
 **Returns:**

@@ -164,6 +164,7 @@ class BonesAuth extends Auth
     /**
      * Get all user ID's in group.
      *
+     * @param array $request
      * @param string $group_id
      *
      * @return array
@@ -171,7 +172,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getGroupUsersRelationships(string $group_id): array
+    public function getGroupUsersRelationships(array $request, string $group_id): array
     {
 
         $query = new Query($this->pdo);
@@ -179,6 +180,8 @@ class BonesAuth extends Auth
         $query->table('rbac_group_users')
             ->select('userId')
             ->where('groupId', 'eq', $group_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'userId'
             ]);
@@ -276,6 +279,7 @@ class BonesAuth extends Auth
     /**
      * Get all role ID's with permission.
      *
+     * @param array $request
      * @param string $permission_id
      *
      * @return array
@@ -283,7 +287,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getPermissionRolesRelationships(string $permission_id): array
+    public function getPermissionRolesRelationships(array $request, string $permission_id): array
     {
 
         $query = new Query($this->pdo);
@@ -291,6 +295,8 @@ class BonesAuth extends Auth
         $query->table('rbac_role_permissions')
             ->select('roleId')
             ->where('permissionId', 'eq', $permission_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'roleId'
             ]);
@@ -388,6 +394,7 @@ class BonesAuth extends Auth
     /**
      * Get all permission ID's of role.
      *
+     * @param array $request
      * @param string $role_id
      *
      * @return array
@@ -395,7 +402,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getRolePermissionsRelationships(string $role_id): array
+    public function getRolePermissionsRelationships(array $request, string $role_id): array
     {
 
         $query = new Query($this->pdo);
@@ -403,6 +410,8 @@ class BonesAuth extends Auth
         $query->table('rbac_role_permissions')
             ->select('permissionId')
             ->where('roleId', 'eq', $role_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'permissionId'
             ]);
@@ -452,6 +461,7 @@ class BonesAuth extends Auth
     /**
      * Get all user ID's with role.
      *
+     * @param array $request
      * @param string $role_id
      *
      * @return array
@@ -459,7 +469,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getRoleUsersRelationships(string $role_id): array
+    public function getRoleUsersRelationships(array $request, string $role_id): array
     {
 
         $query = new Query($this->pdo);
@@ -467,6 +477,8 @@ class BonesAuth extends Auth
         $query->table('rbac_role_users')
             ->select('userId')
             ->where('roleId', 'eq', $role_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'userId'
             ]);
@@ -625,6 +637,7 @@ class BonesAuth extends Auth
     /**
      * Get all permission ID's of user.
      *
+     * @param array $request
      * @param string $user_id
      *
      * @return array
@@ -632,7 +645,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getUserPermissionsRelationships(string $user_id): array
+    public function getUserPermissionsRelationships(array $request, string $user_id): array
     {
 
         $valid_roles = $this->_getActiveUserRoles($user_id);
@@ -643,6 +656,8 @@ class BonesAuth extends Auth
             ->select('permissionId')
             ->distinct()
             ->where('roleId', 'in', implode(', ', $valid_roles))
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'permissionId'
             ]);
@@ -694,6 +709,7 @@ class BonesAuth extends Auth
     /**
      * Get all role ID's of user.
      *
+     * @param array $request
      * @param string $user_id
      *
      * @return array
@@ -701,7 +717,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getUserRolesRelationships(string $user_id): array
+    public function getUserRolesRelationships(array $request, string $user_id): array
     {
 
         $query = new Query($this->pdo);
@@ -709,6 +725,8 @@ class BonesAuth extends Auth
         $query->table('rbac_role_users')
             ->select('roleId')
             ->where('userId', 'eq', $user_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'roleId'
             ]);
@@ -758,6 +776,7 @@ class BonesAuth extends Auth
     /**
      * Get all group ID's of user.
      *
+     * @param array $request
      * @param string $user_id
      *
      * @return array
@@ -765,7 +784,7 @@ class BonesAuth extends Auth
      * @throws QueryException
      */
 
-    public function getUserGroupsRelationships(string $user_id): array
+    public function getUserGroupsRelationships(array $request, string $user_id): array
     {
 
         $query = new Query($this->pdo);
@@ -773,6 +792,8 @@ class BonesAuth extends Auth
         $query->table('rbac_group_users')
             ->select('groupId')
             ->where('userId', 'eq', $user_id)
+            ->limit($request['limit'])
+            ->offset($request['offset'])
             ->orderBy([
                 'groupId'
             ]);
