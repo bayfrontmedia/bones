@@ -32,7 +32,7 @@
     "bayfrontmedia/php-string-helpers": "^1.2.0",
     "bayfrontmedia/php-time-helpers": "^1.1.0",
     "bayfrontmedia/rbac-auth": "^1.2.0",
-    "bayfrontmedia/route-it": "^2.0.1",
+    "bayfrontmedia/route-it": "^2.0.2",
     "bayfrontmedia/simple-pdo": "^1.0.0",
     "bayfrontmedia/session-manager": "^1.0.1",
     "bayfrontmedia/translation": "^1.1.0",
