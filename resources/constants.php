@@ -32,4 +32,4 @@ define('APP_STORAGE_PATH', APP_ROOT_PATH . '/storage'); // Path to the applicati
 
 define('BONES_ROOT_PATH', dirname(__FILE__, 2)); // Root path to the Bones directory
 define('BONES_RESOURCES_PATH', BONES_ROOT_PATH . '/resources'); // Path to the Bones `resources` directory
-define('BONES_VERSION', '1.2.3'); // Current Bones version
+define('BONES_VERSION', '1.2.4'); // Current Bones version
