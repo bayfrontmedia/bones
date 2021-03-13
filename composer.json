@@ -24,7 +24,7 @@
     "bayfrontmedia/filesystem-factory": "^1.2.0",
     "bayfrontmedia/leaky-bucket": "^1.2.0",
     "bayfrontmedia/monolog-factory": "^1.1.0",
-    "bayfrontmedia/php-array-helpers": "^1.3.0",
+    "bayfrontmedia/php-array-helpers": "^1.3.1",
     "bayfrontmedia/php-hooks": "^1.1.0",
     "bayfrontmedia/php-http-request": "^2.0.1",
     "bayfrontmedia/php-http-response": "^1.2.1",
@@ -36,7 +36,7 @@
     "bayfrontmedia/simple-pdo": "^1.0.0",
     "bayfrontmedia/session-manager": "^1.0.1",
     "bayfrontmedia/translation": "^1.1.0",
-    "bayfrontmedia/veil": "^1.2.1",
+    "bayfrontmedia/veil": "^1.3.0",
     "filp/whoops": "2.*",
     "league/climate": "^3.7.0",
     "vlucas/phpdotenv": "^5.3"
