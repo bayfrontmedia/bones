@@ -12,6 +12,7 @@ namespace Bayfront\Bones;
 use Bayfront\Bones\Exceptions\ControllerException;
 use Bayfront\Container\Container;
 use Bayfront\Container\NotFoundException;
+use Bayfront\Filesystem\Filesystem;
 use Bayfront\HttpResponse\Response;
 use Bayfront\Veil\Veil;
 
@@ -27,6 +28,12 @@ abstract class Controller
      */
 
     protected $container;
+
+    /**
+     * @var Filesystem
+     */
+
+    protected $filesystem;
 
     /**
      * @var Response $response
@@ -56,6 +63,8 @@ abstract class Controller
             /*
              * @throws Bayfront\Container\NotFoundException
              */
+
+            $this->filesystem = $this->container->get('filesystem');
 
             $this->response = $this->container->get('response');
 

@@ -853,13 +853,15 @@ class App
 
         foreach ((array)$helpers as $helper) {
 
-            if (!is_file(APP_RESOURCES_PATH . '/helpers' . $helper . '.php')) {
+            $helper = trim($helper, '/'); // Sanitize string
+
+            if (!is_file(APP_RESOURCES_PATH . '/helpers/' . $helper . '.php')) {
 
                 throw new FileNotFoundException('Helper file not found: ' . $helper);
 
             }
 
-            require_once(APP_RESOURCES_PATH . '/helpers' . $helper . '.php');
+            require_once(APP_RESOURCES_PATH . '/helpers/' . $helper . '.php');
 
         }
 

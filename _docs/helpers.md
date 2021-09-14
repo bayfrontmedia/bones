@@ -488,7 +488,7 @@ Include helper file(s) located in the `/resources/helpers` directory.
 ```
 use_helper([
     'first_file',
-    'second_file'
+    'path/to/second_file'
 ]);
 ```
 

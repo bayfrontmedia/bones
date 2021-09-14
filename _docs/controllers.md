@@ -9,6 +9,7 @@ If a controller needs its own constructor, be sure to invoke `parent::__construc
 Services available within a controller:
 
 - Container as `$this->container`
+- Filesystem as `$this->filesystem`
 - HTTP response service as `$this->response`
 - Veil template engine as `$this->veil` (if existing in container)
 
