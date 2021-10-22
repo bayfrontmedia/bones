@@ -22,10 +22,10 @@ return [
                 'private' => 0700,
             ]
         ],
-        'url' => 'https://www.example.com/path/to/root', // Optional key
         'cache' => [ // Optional key
             'location' => 'Memory' // Class name in Bayfront\Filesystem\Cache namespace
-        ]
+        ],
+        'url' => 'https://www.example.com/path/to/root' // Optional. No trailing slash.
     ]
 ];
 ``` 

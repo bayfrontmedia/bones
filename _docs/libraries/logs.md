@@ -15,13 +15,15 @@ return [
                 'params' => [
                     'filename' => storage_path('/app/logs/app.log'),
                     'maxFiles' => 30,
-                    'level' => 'INFO'
+                    'level' => (get_env('APP_ENVIRONMENT') == 'production') ? 'INFO' : 'DEBUG'
                 ],
                 'formatter' => [
                     'name' => 'LineFormatter',
                     'params' => [
-                        'output' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
-                        'dateformat' => 'Y-m-d H:i:s T'
+                        'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+                        'dateFormat' => 'Y-m-d H:i:s T',
+                        'allowInlineLineBreaks' => false,
+                        'ignoreEmptyContextAndExtra' => false
                     ]
                 ]
             ]

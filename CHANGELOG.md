@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.4.0]- 2021.10.21
+
+### Changed
+
+- Multiple documentation improvements.
+
+### Removed
+
+- Removed the `BonesApi` and `BonesAuth` services, as they were not production ready and had not yet been used.
+
 ## [1.3.0]- 2021.09.14
 
 ### Added

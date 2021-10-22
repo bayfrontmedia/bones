@@ -31,10 +31,6 @@ John Robinson, [Bayfront Media](https://www.bayfrontmedia.com)
 
 [Bones Skeleton](https://github.com/bayfrontmedia/bones-skeleton) is the simplest bare-bones configuration to begin building an application using the Bones framework.
 
-### Bones API
-
-[Bones API](https://github.com/bayfrontmedia/bones-api) is a starter app to build a RESTful API using the Bones framework.
-
 ## Usage
 
 Please see the [documentation](_docs/README.md).
