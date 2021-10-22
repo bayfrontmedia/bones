@@ -2,7 +2,7 @@
 
 All Bones exceptions extend `Bayfront\Bones\Exceptions\BonesException`, so you can choose to catch exceptions as narrowly or broadly as you like.
 
-With Bones, all PHP errors will be thrown as a `Bayfront\Bones\Exceptions\ErrorException` exception. 
+With Bones, all PHP errors will be thrown as an `Bayfront\Bones\Exceptions\ErrorException` exception. 
 
 Whenever an exception is thrown, the `bones.exception` event will be executed, if able.
 

@@ -16,7 +16,4 @@ php /path/to/resources/cli.php
 
 ## Bones services
 
-The following services are included with Bones:
-
-- [BonesApi](services/bonesapi.md)
-- [BonesAuth](services/bonesauth.md)
+There are currently no services provided by Bones.
