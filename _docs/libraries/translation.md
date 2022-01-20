@@ -10,6 +10,6 @@ return [
     'enabled' => true,
     'adapter' => 'Local',
     'root_path' => resources_path('/translations'),
-    'locale' => do_filter('translation.locale', 'en') // Filtered default locale
+    'locale' => 'en_US'
 ];
 ``` 
