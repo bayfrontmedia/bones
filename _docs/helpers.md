@@ -67,6 +67,7 @@ The following helpers are automatically included by Bones when their associated 
 **Translate helpers**
 
 - [get_translate](#get_translate)
+- [get_locale](#get_locale)
 - [set_locale](#set_locale)
 - [translate](#translate)
 - [say](#say)
@@ -1194,6 +1195,34 @@ See: [https://github.com/bayfrontmedia/translation](https://github.com/bayfrontm
 
 ```
 $translate = get_translate();
+```
+
+<hr />
+
+### get_locale
+
+**Description:**
+
+Get locale.
+
+See: [https://github.com/bayfrontmedia/translation#getlocale](https://github.com/bayfrontmedia/translation#getlocale)
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (string)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```
+get_locale();
 ```
 
 <hr />

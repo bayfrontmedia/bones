@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [1.4.1]- 2022.01.19
+
+### Added
+
+- Added `get_locale` helper function.
+- Added GitHub workflow
+
+### Changed
+
+- Updated `composer.json` information
+
 ## [1.4.0]- 2021.10.21
 
 ### Changed

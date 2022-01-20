@@ -28,6 +28,21 @@ function get_translate(): Translate
 }
 
 /**
+ * Get locale.
+ *
+ * See: https://github.com/bayfrontmedia/translation#getlocale
+ *
+ * @return string
+ *
+ * @throws NotFoundException
+ */
+
+function get_locale(): string
+{
+    get_translate()->getLocale();
+}
+
+/**
  * Set locale.
  *
  * See: https://github.com/bayfrontmedia/translation#setlocale
