@@ -39,7 +39,7 @@ function get_translate(): Translate
 
 function get_locale(): string
 {
-    get_translate()->getLocale();
+    return get_translate()->getLocale();
 }
 
 /**
