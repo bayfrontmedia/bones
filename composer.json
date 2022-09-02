@@ -1,6 +1,8 @@
 {
   "name": "bayfrontmedia/bones",
   "description": "A PHP framework used to build web apps using the MVC (model-view-controller) design pattern.",
+  "homepage": "https://github.com/bayfrontmedia/bones",
+  "license": "MIT",
   "type": "library",
   "keywords": [
     "php",
@@ -22,8 +24,6 @@
     "optimize-autoloader": true,
     "preferred-install": "dist"
   },
-  "homepage": "https://github.com/bayfrontmedia/bones",
-  "license": "MIT",
   "autoload": {
     "psr-4": {
       "Bayfront\\Bones\\": "src/"
