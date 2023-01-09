@@ -35,7 +35,7 @@ Each executes its own event.
 
 **Class**
 
-`Bayfront\Bones\Controllers\Web`
+`Bayfront\Bones\Controllers\WebController`
 
 **Services available**
 
@@ -43,7 +43,7 @@ Each executes its own event.
 
 **Event**
 
-`app.controller-web`
+`app.controller.web`
 
 ## Creating a new controller
 

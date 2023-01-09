@@ -7,7 +7,7 @@ use Bayfront\Bones\Exceptions\ControllerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\Veil\Veil;
 
-abstract class Web extends Controller
+abstract class WebController extends Controller
 {
 
     /**
@@ -33,7 +33,7 @@ abstract class Web extends Controller
 
             }
 
-            $this->container->get('hooks')->doEvent('app.controller-web');
+            $this->container->get('hooks')->doEvent('app.controller.web');
 
         } catch (NotFoundException $e) {
 

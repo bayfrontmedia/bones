@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `redirect` helper function.
-- Added a separate web controller and `app.controller-web` event.
+- Added a separate web controller and `app.controller.web` event.
 - Added `app.model` event.
 
 ### Changed
