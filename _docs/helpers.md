@@ -63,6 +63,7 @@ The following helpers are automatically included by Bones when their associated 
 - [get_router](#get_router)
 - [get_named_routes](#get_named_routes)
 - [get_named_route](#get_named_route)
+- [redirect](#redirect)
 
 **Translate helpers**
 
@@ -1167,6 +1168,36 @@ See: [https://github.com/bayfrontmedia/route-it#getnamedroute](https://github.co
 
 ```
 echo get_named_route('home');
+```
+
+<hr />
+
+### redirect
+
+**Description:**
+
+Redirects to a given URL using a given status code.
+
+See: [https://github.com/bayfrontmedia/route-it#redirect](https://github.com/bayfrontmedia/route-it#redirect)
+
+**Parameters:**
+
+- `$url` (string): Fully qualified URL
+- `$status = 302` (string): Status code to return
+
+**Returns:**
+
+- (void)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+- `Bayfront\RouteIt\DispatchException`
+
+**Example:**
+
+```
+redirect('https://google.com');
 ```
 
 <hr />

@@ -8,6 +8,7 @@
 
 use Bayfront\Bones\App;
 use Bayfront\Container\NotFoundException;
+use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
 
 /**
@@ -54,4 +55,21 @@ function get_named_routes(): array
 function get_named_route(string $name, string $default = ''): string
 {
     return get_router()->getNamedRoute($name, $default);
+}
+
+/**
+ * Redirects to a given URL using a given status code.
+ *
+ * See: https://github.com/bayfrontmedia/route-it#redirect
+ *
+ * @param string $url (Fully qualified URL)
+ * @param int $status (Status code to return)
+ *
+ * @throws NotFoundException
+ * @throws DispatchException
+ */
+
+function redirect(string $url, int $status = 302): void
+{
+    get_router()->redirect($url, $status);
 }
