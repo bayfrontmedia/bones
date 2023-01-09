@@ -199,7 +199,7 @@ abstract class ExceptionHandler
      * @return string
      */
 
-    private function _bodyAsText($message, $data)
+    private function _bodyAsText($message, $data): string
     {
 
         $body = '<h1>Error: ' . $message . '</h1><ul>';

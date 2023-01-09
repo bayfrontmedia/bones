@@ -231,7 +231,7 @@ function set_in_container(string $id, string $class, array $params = [])
  * @param array $params
  * @param bool $force_unique
  *
- * @return mixed
+ * @return object
  *
  * @throws ModelException
  *
@@ -239,7 +239,7 @@ function set_in_container(string $id, string $class, array $params = [])
  *
  */
 
-function get_model(string $model, array $params = [], bool $force_unique = false)
+function get_model(string $model, array $params = [], bool $force_unique = false): object
 {
     return App::getModel($model, $params, $force_unique);
 }
@@ -249,7 +249,7 @@ function get_model(string $model, array $params = [], bool $force_unique = false
  * @param array $params
  * @param bool $force_unique
  *
- * @return mixed
+ * @return object
  *
  * @throws ServiceException
  *
@@ -257,7 +257,7 @@ function get_model(string $model, array $params = [], bool $force_unique = false
  *
  */
 
-function get_service(string $service, array $params = [], bool $force_unique = false)
+function get_service(string $service, array $params = [], bool $force_unique = false): object
 {
     return App::getService($service, $params, $force_unique);
 }

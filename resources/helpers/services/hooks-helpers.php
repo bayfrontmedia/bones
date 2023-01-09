@@ -33,7 +33,7 @@ function get_hooks(): Hooks
  * @throws NotFoundException
  */
 
-function add_event(string $name, callable $function, $priority = 5): void
+function add_event(string $name, callable $function, int $priority = 5): void
 {
     get_hooks()->addEvent($name, $function, $priority);
 }
@@ -70,7 +70,7 @@ function do_event(string $name, ...$arg): void
  * @throws NotFoundException
  */
 
-function add_filter(string $name, callable $function, $priority = 5): void
+function add_filter(string $name, callable $function, int $priority = 5): void
 {
     get_hooks()->addFilter($name, $function, $priority);
 }

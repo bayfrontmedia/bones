@@ -13,12 +13,13 @@ use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\Filesystem\Exceptions\ConfigurationException;
-use Bayfront\Filesystem\Exceptions\DiskException;
 use Bayfront\Filesystem\Filesystem;
 use Bayfront\Hooks\Hooks;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-use Bayfront\MonologFactory\Exceptions\LoggerException;
+use Bayfront\MonologFactory\Exceptions\FormatterException;
+use Bayfront\MonologFactory\Exceptions\HandlerException;
+use Bayfront\MonologFactory\Exceptions\ProcessorException;
 use Bayfront\MonologFactory\LoggerFactory;
 use Bayfront\PDO\DbFactory;
 use Bayfront\PDO\Exceptions\ConfigurationException as PDOConfigurationException;
@@ -31,6 +32,7 @@ use Bayfront\Translation\AdapterException;
 use Dotenv\Dotenv;
 use Exception;
 use League\CLImate\CLImate;
+use ReflectionException;
 
 class App
 {
@@ -44,32 +46,47 @@ class App
     /**
      * Starts the app.
      *
+     * @param string $app_root_path (Path to project root)
+     * @param string $app_public_path (Path to /public)
+     *
      * @return void
      *
+     * @throws AdapterException
      * @throws ConfigurationException
      * @throws ContainerException
      * @throws DispatchException
+     * @throws ErrorException
      * @throws FileNotFoundException
      * @throws InvalidConfigurationException
      * @throws InvalidDatabaseException
-     * @throws LoggerException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
      * @throws PDOConfigurationException
-     * @throws UnableToConnectException
-     * @throws ErrorException
-     * @throws DiskException
      * @throws ServiceException
-     * @throws AdapterException
+     * @throws UnableToConnectException
+     * @throws FormatterException
+     * @throws HandlerException
+     * @throws \Bayfront\MonologFactory\Exceptions\InvalidConfigurationException
+     * @throws ProcessorException
+     * @throws ReflectionException
      * @throws Exception
      */
 
-    public static function start(): void
+    public static function start(string $app_root_path, string $app_public_path): void
     {
 
-        // -------------------- Create container --------------------
+        // ------------------------- Define constants -------------------------
+
+        define('APP_ROOT_PATH', rtrim($app_root_path, '/')); // Remove trailing slash
+        define('APP_PUBLIC_PATH', rtrim($app_public_path, '/')); // Remove trailing slash
+
+        require(dirname(__FILE__, 2) . '/resources/constants.php');
+
+        // ------------------------- Create container -------------------------
 
         self::$container = new Container();
 
-        // -------------------- Set exception handler --------------------
+        // ------------------------- Set exception handler -------------------------
 
         set_exception_handler(function ($e) {
 
@@ -152,25 +169,13 @@ class App
 
         });
 
-        // -------------------- Check for required app constants --------------------
-
-        if (!defined('APP_ROOT_PATH') || !defined('APP_PUBLIC_PATH')) {
-
-            throw new InvalidConfigurationException('Unable to start: missing required app constants');
-
-        }
-
-        // -------------------- Load environment variables --------------------
+        // ------------------------- Load environment variables -------------------------
 
         if (file_exists(APP_ROOT_PATH . '/.env')) {
             Dotenv::createImmutable(APP_ROOT_PATH)->load();
         }
 
-        // -------------------- Bones constants --------------------
-
-        require(dirname(__FILE__, 2) . '/resources/constants.php');
-
-        // -------------------- Check for required app files --------------------
+        // ------------------------- Check for required app files -------------------------
 
         if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
             !file_exists(APP_RESOURCES_PATH . '/events.php') ||
@@ -181,11 +186,11 @@ class App
 
         }
 
-        // -------------------- App helpers --------------------
+        // ------------------------- App helpers -------------------------
 
         require(BONES_RESOURCES_PATH . '/helpers/app-helpers.php');
 
-        // -------------------- Check for required app config --------------------
+        // ------------------------- Check for required app config -------------------------
 
         if (Arr::isMissing(get_config('app', []), [
             'key',
@@ -197,13 +202,13 @@ class App
             throw new InvalidConfigurationException('Unable to start: invalid app configuration');
         }
 
-        // -------------------- Set timezone --------------------
+        // ------------------------- Set timezone -------------------------
 
         if (Time::isTimezone(get_config('app.timezone'))) {
             date_default_timezone_set(get_config('app.timezone'));
         }
 
-        // -------------------- Error handler --------------------
+        // ------------------------- Error handler -------------------------
 
         if (true === get_config('app.debug_mode')) { // Show all errors
 
@@ -217,7 +222,7 @@ class App
 
             $ename = 'Unknown error';
 
-            // Get name of error from it's number
+            // Get name of error from its number
 
             $constants = get_defined_constants(1);
 
@@ -245,7 +250,7 @@ class App
          * ############################################################
          */
 
-        // -------------------- Filesystem (required) --------------------
+        // ------------------------- Filesystem (required) -------------------------
 
         /*
          * @throws ConfigurationException
@@ -255,13 +260,13 @@ class App
 
         self::$container->put('filesystem', $filesystem);
 
-        // -------------------- Response (required) --------------------
+        // ------------------------- Response (required) -------------------------
 
         $response = new Response();
 
         self::$container->put('response', $response);
 
-        // -------------------- Hooks --------------------
+        // ------------------------- Hooks -------------------------
 
         /*
          * @throws Bayfront\Container\ContainerException
@@ -281,7 +286,7 @@ class App
             include(APP_RESOURCES_PATH . '/events.php');
         }
 
-        // -------------------- Database (optional) --------------------
+        // ------------------------- Database (optional) -------------------------
 
         if (is_array(get_config('database'))) {
 
@@ -297,7 +302,7 @@ class App
 
         }
 
-        // -------------------- Translate (optional) --------------------
+        // ------------------------- Translate (optional) -------------------------
 
         if (true === get_config('translation.enabled')) {
 
@@ -355,7 +360,7 @@ class App
 
         }
 
-        // -------------------- Veil (optional) --------------------
+        // ------------------------- Veil (optional) -------------------------
 
         if (is_array(get_config('veil'))) {
 
@@ -367,7 +372,7 @@ class App
 
         }
 
-        // -------------------- Logs (optional) --------------------
+        // ------------------------- Logs (optional) -------------------------
 
         if (is_array(get_config('logs'))) {
 
@@ -383,7 +388,7 @@ class App
 
         }
 
-        // -------------------- Router (required) --------------------
+        // ------------------------- Router (required) -------------------------
 
         $router = new Router(get_config('router', []));
 
@@ -391,7 +396,7 @@ class App
 
         require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
 
-        // -------------------- First event --------------------
+        // ------------------------- First event -------------------------
 
         /*
          * Now that all Bones services exist in the container,
@@ -411,7 +416,7 @@ class App
          *     - HTTP (route)
          */
 
-        // -------------------- Check if running as cron --------------------
+        // ------------------------- Check if running as cron -------------------------
 
         if (self::isCron()) {
 
@@ -445,7 +450,7 @@ class App
 
         }
 
-        // -------------------- Check if running from CLI --------------------
+        // ------------------------- Check if running from CLI -------------------------
 
         if (self::isCLI()) {
 
@@ -473,7 +478,7 @@ class App
          * Environment is HTTP
          */
 
-        // -------------------- Bootstrap app / event --------------------
+        // ------------------------- Bootstrap app / event -------------------------
 
         include(APP_RESOURCES_PATH . '/bootstrap.php');
 
@@ -483,11 +488,11 @@ class App
 
         $hooks->doEvent('app.bootstrap');
 
-        // -------------------- Include routes --------------------
+        // ------------------------- Include routes -------------------------
 
         include(APP_RESOURCES_PATH . '/routes.php');
 
-        // -------------------- Router dispatch --------------------
+        // ------------------------- Router dispatch -------------------------
 
         /*
          * @throws Bayfront\RouteIt\DispatchException
@@ -495,7 +500,7 @@ class App
 
         $router->dispatch($hooks->doFilter('router.parameters', []));
 
-        // -------------------- Last event --------------------
+        // ------------------------- Last event -------------------------
 
         /*
          * @throws Bayfront\Hooks\EventException
@@ -668,7 +673,7 @@ class App
                      * @throws Bayfront\Container\ContainerException
                      */
 
-                    return self::$container->create($namespace, $params, $force_unique);
+                    return self::$container->create($namespace, $params, true);
 
                 }
 
@@ -725,7 +730,7 @@ class App
 
             return self::_getClass($model, $params, $force_unique);
 
-        } catch (ContainerException | NotFoundException | FileNotFoundException $e) {
+        } catch (ContainerException|NotFoundException|FileNotFoundException $e) {
 
             throw new ModelException('Unable to get model: ' . $model, 0, $e);
 
@@ -756,7 +761,7 @@ class App
 
             return self::_getClass($service, $params, $force_unique);
 
-        } catch (ContainerException | NotFoundException | FileNotFoundException $e) {
+        } catch (ContainerException|NotFoundException|FileNotFoundException $e) {
 
             throw new ServiceException('Unable to get service: ' . $service, 0, $e);
 
@@ -854,32 +859,34 @@ class App
      * Checks if the app is running from the command line interface.
      *
      * @return bool
+     * @noinspection PhpCastIsUnnecessaryInspection
      */
 
     public static function isCLI(): bool
     {
 
-        if (defined('IS_CLI') && true === IS_CLI) {
-            return true;
+        if (!defined('IS_CLI')) {
+            define('IS_CLI', false);
         }
 
-        return false;
+        return (bool)IS_CLI;
     }
 
     /**
      * Checks if the app is running from a cron job.
      *
      * @return bool
+     * @noinspection PhpCastIsUnnecessaryInspection
      */
 
     public static function isCron(): bool
     {
 
-        if (defined('IS_CRON') && true === IS_CRON) {
-            return true;
+        if (!defined('IS_CRON')) {
+            define('IS_CRON', false);
         }
 
-        return false;
+        return (bool)IS_CRON;
     }
 
 }
