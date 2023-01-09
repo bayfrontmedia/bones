@@ -7,7 +7,6 @@ use Bayfront\Container\Container;
 use Bayfront\Container\NotFoundException;
 use Bayfront\Filesystem\Filesystem;
 use Bayfront\HttpResponse\Response;
-use Bayfront\Veil\Veil;
 
 abstract class Controller
 {
@@ -35,12 +34,6 @@ abstract class Controller
     protected $response;
 
     /**
-     * @var Veil $veil
-     */
-
-    protected $veil;
-
-    /**
      * Controller constructor
      *
      * @throws ControllerException
@@ -60,12 +53,6 @@ abstract class Controller
             $this->filesystem = $this->container->get('filesystem');
 
             $this->response = $this->container->get('response');
-
-            if ($this->container->has('veil')) { // Veil is optional, so check if it exists
-
-                $this->veil = $this->container->get('veil');
-
-            }
 
             /*
              * @throws Bayfront\Container\NotFoundException

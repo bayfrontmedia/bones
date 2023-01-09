@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `redirect` helper function.
+- Added a separate web controller.
+
+### Changed
+
+- Moved `$this->veil` if existing in container from `Bayfront\Bones\Controller` to `Bayfront\Bones\Controllers\Web`.
 
 ### Removed
 

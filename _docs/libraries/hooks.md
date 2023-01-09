@@ -22,7 +22,8 @@ Default Bones events, in order of execution:
 - `app.cron`: Executes as the last event when running as a cron job.
 - `app.cli`: Executes as the last event when running from the command line.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded.
-- `app.controller`: Executes when a controller is constructed.
+- `app.controller`: Executes when any controller is constructed.
+- `app.controller-web`: Executes when `Bayfront\Controllers\Web` is constructed.
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. This event accepts two parameters: the thrown exception object and the [HTTP Response](../container.md) library.
 - `bones.shutdown`: Executes as the last event.
 
