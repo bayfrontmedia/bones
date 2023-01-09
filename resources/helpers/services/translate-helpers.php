@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @package bones
- * @link https://github.com/bayfrontmedia/bones
- * @author John Robinson <john@bayfrontmedia.com>
- * @copyright 2020-2021 Bayfront Media
- */
-
 use Bayfront\Bones\App;
 use Bayfront\Container\NotFoundException;
 use Bayfront\Translation\Translate;
