@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `redirect` helper function.
 
+### Removed
+
+- Removed support for the [Session Manager](https://github.com/bayfrontmedia/session-manager) library
+
 ## [1.4.1]- 2022.01.19
 
 ### Added

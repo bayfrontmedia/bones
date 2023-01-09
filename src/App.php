@@ -26,7 +26,6 @@ use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\UnableToConnectException;
 use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
-use Bayfront\SessionManager\HandlerException;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Translation\AdapterException;
 use Dotenv\Dotenv;
@@ -57,7 +56,6 @@ class App
      * @throws PDOConfigurationException
      * @throws UnableToConnectException
      * @throws ErrorException
-     * @throws HandlerException
      * @throws DiskException
      * @throws ServiceException
      * @throws AdapterException
@@ -392,71 +390,6 @@ class App
         self::$container->put('router', $router);
 
         require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
-
-        // -------------------- Session (optional) --------------------
-
-        if (true === get_config('sessions.enabled')) {
-
-            $interface = get_config('sessions.handler', '');
-
-            if (class_exists('\\Bayfront\\SessionManager\\Handlers\\' . $interface)) {
-
-                if ($interface == 'Flysystem') {
-
-                    if (in_array(get_config('sessions.disk_name', ''), $filesystem->getDiskNames())) { // If disk exists
-
-                        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-
-                        $handler = new \Bayfront\SessionManager\Handlers\Flysystem(
-                            $filesystem->getDisk(get_config('sessions.disk_name', 'default')),
-                            get_config('sessions.root_path', APP_STORAGE_PATH . '/app/sessions')
-                        );
-
-                    }
-
-                } else if ($interface == 'Local') {
-
-                    /** @noinspection PhpFullyQualifiedNameUsageInspection */
-
-                    $handler = new \Bayfront\SessionManager\Handlers\Local(
-                        get_config('sessions.root_path', APP_STORAGE_PATH . '/app/sessions')
-                    );
-
-                } else if ($interface == 'PDO' && isset($db)) {
-
-                    if ($db->isConnected(get_config('sessions.db_id', ''))) { // If connected to db
-
-                        /** @noinspection PhpFullyQualifiedNameUsageInspection */
-
-                        $handler = new \Bayfront\SessionManager\Handlers\PDO(
-                            $db->get(get_config('sessions.db_id', '')),
-                            get_config('sessions.table_name', 'sessions')
-                        );
-
-                    }
-
-                }
-
-                if (isset($handler)) {
-
-                    self::$container->set('session', 'Bayfront\SessionManager\Session', [
-                        'handler' => $handler,
-                        'config' => get_config('sessions.config', [])
-                    ]);
-
-                } else {
-
-                    throw new ServiceException('Unable to start service: session- unable to create handler');
-
-                }
-
-            } else {
-
-                throw new ServiceException('Unable to start service: session- handler does not exist');
-
-            }
-
-        }
 
         // -------------------- First event --------------------
 

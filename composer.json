@@ -44,7 +44,6 @@
     "bayfrontmedia/php-string-helpers": "^1.2",
     "bayfrontmedia/php-time-helpers": "^1.1",
     "bayfrontmedia/route-it": "^2.0",
-    "bayfrontmedia/session-manager": "^1.1",
     "bayfrontmedia/simple-pdo": "^1.0",
     "bayfrontmedia/translation": "^1.1",
     "bayfrontmedia/veil": "^1.3",

@@ -5,7 +5,7 @@
 - **Controller:** Similar to an air traffic controller, a controller is responsible for gathering and handling all incoming and outgoing
 data.
 - **Helper:** A helper is a global function (or group of functions) introduced to the app by including a specific file.
-- **Service:** A service is a class or library written specifically to be used by the app in order to expand its functionality.
+- **Service:** A service is a class or library not intended to be used or maintained outside this Bones application. *
 - **Model:** A model is a class to be used from within a controller to provide required data needed to build a response.
 - **Route:** A route is the destination for an incoming HTTP request.
 - **View:** A view is a file used to build the HTML that will be returned to the browser. They are either called from within a controller, or directly from a defined route.
@@ -113,6 +113,5 @@ These include:
 - [HTTP Response](libraries/http-response.md)
 - [Logs](libraries/logs.md)
 - [Router](libraries/router.md)
-- [Sessions](libraries/sessions.md)
 - [Translation](libraries/translation.md)
 - [Views](libraries/views.md)

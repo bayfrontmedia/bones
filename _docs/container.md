@@ -21,7 +21,6 @@ Additional documentation for each library can be found by visiting its URL.
 | [Translation](libraries/translation.md)* | [Translation](https://github.com/bayfrontmedia/translation) | `translate` |
 | [Views](libraries/views.md)* | [Veil](https://github.com/bayfrontmedia/veil) | `veil` |
 | [Logs](libraries/logs.md)* | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory) | `logs` |
-| [Sessions](libraries/sessions.md)* | [Session Manager](https://github.com/bayfrontmedia/session-manager) | `session` |
 | [Cron jobs](libraries/cron.md) | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler) | `cron` |
 | [Command line](libraries/cli.md) | [Climate](https://github.com/thephpleague/climate) | `cli` |
 
