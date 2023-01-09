@@ -5,7 +5,6 @@ namespace Bayfront\Bones;
 use Bayfront\Bones\Exceptions\ControllerException;
 use Bayfront\Container\Container;
 use Bayfront\Container\NotFoundException;
-use Bayfront\Filesystem\Filesystem;
 use Bayfront\HttpResponse\Response;
 
 abstract class Controller
@@ -20,12 +19,6 @@ abstract class Controller
      */
 
     protected $container;
-
-    /**
-     * @var Filesystem
-     */
-
-    protected $filesystem;
 
     /**
      * @var Response $response
@@ -46,18 +39,7 @@ abstract class Controller
 
         try {
 
-            /*
-             * @throws Bayfront\Container\NotFoundException
-             */
-
-            $this->filesystem = $this->container->get('filesystem');
-
             $this->response = $this->container->get('response');
-
-            /*
-             * @throws Bayfront\Container\NotFoundException
-             * @throws Bayfront\Hooks\EventException
-             */
 
             $this->container->get('hooks')->doEvent('app.controller');
 

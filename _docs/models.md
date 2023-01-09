@@ -10,10 +10,13 @@ If a model needs its own constructor, be sure to invoke `parent::__construct()` 
 Services available within a model:
 
 - Container as `$this->container`
+- Filesystem as `$this->filesystem`
 - Database as `$this->db` (if existing in container)
 
 Models should be instantiated via the `get_model()` helper.
 This allows them to be managed by the container, which also handles dependency injection.
+
+The `app.model` event is executed whenever a model is constructed.
 
 ## Creating a new model
 

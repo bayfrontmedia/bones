@@ -5,6 +5,7 @@ namespace Bayfront\Bones;
 use Bayfront\Bones\Exceptions\ModelException;
 use Bayfront\Container\Container;
 use Bayfront\Container\NotFoundException;
+use Bayfront\Filesystem\Filesystem;
 use Bayfront\PDO\Db;
 
 abstract class Model
@@ -19,6 +20,12 @@ abstract class Model
      */
 
     protected $container;
+
+    /**
+     * @var Filesystem
+     */
+
+    protected $filesystem;
 
     /**
      * @var Db
@@ -37,21 +44,21 @@ abstract class Model
 
         $this->container = App::getContainer();
 
-        if ($this->container->has('db')) { // db is optional, so check if it exists
+        try {
 
-            try {
+            $this->filesystem = $this->container->get('filesystem');
 
-                /*
-                 * @throws Bayfront\Container\NotFoundException
-                 */
+            if ($this->container->has('db')) { // db is optional, so check if it exists
 
                 $this->db = $this->container->get('db');
 
-            } catch (NotFoundException $e) {
-
-                throw new ModelException('Unable to construct model: ' . get_called_class(), 0, $e);
-
             }
+
+            $this->container->get('hooks')->doEvent('app.model');
+
+        } catch (NotFoundException $e) {
+
+            throw new ModelException('Unable to construct model: ' . get_called_class(), 0, $e);
 
         }
 
