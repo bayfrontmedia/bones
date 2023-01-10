@@ -22,7 +22,6 @@ The file structure for building an app using Bones is as follows:
   /Services
 /config
   /app.php
-  /filesystem.php
   /router.php
 /public
   .htaccess
@@ -77,7 +76,6 @@ These files typically return an array.
 The required configuration files are:
  
 - `app.php`- [App configuration](app.md)
-- `filesystem.php`- [Filesystem](libraries/filesystem.md)
 - `router.php`- [Router](libraries/router.md)
 
 Additional configuration files may be needed depending on the services you use.

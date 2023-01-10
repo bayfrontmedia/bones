@@ -16,7 +16,7 @@ abstract class Model
      */
 
     /**
-     * @var Container $container
+     * @var Container
      */
 
     protected $container;
@@ -46,12 +46,12 @@ abstract class Model
 
         try {
 
-            $this->filesystem = $this->container->get('filesystem');
+            if ($this->container->has('filesystem')) {
+                $this->filesystem = $this->container->get('filesystem');
+            }
 
-            if ($this->container->has('db')) { // db is optional, so check if it exists
-
+            if ($this->container->has('db')) {
                 $this->db = $this->container->get('db');
-
             }
 
             $this->container->get('hooks')->doEvent('app.model');

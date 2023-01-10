@@ -1,9 +1,9 @@
 # Filesystem
 
-The [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) library is required by Bones.
+The [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) library is used 
+to manage read/write functions from multiple filesystems.
 
-This library exists in the services container as `filesystem`. 
-A valid [configuration array](https://github.com/bayfrontmedia/filesystem-factory#configuration-array) must exist at `/config/filesystem.php`.
+This library will be added to the services container as `filesystem` if a valid [configuration array](https://github.com/bayfrontmedia/filesystem-factory#configuration-array) exists as `/config/filesystem.php`.
 
 **Example:**
 ```

@@ -253,23 +253,13 @@ class App
          * ############################################################
          */
 
-        // ------------------------- Filesystem (required) -------------------------
-
-        /*
-         * @throws ConfigurationException
-         */
-
-        $filesystem = new Filesystem(get_config('filesystem', []));
-
-        self::$container->put('filesystem', $filesystem);
-
         // ------------------------- Response (required) -------------------------
 
         $response = new Response();
 
         self::$container->put('response', $response);
 
-        // ------------------------- Hooks -------------------------
+        // ------------------------- Hooks (required) -------------------------
 
         /*
          * @throws Bayfront\Container\ContainerException
@@ -287,6 +277,20 @@ class App
 
         if (get_config('app.events_enabled', false)) {
             include(APP_RESOURCES_PATH . '/events.php');
+        }
+
+        // ------------------------- Filesystem (optional) -------------------------
+
+        if (is_array(get_config('filesystem'))) {
+
+            /*
+             * @throws ConfigurationException
+             */
+
+            $filesystem = new Filesystem(get_config('filesystem', []));
+
+            self::$container->put('filesystem', $filesystem);
+
         }
 
         // ------------------------- Database (optional) -------------------------

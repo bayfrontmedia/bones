@@ -10,7 +10,7 @@ If a model needs its own constructor, be sure to invoke `parent::__construct()` 
 Services available within a model:
 
 - Container as `$this->container`
-- Filesystem as `$this->filesystem`
+- Filesystem as `$this->filesystem` (if existing in container)
 - Database as `$this->db` (if existing in container)
 
 Models should be instantiated via the `get_model()` helper.

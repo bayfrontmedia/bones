@@ -1,6 +1,7 @@
 # Database
 
-The [Simple PDO](https://github.com/bayfrontmedia/simple-pdo) library is used to manage database connections.
+The [Simple PDO](https://github.com/bayfrontmedia/simple-pdo) library is used 
+to manage database connections.
 
 This library will be added to the services container as `db` if a [Simple PDO factory](https://github.com/bayfrontmedia/simple-pdo#factory-usage) configuration array exists as `/config/database.php`.
 
