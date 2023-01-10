@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed support for the [Session Manager](https://github.com/bayfrontmedia/session-manager) library
 
+### Fixed
+
+- Fixed bug where `bones.shutdown` event was not being triggered via CLI and cron.
+
 ## [1.4.1]- 2022.01.19
 
 ### Added

@@ -87,6 +87,32 @@ class App
 
         self::$container = new Container();
 
+        // ------------------------- Load environment variables -------------------------
+
+        if (file_exists(APP_ROOT_PATH . '/.env')) {
+            Dotenv::createImmutable(APP_ROOT_PATH)->load();
+        }
+
+        // ------------------------- Load app helpers -------------------------
+
+        require(BONES_RESOURCES_PATH . '/helpers/app-helpers.php');
+
+        // ------------------------- Set timezone -------------------------
+
+        if (Time::isTimezone(get_config('app.timezone'))) {
+            date_default_timezone_set(get_config('app.timezone'));
+        }
+
+        // ------------------------- Debug mode errors -------------------------
+
+        if (true === get_config('app.debug_mode')) { // Show all errors
+
+            error_reporting(E_ALL);
+            ini_set('display_errors', '1');
+            ini_set('display_startup_errors', '1');
+
+        }
+
         // ------------------------- Set exception handler -------------------------
 
         set_exception_handler(function ($e) {
@@ -170,57 +196,7 @@ class App
 
         });
 
-        // ------------------------- Load environment variables -------------------------
-
-        if (file_exists(APP_ROOT_PATH . '/.env')) {
-            Dotenv::createImmutable(APP_ROOT_PATH)->load();
-        }
-
-        // ------------------------- Check for required app files -------------------------
-
-        if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/cli.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/events.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/routes.php')) {
-
-            throw new FileNotFoundException('Unable to start: missing required app files');
-
-        }
-
-        // ------------------------- App helpers -------------------------
-
-        require(BONES_RESOURCES_PATH . '/helpers/app-helpers.php');
-
-        // ------------------------- Check for required app config -------------------------
-
-        if (Arr::isMissing(get_config('app', []), [
-            'namespace',
-            'key',
-            'debug_mode',
-            'environment',
-            'timezone',
-            'events_enabled',
-            'filters_enabled'
-        ])) {
-            throw new InvalidConfigurationException('Unable to start: invalid app configuration');
-        }
-
-        // ------------------------- Set timezone -------------------------
-
-        if (Time::isTimezone(get_config('app.timezone'))) {
-            date_default_timezone_set(get_config('app.timezone'));
-        }
-
-        // ------------------------- Error handler -------------------------
-
-        if (true === get_config('app.debug_mode')) { // Show all errors
-
-            error_reporting(E_ALL);
-            ini_set('display_errors', '1');
-            ini_set('display_startup_errors', '1');
-
-        }
+        // ------------------------- Set error handler -------------------------
 
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 
@@ -247,6 +223,32 @@ class App
             throw new ErrorException($message, $errno);
 
         }, E_ALL);
+
+        // ------------------------- Check for required app config -------------------------
+
+        if (Arr::isMissing(get_config('app', []), [
+            'namespace',
+            'key',
+            'debug_mode',
+            'environment',
+            'timezone',
+            'events_enabled',
+            'filters_enabled'
+        ])) {
+            throw new InvalidConfigurationException('Unable to start: invalid app configuration');
+        }
+
+        // ------------------------- Check for required app resource files -------------------------
+
+        if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
+            !file_exists(APP_RESOURCES_PATH . '/cli.php') ||
+            !file_exists(APP_RESOURCES_PATH . '/events.php') ||
+            !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
+            !file_exists(APP_RESOURCES_PATH . '/routes.php')) {
+
+            throw new FileNotFoundException('Unable to start: missing required app resource files');
+
+        }
 
         /*
          * ############################################################
@@ -477,6 +479,14 @@ class App
             $cli = new Cli($climate);
 
             $cli->intro()->start();
+
+            // Last event
+
+            /*
+             * @throws Bayfront\Hooks\EventException
+             */
+
+            $hooks->doEvent('bones.shutdown');
 
             return; // Stop here
 

@@ -10,19 +10,19 @@ When Bones is initialized, all required services are bound to the container and 
 
 Additional documentation for each library can be found by visiting its URL.
 
-| Service | Library | Container ID
-| --- | --- | --- |
-| Container | [Container](https://github.com/bayfrontmedia/container) | |
-| [Filesystem](libraries/filesystem.md) | [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) | `filesystem` |
-| [HTTP Response](libraries/http-response.md) | [PHP HTTP Response](https://github.com/bayfrontmedia/php-http-response) | `response` |
-| [Hooks](libraries/hooks.md) | [PHP Hooks](https://github.com/bayfrontmedia/php-hooks) | `hooks` |
-| [Router](libraries/router.md) | [Route It](https://github.com/bayfrontmedia/route-it) | `router` |
-| [Database](libraries/database.md)* | [Simple PDO](https://github.com/bayfrontmedia/simple-pdo) | `db` |
-| [Translation](libraries/translation.md)* | [Translation](https://github.com/bayfrontmedia/translation) | `translate` |
-| [Views](libraries/views.md)* | [Veil](https://github.com/bayfrontmedia/veil) | `veil` |
-| [Logs](libraries/logs.md)* | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory) | `logs` |
-| [Cron jobs](libraries/cron.md) | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler) | `cron` |
-| [Command line](libraries/cli.md) | [Climate](https://github.com/thephpleague/climate) | `cli` |
+| Service                                     | Library                                                                   | Container ID | 
+|---------------------------------------------|---------------------------------------------------------------------------|--------------|
+| Container                                   | [Container](https://github.com/bayfrontmedia/container)                   |              |
+| [HTTP Response](libraries/http-response.md) | [PHP HTTP Response](https://github.com/bayfrontmedia/php-http-response)   | `response`   |
+| [Hooks](libraries/hooks.md)                 | [PHP Hooks](https://github.com/bayfrontmedia/php-hooks)                   | `hooks`      |
+| [Router](libraries/router.md)               | [Route It](https://github.com/bayfrontmedia/route-it)                     | `router`     |
+| [Database](libraries/database.md)*          | [Simple PDO](https://github.com/bayfrontmedia/simple-pdo)                 | `db`         |
+| [Filesystem](libraries/filesystem.md)*      | [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) | `filesystem` |
+| [Logs](libraries/logs.md)*                  | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory)       | `logs`       |
+| [Translation](libraries/translation.md)*    | [Translation](https://github.com/bayfrontmedia/translation)               | `translate`  |
+| [Views](libraries/views.md)*                | [Veil](https://github.com/bayfrontmedia/veil)                             | `veil`       |
+| [Cron jobs](libraries/cron.md)              | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler)         | `cron`       |
+| [Command line](libraries/cli.md)            | [Climate](https://github.com/thephpleague/climate)                        | `cli`        |
 
 **NOTE:**
 

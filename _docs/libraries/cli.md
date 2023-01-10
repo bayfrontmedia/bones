@@ -21,8 +21,6 @@ php /path/to/resources/cli.php
 This file is loaded immediately after the `bones.init` event.
 The `app.cli` event is fired immediately after the Climate library is added to the container.
 
-**NOTE:** When running from the command line, the `bones.shutdown` event will not be executed unless called in the `/resources/cli.php` file.
-
 Command line functionality includes:
 
 - Create new controller
