@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Moved `$this->veil` if existing in container from `Bayfront\Bones\Controller` to `Bayfront\Bones\Controllers\Web`.
-- Moved `$this->filesystem` from `Bayfront\Bones\Controller` to `Bayfront\Bones\Model`.
+- Moved `$this->filesystem` from `Bayfront\Bones\Controller` to `Bayfront\Bones\Model` and made it optional.
 
 ### Removed
 

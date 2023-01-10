@@ -179,6 +179,7 @@ class App
         // ------------------------- Check for required app files -------------------------
 
         if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
+            !file_exists(APP_RESOURCES_PATH . '/cli.php') ||
             !file_exists(APP_RESOURCES_PATH . '/events.php') ||
             !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
             !file_exists(APP_RESOURCES_PATH . '/routes.php')) {

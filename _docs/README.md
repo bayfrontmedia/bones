@@ -29,6 +29,7 @@ The file structure for building an app using Bones is as follows:
 /resources
   bootstrap.php
   cli.php
+  cron.php
   events.php
   filters.php
   routes.php

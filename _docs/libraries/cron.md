@@ -12,7 +12,7 @@ use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
 
-define('IS_CRON', true);
+const IS_CRON = true;
 
 require(dirname(__FILE__, 2) . '/public/index.php'); // Modify this path if necessary
 
@@ -62,15 +62,15 @@ log_debug('Completed running ' . $result['count'] . ' cron jobs', [
 ```
 
 This file is loaded immediately after the `bones.init` event.
-The `app.cli` event is fired immediately after the Climate library is added to the container.
+The `app.cron` event is fired immediately after the Cron Scheduler library is added to the container.
 
 **NOTE:** When running as cron, the `bones.shutdown` event will not be executed unless called in the `/resources/cron.php` file.
 
 ## Configuration
 
-In order to run cron jobs, a configuration file must be located at `/resources/cron.php`.
+In order to customize the handling of cron jobs, a configuration file must be located at `/resources/cron.php`.
 
-**Example:**
+**Example (default values):**
 
 ```
 return [
