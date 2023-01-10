@@ -125,7 +125,7 @@ class Cli
 
                     $dir_name = ucfirst($options[$command]['object']) . 's';
 
-                    $file_name = root_path('/app/' . $dir_name . '/' . ucfirst(Str::camelCase($name)) . '.php');
+                    $file_name = root_path('/app/' . $dir_name . '/' . str_replace(' ', '', ucwords($name)) . '.php');
 
                     if (!copy(BONES_RESOURCES_PATH . '/cli-templates/' . $options[$command]['object'] . '.php', $file_name)) {
 
@@ -145,7 +145,7 @@ class Cli
                         $options[$command]['object'] . '_name',
                         'bones_version'
                     ], [
-                        ucfirst(Str::camelCase($name)),
+                        str_replace(' ', '', ucwords($name)),
                         'v' . BONES_VERSION
                     ], $contents);
 

@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed bug where `bones.shutdown` event was not being triggered via CLI and cron.
+- Fixed bug where objects created via the CLI were not being capitalized correctly.
 
 ## [1.4.1]- 2022.01.19
 
