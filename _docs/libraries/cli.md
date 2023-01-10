@@ -18,7 +18,7 @@ require(dirname(__FILE__, 2) . '/public/index.php'); // Modify this path if nece
 php /path/to/resources/cli.php
 ```
 
-This file is loaded immediately after the `bones.init` event.
+This file is loaded immediately after the `app.bootstrap` event.
 The `app.cli` event is fired immediately after the Climate library is added to the container.
 
 Command line functionality includes:

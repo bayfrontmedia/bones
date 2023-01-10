@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Moved `$this->veil` if existing in container from `Bayfront\Bones\Controller` to `Bayfront\Bones\Controllers\Web`.
 - Moved `$this->filesystem` from `Bayfront\Bones\Controller` to `Bayfront\Bones\Model` and made it optional.
+- Moved handling CLI and cron jobs to after the app bootstrap file is included and `app.bootstrap` event is executed.
 
 ### Removed
 

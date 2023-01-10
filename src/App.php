@@ -419,6 +419,16 @@ class App
 
         $hooks->doEvent('bones.init');
 
+        // ------------------------- Bootstrap app / event -------------------------
+
+        include(APP_RESOURCES_PATH . '/bootstrap.php');
+
+        /*
+         * @throws Bayfront\Hooks\EventException
+         */
+
+        $hooks->doEvent('app.bootstrap');
+
         /*
          * From here, find the environment, and respond appropriately
          *     - cron
@@ -495,16 +505,6 @@ class App
         /*
          * Environment is HTTP
          */
-
-        // ------------------------- Bootstrap app / event -------------------------
-
-        include(APP_RESOURCES_PATH . '/bootstrap.php');
-
-        /*
-         * @throws Bayfront\Hooks\EventException
-         */
-
-        $hooks->doEvent('app.bootstrap');
 
         // ------------------------- Include routes -------------------------
 

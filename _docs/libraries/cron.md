@@ -61,7 +61,7 @@ log_debug('Completed running ' . $result['count'] . ' cron jobs', [
 * * * * * /path/to/php/bin /path/to/resources/cron.php > /dev/null 2>&1
 ```
 
-This file is loaded immediately after the `bones.init` event.
+This file is loaded immediately after the `app.bootstrap` event.
 The `app.cron` event is fired immediately after the Cron Scheduler library is added to the container.
 
 **NOTE:** When running as cron, the `bones.shutdown` event will not be executed unless called in the `/resources/cron.php` file.

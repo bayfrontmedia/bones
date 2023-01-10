@@ -19,9 +19,9 @@ Although not necessary to store these values in a the `.env` file, it may be con
 Default Bones events, in order of execution:
 
 - `bones.init`: Executes just after Bones has initialized.
-- `app.cron`: Executes as the last event when running as a cron job.
-- `app.cli`: Executes as the last event when running from the command line.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded.
+- `app.cron`: Executes when running as a cron job.
+- `app.cli`: Executes when running from the command line.
 - `app.controller`: Executes when any controller is constructed.
 - `app.controller.web`: Executes when `Bayfront\Controllers\WebController` is constructed.
 - `app.model`: Executes when a model is constructed.
