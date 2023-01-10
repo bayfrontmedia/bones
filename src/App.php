@@ -280,19 +280,13 @@ class App
             include(APP_RESOURCES_PATH . '/events.php');
         }
 
-        // ------------------------- Filesystem (optional) -------------------------
+        // ------------------------- Router (required) -------------------------
 
-        if (is_array(get_config('filesystem'))) {
+        $router = new Router(get_config('router', []));
 
-            /*
-             * @throws ConfigurationException
-             */
+        self::$container->put('router', $router);
 
-            $filesystem = new Filesystem(get_config('filesystem', []));
-
-            self::$container->put('filesystem', $filesystem);
-
-        }
+        require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
 
         // ------------------------- Database (optional) -------------------------
 
@@ -307,6 +301,36 @@ class App
             $db = DbFactory::create(get_config('database'));
 
             self::$container->put('db', $db);
+
+        }
+
+        // ------------------------- Filesystem (optional) -------------------------
+
+        if (is_array(get_config('filesystem'))) {
+
+            /*
+             * @throws ConfigurationException
+             */
+
+            $filesystem = new Filesystem(get_config('filesystem', []));
+
+            self::$container->put('filesystem', $filesystem);
+
+        }
+
+        // ------------------------- Logs (optional) -------------------------
+
+        if (is_array(get_config('logs'))) {
+
+            /*
+             * @throws Bayfront\LoggerFactory\Exceptions\LoggerException
+             */
+
+            $logger = new LoggerFactory(get_config('logs'));
+
+            self::$container->put('logs', $logger);
+
+            require(BONES_RESOURCES_PATH . '/helpers/services/logs-helpers.php');
 
         }
 
@@ -379,30 +403,6 @@ class App
             require(BONES_RESOURCES_PATH . '/helpers/services/veil-helpers.php');
 
         }
-
-        // ------------------------- Logs (optional) -------------------------
-
-        if (is_array(get_config('logs'))) {
-
-            /*
-             * @throws Bayfront\LoggerFactory\Exceptions\LoggerException
-             */
-
-            $logger = new LoggerFactory(get_config('logs'));
-
-            self::$container->put('logs', $logger);
-
-            require(BONES_RESOURCES_PATH . '/helpers/services/logs-helpers.php');
-
-        }
-
-        // ------------------------- Router (required) -------------------------
-
-        $router = new Router(get_config('router', []));
-
-        self::$container->put('router', $router);
-
-        require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
 
         // ------------------------- First event -------------------------
 
