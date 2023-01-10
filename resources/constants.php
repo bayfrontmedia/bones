@@ -5,6 +5,7 @@
  *
  * APP_ROOT_PATH
  * APP_PUBLIC_PATH
+ * BONES_ROOT_PATH
  */
 
 /**
@@ -19,6 +20,5 @@ const APP_STORAGE_PATH = APP_ROOT_PATH . '/storage'; // Path to the application'
 
 // Bones
 
-define('BONES_ROOT_PATH', rtrim(dirname(__FILE__, 2), '/')); // Root path to the Bones directory
 const BONES_RESOURCES_PATH = BONES_ROOT_PATH . '/resources'; // Path to the Bones `resources` directory
 const BONES_VERSION = '2.0.0'; // Current Bones version

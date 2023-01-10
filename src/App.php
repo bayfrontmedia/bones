@@ -79,8 +79,9 @@ class App
 
         define('APP_ROOT_PATH', rtrim($app_root_path, '/')); // Remove trailing slash
         define('APP_PUBLIC_PATH', rtrim($app_public_path, '/')); // Remove trailing slash
+        define('BONES_ROOT_PATH', rtrim(dirname(__FILE__, 2), '/')); // Root path to the Bones directory
 
-        require(dirname(__FILE__, 2) . '/resources/constants.php');
+        require(BONES_ROOT_PATH . '/resources/constants.php');
 
         // ------------------------- Create container -------------------------
 
