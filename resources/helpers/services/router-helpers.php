@@ -59,6 +59,8 @@ function get_named_route(string $name, string $default = ''): string
  * @param string $url (Fully qualified URL)
  * @param int $status (Status code to return)
  *
+ * @return void
+ *
  * @throws NotFoundException
  * @throws DispatchException
  */

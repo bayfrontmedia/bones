@@ -37,7 +37,6 @@ function get_datetime(int $timestamp = 0): string
  *
  * @return string
  *
- * @noinspection PhpUndefinedConstantInspection
  */
 
 function root_path(string $path = ''): string
@@ -53,7 +52,6 @@ function root_path(string $path = ''): string
  *
  * @return string
  *
- * @noinspection PhpUndefinedConstantInspection
  */
 
 function public_path(string $path = ''): string
