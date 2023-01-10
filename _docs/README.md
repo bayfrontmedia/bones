@@ -60,7 +60,7 @@ it should never be made public or committed to your application's version contro
 ```
 APP_KEY=SECURE_APP_KEY
 APP_DEBUG_MODE=true
-APP_ENVIRONMENT=development
+APP_ENVIRONMENT=dev
 APP_TIMEZONE=America/New_York
 APP_EVENTS_ENABLED=true
 APP_FILTERS_ENABLED=true
