@@ -194,11 +194,13 @@ class App
         // ------------------------- Check for required app config -------------------------
 
         if (Arr::isMissing(get_config('app', []), [
-            'key',
             'namespace',
+            'key',
             'debug_mode',
             'environment',
-            'timezone'
+            'timezone',
+            'events_enabled',
+            'filters_enabled'
         ])) {
             throw new InvalidConfigurationException('Unable to start: invalid app configuration');
         }

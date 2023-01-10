@@ -58,8 +58,6 @@ it should never be made public or committed to your application's version contro
 **Example:**
 
 ```
-APP_ROOT_PATH=/path/to/bones-app/
-APP_PUBLIC_PATH=/path/to/bones-app/public/
 APP_KEY=SECURE_APP_KEY
 APP_DEBUG_MODE=true
 APP_ENVIRONMENT=development
