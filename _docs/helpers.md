@@ -45,6 +45,13 @@ The following helpers are automatically included by Bones when their associated 
 - [add_filter](#add_filter)
 - [do_filter](#do_filter)
 
+**Router helpers**
+
+- [get_router](#get_router)
+- [get_named_routes](#get_named_routes)
+- [get_named_route](#get_named_route)
+- [redirect](#redirect)
+
 **Logs helpers**
 
 - [get_logs](#get_logs)
@@ -57,13 +64,6 @@ The following helpers are automatically included by Bones when their associated 
 - [log_critical](#log_critical)
 - [log_alert](#log_alert)
 - [log_emergency](#log_emergency)
-
-**Router helpers**
-
-- [get_router](#get_router)
-- [get_named_routes](#get_named_routes)
-- [get_named_route](#get_named_route)
-- [redirect](#redirect)
 
 **Translate helpers**
 
@@ -753,6 +753,121 @@ $name = do_filter('name', 'John');
 
 <hr />
 
+### get_router
+
+**Description:**
+
+Get Router instance from container.
+
+See: [https://github.com/bayfrontmedia/route-it](https://github.com/bayfrontmedia/route-it)
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (`Bayfront\RouteIt\Router`)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```
+$router = get_router();
+```
+
+<hr />
+
+### get_named_routes
+
+**Description:**
+
+Returns array of named routes.
+
+See: [https://github.com/bayfrontmedia/route-it#getnamedroutes](https://github.com/bayfrontmedia/route-it#getnamedroutes)
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (array)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```
+$named_routes = get_named_routes();
+```
+
+<hr />
+
+### get_named_route
+
+**Description:**
+
+Returns URL of a single named route.
+
+See: [https://github.com/bayfrontmedia/route-it#getnamedroute](https://github.com/bayfrontmedia/route-it#getnamedroute)
+
+**Parameters:**
+
+- `$name` (string)
+- `$default = ''` (string): Default value to return if named route does not exist
+
+**Returns:**
+
+- (string)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```
+echo get_named_route('home');
+```
+
+<hr />
+
+### redirect
+
+**Description:**
+
+Redirects to a given URL using a given status code.
+
+See: [https://github.com/bayfrontmedia/route-it#redirect](https://github.com/bayfrontmedia/route-it#redirect)
+
+**Parameters:**
+
+- `$url` (string): Fully qualified URL
+- `$status = 302` (string): Status code to return
+
+**Returns:**
+
+- (void)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+- `Bayfront\RouteIt\DispatchException`
+
+**Example:**
+
+```
+redirect('https://google.com');
+```
+
+<hr />
+
 ### get_logs
 
 **Description:**
@@ -1083,121 +1198,6 @@ See: [https://github.com/bayfrontmedia/monolog-factory#emergency](https://github
 
 ```
 log_emergency('Message to be logged');
-```
-
-<hr />
-
-### get_router
-
-**Description:**
-
-Get Router instance from container.
-
-See: [https://github.com/bayfrontmedia/route-it](https://github.com/bayfrontmedia/route-it)
-
-**Parameters:**
-
-- None
-
-**Returns:**
-
-- (`Bayfront\RouteIt\Router`)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-
-**Example:**
-
-```
-$router = get_router();
-```
-
-<hr />
-
-### get_named_routes
-
-**Description:**
-
-Returns array of named routes.
-
-See: [https://github.com/bayfrontmedia/route-it#getnamedroutes](https://github.com/bayfrontmedia/route-it#getnamedroutes)
-
-**Parameters:**
-
-- None
-
-**Returns:**
-
-- (array)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-
-**Example:**
-
-```
-$named_routes = get_named_routes();
-```
-
-<hr />
-
-### get_named_route
-
-**Description:**
-
-Returns URL of a single named route.
-
-See: [https://github.com/bayfrontmedia/route-it#getnamedroute](https://github.com/bayfrontmedia/route-it#getnamedroute)
-
-**Parameters:**
-
-- `$name` (string)
-- `$default = ''` (string): Default value to return if named route does not exist
-
-**Returns:**
-
-- (string)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-
-**Example:**
-
-```
-echo get_named_route('home');
-```
-
-<hr />
-
-### redirect
-
-**Description:**
-
-Redirects to a given URL using a given status code.
-
-See: [https://github.com/bayfrontmedia/route-it#redirect](https://github.com/bayfrontmedia/route-it#redirect)
-
-**Parameters:**
-
-- `$url` (string): Fully qualified URL
-- `$status = 302` (string): Status code to return
-
-**Returns:**
-
-- (void)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-- `Bayfront\RouteIt\DispatchException`
-
-**Example:**
-
-```
-redirect('https://google.com');
 ```
 
 <hr />
