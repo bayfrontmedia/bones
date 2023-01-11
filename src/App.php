@@ -436,9 +436,7 @@ class App
          *     - HTTP (route)
          */
 
-        // ------------------------- Check if running as cron -------------------------
-
-        if (self::isCron()) {
+        if (self::isCron()) { // Cron
 
             $cron_config = [
                 'lock_file_path' => storage_path('/app/temp'),
@@ -466,13 +464,7 @@ class App
 
             $hooks->doEvent('app.cron');
 
-            return; // Stop here
-
-        }
-
-        // ------------------------- Check if running from CLI -------------------------
-
-        if (self::isCLI()) {
+        } else if (self::isCLI()) { // CLI
 
             /** @var CLImate $cli */
 
@@ -490,33 +482,27 @@ class App
 
             $cli->intro()->start();
 
-            // Last event
+        } else { // HTTP
+
+            // ------------------------- Include routes -------------------------
+
+            include(APP_RESOURCES_PATH . '/routes.php');
 
             /*
              * @throws Bayfront\Hooks\EventException
              */
 
-            $hooks->doEvent('bones.shutdown');
+            $hooks->doEvent('app.http');
 
-            return; // Stop here
+            // ------------------------- Router dispatch -------------------------
+
+            /*
+             * @throws Bayfront\RouteIt\DispatchException
+             */
+
+            $router->dispatch($hooks->doFilter('router.parameters', []));
 
         }
-
-        /*
-         * Environment is HTTP
-         */
-
-        // ------------------------- Include routes -------------------------
-
-        include(APP_RESOURCES_PATH . '/routes.php');
-
-        // ------------------------- Router dispatch -------------------------
-
-        /*
-         * @throws Bayfront\RouteIt\DispatchException
-         */
-
-        $router->dispatch($hooks->doFilter('router.parameters', []));
 
         // ------------------------- Last event -------------------------
 

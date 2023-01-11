@@ -22,6 +22,7 @@ Default Bones events, in order of execution:
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded.
 - `app.cron`: Executes when running as a cron job.
 - `app.cli`: Executes when running from the command line.
+- `app.http`: Executes when running as an HTTP request.
 - `app.controller`: Executes when any controller is constructed.
 - `app.controller.web`: Executes when `Bayfront\Controllers\WebController` is constructed.
 - `app.model`: Executes when a model is constructed.
