@@ -22,7 +22,10 @@ Additional documentation for each library can be found by visiting its URL.
 | [Logs](libraries/logs.md)*                  | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory)       | `logs`       |
 | [Translation](libraries/translation.md)*    | [Translation](https://github.com/bayfrontmedia/translation)               | `translate`  |
 | [Views](libraries/views.md)*                | [Veil](https://github.com/bayfrontmedia/veil)                             | `veil`       |
+| [CLI](libraries/cli.md)**                   | [Symfony Console](https://github.com/symfony/console)                     | `console`    |
 
 **NOTE:**
 
 \* These services are optional, and will only exist in the container if the associated config file exists in the `/config` directory.
+
+\** The `console` service will only exist in the container when the app interface is `CLI`.

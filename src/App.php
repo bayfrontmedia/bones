@@ -5,8 +5,8 @@ namespace Bayfront\Bones;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
 use Bayfront\Bones\Console\Commands\ContainerList;
-use Bayfront\Bones\Console\Commands\Create;
 use Bayfront\Bones\Console\Commands\KeyCreate;
+use Bayfront\Bones\Console\Commands\MakeCommand;
 use Bayfront\Bones\Console\Commands\MakeController;
 use Bayfront\Bones\Console\Commands\MakeException;
 use Bayfront\Bones\Console\Commands\MakeModel;
@@ -485,30 +485,24 @@ class App
 
         if ($interface == self::INTERFACE_CLI) {
 
-            $hooks->doEvent('app.cli');
+            $console = new Application();
 
-            // See: https://symfony.com/doc/current/components/console.html
+            self::$container->put('console', $console);
 
-            $app = new Application();
+            $hooks->doEvent('app.cli', $console);
 
-            /*
-             * Future commands:
-             * event:list
-             * filter:list?
-             * router:list
-             */
+            $console->add(new About());
+            $console->add(new ContainerList(self::$container));
+            $console->add(new KeyCreate());
+            $console->add(new MakeCommand());
+            $console->add(new MakeController());
+            $console->add(new MakeException());
+            $console->add(new MakeModel());
+            $console->add(new MakeService());
+            $console->add(new ScheduleRun($schedule));
 
-            $app->add(new About());
-            $app->add(new ContainerList(self::$container));
-            $app->add(new KeyCreate());
-            $app->add(new MakeController());
-            $app->add(new MakeException());
-            $app->add(new MakeModel());
-            $app->add(new MakeService());
-            $app->add(new ScheduleRun($schedule));
-
-            $app->setAutoExit(false);
-            $app->run();
+            $console->setAutoExit(false);
+            $console->run();
 
         } else { // HTTP
 
