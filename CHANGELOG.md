@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `app.model` event.
 - Added `app.http` event.
 - Added `App::getInterface()` method.
+- Added new CLI commands using Symfony Console.
 
 ### Changed
 
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed support for the [Session Manager](https://github.com/bayfrontmedia/session-manager) library
 - Removed the need for `resources/cron.php` in favor of `php bones schedule:run`
 - Removed the need for `resources/cli.php` in favor of `php bones` CLI commands.
+- Removed the [CLImate library ](https://github.com/thephpleague/climate) in favor of Symfony Console.
 
 ### Fixed
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace _namespace_\Models;
 
 use Bayfront\Bones\Model;
 
 /**
- * model_name model.
+ * _model_name_ model.
  *
- * Created with Bones bones_version
+ * Created for Bones v_bones_version_
  */
-class model_name extends Model
+class _model_name_ extends Model
 {
 
 }

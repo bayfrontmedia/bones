@@ -1,8 +1,6 @@
 # Command line
 
-The [Climate](https://github.com/thephpleague/climate) library is used to manage command line functionality.
-
-This library will be added to the services container as `cli` if the `/resources/cli.php` file is accessed.
+The [Symfony Console](https://github.com/symfony/console) library is used to manage command line functionality.
 
 **Example usage:**
 
@@ -10,13 +8,32 @@ This library will be added to the services container as `cli` if the `/resources
 php bones
 ```
 
-This file is loaded immediately after the `app.bootstrap` event.
-The `app.cli` event is fired immediately after the Climate library is added to the container.
+The `app.cli` event is fired immediately after the `app.bootstrap` event, and before the command is processed.
 
 Command line functionality includes:
 
-- Create new controller
-- Create new exception
-- Create new model
-- Create new service
-- Create a secure key
+```shell
+# Get app info
+php bones about
+php bones about --json
+
+# List items in container
+php bones container:list
+php bones container:list --json
+
+# Create a cryptographically secure key
+php bones key:create
+
+# Make a new controller
+php bones make:controller
+php bones make:controller --type=web
+
+# Make a new exception
+php bones make:exception
+
+# Make a new model
+php bones make:model
+
+# Make a new service
+php bones make:service
+```

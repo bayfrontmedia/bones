@@ -2,51 +2,41 @@
 
 namespace Bayfront\Bones\Console\Commands;
 
-use Bayfront\Bones\Cli;
-use Bayfront\Container\ContainerException;
+use Bayfront\Bones\App;
 use Exception;
-use League\CLImate\CLImate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Create extends Command
+class KeyCreate extends Command
 {
+
+    /**
+     * @return void
+     */
 
     protected function configure()
     {
 
-        $this->setName('create')
-            ->setDescription('Create resources')
-            ->setHelp('Creates resources to be used in your app.');
+        $this->setName('key:create')
+            ->setDescription('Create a cryptographically secure key');
 
     }
 
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     *
      * @return int
-     *
-     * @throws ContainerException
      * @throws Exception
      */
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        /** @var CLImate $cli */
-
-        $climate = set_in_container('cli', 'League\CLImate\CLImate');
-
-        $cli = new Cli($climate);
-
-        $cli->intro()->start();
+        $output->writeln(App::createKey());
 
         return Command::SUCCESS;
-
     }
-
 
 
 }

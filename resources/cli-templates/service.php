@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace _namespace_\Services;
 
 /**
- * service_name service.
+ * _service_name_ service.
  *
- * Created with Bones bones_version
+ * Created for Bones v_bones_version_
  */
-class service_name
+class _service_name_
 {
 
 }

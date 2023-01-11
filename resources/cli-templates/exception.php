@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Exceptions;
+namespace _namespace_\Exceptions;
 
 use Bayfront\Bones\Exceptions\BonesException;
 
 /**
- * exception_name exception.
+ * _exception_name_ exception.
  *
- * Created with Bones bones_version
+ * Created for Bones v_bones_version_
  */
-class exception_name extends BonesException
+class _exception_name_ extends BonesException
 {
 
 }

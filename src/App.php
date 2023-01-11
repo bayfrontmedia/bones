@@ -3,9 +3,15 @@
 namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Console\Commands\About;
+use Bayfront\Bones\Console\Commands\ContainerList;
 use Bayfront\Bones\Console\Commands\Create;
+use Bayfront\Bones\Console\Commands\KeyCreate;
+use Bayfront\Bones\Console\Commands\MakeController;
+use Bayfront\Bones\Console\Commands\MakeException;
+use Bayfront\Bones\Console\Commands\MakeModel;
+use Bayfront\Bones\Console\Commands\MakeService;
 use Bayfront\Bones\Console\Commands\ScheduleRun;
-use Bayfront\Bones\Console\Commands\Test;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\FileNotFoundException;
 use Bayfront\Bones\Exceptions\HttpException;
@@ -296,7 +302,7 @@ class App
             include(APP_RESOURCES_PATH . '/events.php');
         }
 
-        // ------------------------- Cron scheduler -------------------------
+        // ------------------------- Cron scheduler (required) -------------------------
 
         $scheduler_config = [
             'lock_file_path' => storage_path('/app/temp'),
@@ -485,8 +491,20 @@ class App
 
             $app = new Application();
 
-            $app->add(new Create());
-            $app->add(new Test());
+            /*
+             * Future commands:
+             * event:list
+             * filter:list?
+             * router:list
+             */
+
+            $app->add(new About());
+            $app->add(new ContainerList(self::$container));
+            $app->add(new KeyCreate());
+            $app->add(new MakeController());
+            $app->add(new MakeException());
+            $app->add(new MakeModel());
+            $app->add(new MakeService());
             $app->add(new ScheduleRun($schedule));
 
             $app->setAutoExit(false);
@@ -521,7 +539,7 @@ class App
     }
 
     /**
-     * Valid interfaces.
+     * App interfaces.
      */
 
     public const INTERFACE_CLI = 'CLI';
