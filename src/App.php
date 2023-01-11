@@ -37,6 +37,12 @@ use ReflectionException;
 class App
 {
 
+    /** @var string */
+
+    private static $interface; // App interface
+
+    /** @var array */
+
     private static $config = []; // Arrays from loaded config files
 
     /** @var Container $container */
@@ -46,8 +52,9 @@ class App
     /**
      * Starts the app.
      *
-     * @param string $app_root_path (Path to project root)
-     * @param string $app_public_path (Path to /public)
+     * @param string $base_path (Path to app's project root)
+     * @param string $public_path (Path to /public)
+     * @param string $interface
      *
      * @return void
      *
@@ -72,16 +79,20 @@ class App
      * @throws Exception
      */
 
-    public static function start(string $app_root_path, string $app_public_path): void
+    public static function start(string $base_path, string $public_path, string $interface = self::INTERFACE_HTTP): void
     {
 
         // ------------------------- Define constants -------------------------
 
-        define('APP_ROOT_PATH', rtrim($app_root_path, '/')); // Remove trailing slash
-        define('APP_PUBLIC_PATH', rtrim($app_public_path, '/')); // Remove trailing slash
+        define('APP_ROOT_PATH', rtrim($base_path, '/')); // Remove trailing slash
+        define('APP_PUBLIC_PATH', rtrim($public_path, '/')); // Remove trailing slash
         define('BONES_ROOT_PATH', rtrim(dirname(__FILE__, 2), '/')); // Root path to the Bones directory
 
         require(BONES_ROOT_PATH . '/resources/constants.php');
+
+        // ------------------------- Define interface -------------------------
+
+        self::$interface = $interface;
 
         // ------------------------- Create container -------------------------
 
@@ -436,7 +447,7 @@ class App
          *     - HTTP (route)
          */
 
-        if (self::isCron()) { // Cron
+        if ($interface == self::INTERFACE_CRON) {
 
             $cron_config = [
                 'lock_file_path' => storage_path('/app/temp'),
@@ -464,7 +475,7 @@ class App
 
             $hooks->doEvent('app.cron');
 
-        } else if (self::isCLI()) { // CLI
+        } else if ($interface == self::INTERFACE_CLI) {
 
             /** @var CLImate $cli */
 
@@ -512,6 +523,25 @@ class App
 
         $hooks->doEvent('bones.shutdown');
 
+    }
+
+    /**
+     * Valid interfaces.
+     */
+
+    public const INTERFACE_HTTP = 'HTTP';
+    public const INTERFACE_CLI = 'CLI';
+    public const INTERFACE_CRON = 'CRON';
+
+    /**
+     * Return App interface.
+     *
+     * @return string
+     */
+
+    public static function getInterface(): string
+    {
+        return self::$interface;
     }
 
     /**
@@ -857,40 +887,6 @@ class App
 
         throw new HttpException($message);
 
-    }
-
-    /**
-     * Checks if the app is running from the command line interface.
-     *
-     * @return bool
-     * @noinspection PhpCastIsUnnecessaryInspection
-     */
-
-    public static function isCLI(): bool
-    {
-
-        if (!defined('IS_CLI')) {
-            define('IS_CLI', false);
-        }
-
-        return (bool)IS_CLI;
-    }
-
-    /**
-     * Checks if the app is running from a cron job.
-     *
-     * @return bool
-     * @noinspection PhpCastIsUnnecessaryInspection
-     */
-
-    public static function isCron(): bool
-    {
-
-        if (!defined('IS_CRON')) {
-            define('IS_CRON', false);
-        }
-
-        return (bool)IS_CRON;
     }
 
 }
