@@ -524,6 +524,8 @@ class App
 
         // ------------------------- Last event -------------------------
 
+        define('BONES_END', microtime(true));
+
         /*
          * @throws Bayfront\Hooks\EventException
          */

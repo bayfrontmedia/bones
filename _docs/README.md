@@ -35,7 +35,7 @@ The file structure for building an app using Bones is as follows:
 .env
 ```
 
-- `/app`- All of your app's namespaced classes reside here. These include controllers, exceptions, models and services.
+- `/app`- All of your app's namespaced classes reside here. These include things such as controllers, exceptions, models and services.
 - `/config`- All of your app's configuration files reside here.
 - `/public`- Public web root of the application. 
 - `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. Resources may also include global helper functions, translations, views, or any other custom resource you choose to use.

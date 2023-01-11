@@ -14,4 +14,5 @@ The following constants are used by Bones:
 - `BONES_ROOT_PATH`- Root path to the Bones directory
 - `BONES_RESOURCES_PATH`- Path to the Bones `/resources` directory
 - `BONES_START`- `microtime` timestamp of when the app was started
+- `BONES_END`- `microtime` timestamp of when the app execution completed (defined immediately before the `bones.shutdown` event)
 - `BONES_VERSION`- Currently installed Bones version
