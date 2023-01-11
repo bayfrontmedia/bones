@@ -15,17 +15,17 @@ Additional documentation for each library can be found by visiting its URL.
 | Container                                   | [Container](https://github.com/bayfrontmedia/container)                   |              |
 | [HTTP Response](libraries/http-response.md) | [PHP HTTP Response](https://github.com/bayfrontmedia/php-http-response)   | `response`   |
 | [Hooks](libraries/hooks.md)                 | [PHP Hooks](https://github.com/bayfrontmedia/php-hooks)                   | `hooks`      |
+| [Scheduler](libraries/scheduler.md)         | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler)         | `schedule`   |
 | [Router](libraries/router.md)               | [Route It](https://github.com/bayfrontmedia/route-it)                     | `router`     |
 | [Database](libraries/database.md)*          | [Simple PDO](https://github.com/bayfrontmedia/simple-pdo)                 | `db`         |
 | [Filesystem](libraries/filesystem.md)*      | [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) | `filesystem` |
 | [Logs](libraries/logs.md)*                  | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory)       | `logs`       |
 | [Translation](libraries/translation.md)*    | [Translation](https://github.com/bayfrontmedia/translation)               | `translate`  |
 | [Views](libraries/views.md)*                | [Veil](https://github.com/bayfrontmedia/veil)                             | `veil`       |
-| [Cron jobs](libraries/cron.md)              | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler)         | `cron`       |
 | [Command line](libraries/cli.md)            | [Climate](https://github.com/thephpleague/climate)                        | `cli`        |
 
 **NOTE:**
 
 \* These services are optional, and will only exist in the container if the associated config file exists in the `/config` directory.
 
-The `cron` and `cli` services will only exist in the container when running in their respective environments.
+The `cli` services will only exist in the container when the app interface is `CLI`.

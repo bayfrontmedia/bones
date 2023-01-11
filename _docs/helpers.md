@@ -19,6 +19,9 @@ The following helpers are automatically included by Bones:
 - [resources_path](#resources_path)
 - [storage_path](#storage_path)
 - [get_env](#get_env)
+- [get_interface](#get_interface)
+- [is_cli](#is_cli)
+- [is_http](#is_http)
 - [get_config](#get_config)
 - [get_container](#get_container)
 - [in_container](#in_container)
@@ -30,8 +33,6 @@ The following helpers are automatically included by Bones:
 - [use_helper](#use_helper)
 - [create_key](#create_key)
 - [abort](#abort)
-- [is_cli](#is_cli)
-- [is_cron](#is_cron)
 
 ## Services helpers
 
@@ -245,11 +246,81 @@ get_env('APP_TIMEZONE');
 
 <hr />
 
+### get_interface
+
+**Description:**
+
+Return app interface.
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (string)
+
+**Example:**
+
+```
+get_interface()
+```
+
+<hr />
+
+### is_cli
+
+**Description:**
+
+Returns boolean value depending on if the app interface is `CLI`.
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (bool)
+
+**Example:**
+
+```
+if (is_cli()) {
+    // Do something
+}
+```
+
+<hr />
+
+### is_http
+
+**Description:**
+
+Returns boolean value depending on if the app interface is `HTTP`.
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (bool)
+
+**Example:**
+
+```
+if (is_http()) {
+    // Do something
+}
+```
+
+<hr />
+
 ### get_config
 
 **Description:**
 
-Returns value from a configuration array key using dot notation, 
+Returns value from a configuration array key using dot notation,
 with the first segment being the filename. (e.g.: filename.key)
 
 **Parameters:**
@@ -551,54 +622,6 @@ If no message is provided, the phrase for the HTTP status code will be used.
 
 ```
 abort(429);
-```
-
-<hr />
-
-### is_cli
-
-**Description:**
-
-Checks if the app is running from the command line interface.
-
-**Parameters:**
-
-- None
-
-**Returns:**
-
-- (bool)
-
-**Example:**
-
-```
-if (is_cli()) {
-    // Do something
-}
-```
-
-<hr />
-
-### is_cron
-
-**Description:**
-
-Checks if the app is running from a cron job.
-
-**Parameters:**
-
-- None
-
-**Returns:**
-
-- (bool)
-
-**Example:**
-
-```
-if (is_cron()) {
-    // Do something
-}
 ```
 
 <hr />

@@ -13,6 +13,5 @@ The following constants are used by Bones:
 - `APP_STORAGE_PATH`- Path to the application's `/storage` directory
 - `BONES_ROOT_PATH`- Root path to the Bones directory
 - `BONES_RESOURCES_PATH`- Path to the Bones `/resources` directory
+- `BONES_START`- `microtime` timestamp of when the app was started
 - `BONES_VERSION`- Currently installed Bones version
-- `IS_CRON` If app is running from a cron job
-- `IS_CLI` If app is running from the CLI

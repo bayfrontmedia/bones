@@ -49,6 +49,7 @@
     "bayfrontmedia/veil": "^1.3",
     "filp/whoops": "^2.14",
     "league/climate": "3.7",
+    "symfony/console": "^6.2",
     "vlucas/phpdotenv": "^5.3"
   }
 }

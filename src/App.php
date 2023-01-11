@@ -3,6 +3,9 @@
 namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Console\Commands\Create;
+use Bayfront\Bones\Console\Commands\ScheduleRun;
+use Bayfront\Bones\Console\Commands\Test;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\FileNotFoundException;
 use Bayfront\Bones\Exceptions\HttpException;
@@ -31,8 +34,8 @@ use Bayfront\TimeHelpers\Time;
 use Bayfront\Translation\AdapterException;
 use Dotenv\Dotenv;
 use Exception;
-use League\CLImate\CLImate;
 use ReflectionException;
+use Symfony\Component\Console\Application;
 
 class App
 {
@@ -84,6 +87,7 @@ class App
 
         // ------------------------- Define constants -------------------------
 
+        define('BONES_START', microtime(true));
         define('APP_ROOT_PATH', rtrim($base_path, '/')); // Remove trailing slash
         define('APP_PUBLIC_PATH', rtrim($public_path, '/')); // Remove trailing slash
         define('BONES_ROOT_PATH', rtrim(dirname(__FILE__, 2), '/')); // Root path to the Bones directory
@@ -252,7 +256,6 @@ class App
         // ------------------------- Check for required app resource files -------------------------
 
         if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/cli.php') ||
             !file_exists(APP_RESOURCES_PATH . '/events.php') ||
             !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
             !file_exists(APP_RESOURCES_PATH . '/routes.php')) {
@@ -293,6 +296,32 @@ class App
             include(APP_RESOURCES_PATH . '/events.php');
         }
 
+        // ------------------------- Cron scheduler -------------------------
+
+        $scheduler_config = [
+            'lock_file_path' => storage_path('/app/temp'),
+            'output_file' => storage_path('/app/cron/cron-' . date('Y-m-d') . '.txt')
+        ];
+
+        /*
+         * Merge app config with default config, and ensure only valid keys are returned
+         */
+
+        if (is_array(get_config('scheduler'))) {
+
+            $scheduler_config = Arr::only(array_merge($scheduler_config, get_config('scheduler')), [
+                'lock_file_path',
+                'output_file'
+            ]);
+
+        }
+
+        /*
+         * @throws Bayfront\Container\ContainerException
+         */
+
+        $schedule = self::$container->set('schedule', 'Bayfront\CronScheduler\Cron', $scheduler_config);
+
         // ------------------------- Router (required) -------------------------
 
         $router = new Router(get_config('router', []));
@@ -300,6 +329,10 @@ class App
         self::$container->put('router', $router);
 
         require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
+
+        // Include routes
+
+        include(APP_RESOURCES_PATH . '/routes.php');
 
         // ------------------------- Database (optional) -------------------------
 
@@ -441,63 +474,25 @@ class App
         $hooks->doEvent('app.bootstrap');
 
         /*
-         * From here, find the environment, and respond appropriately
-         *     - cron
-         *     - CLI
-         *     - HTTP (route)
+         * From here, respond depending on the interface
          */
 
-        if ($interface == self::INTERFACE_CRON) {
-
-            $cron_config = [
-                'lock_file_path' => storage_path('/app/temp'),
-                'output_file' => storage_path('/app/cron/cron-' . date('Y-m-d') . '.txt')
-            ];
-
-            /*
-             * Merge app config with default config, and ensure only valid keys are returned
-             */
-
-            if (is_array(get_config('cron'))) {
-
-                $cron_config = Arr::only(array_merge($cron_config, get_config('cron')), [
-                    'lock_file_path',
-                    'output_file'
-                ]);
-
-            }
-
-            /*
-             * @throws Bayfront\Container\ContainerException
-             */
-
-            self::$container->set('cron', 'Bayfront\CronScheduler\Cron', $cron_config);
-
-            $hooks->doEvent('app.cron');
-
-        } else if ($interface == self::INTERFACE_CLI) {
-
-            /** @var CLImate $cli */
-
-            $climate = self::$container->set('cli', 'League\CLImate\CLImate');
-
-            /*
-             * @throws Bayfront\Hooks\EventException
-             */
+        if ($interface == self::INTERFACE_CLI) {
 
             $hooks->doEvent('app.cli');
 
-            // Begin CLI environment
+            // See: https://symfony.com/doc/current/components/console.html
 
-            $cli = new Cli($climate);
+            $app = new Application();
 
-            $cli->intro()->start();
+            $app->add(new Create());
+            $app->add(new Test());
+            $app->add(new ScheduleRun($schedule));
+
+            $app->setAutoExit(false);
+            $app->run();
 
         } else { // HTTP
-
-            // ------------------------- Include routes -------------------------
-
-            include(APP_RESOURCES_PATH . '/routes.php');
 
             /*
              * @throws Bayfront\Hooks\EventException
@@ -529,9 +524,8 @@ class App
      * Valid interfaces.
      */
 
-    public const INTERFACE_HTTP = 'HTTP';
     public const INTERFACE_CLI = 'CLI';
-    public const INTERFACE_CRON = 'CRON';
+    public const INTERFACE_HTTP = 'HTTP';
 
     /**
      * Return App interface.

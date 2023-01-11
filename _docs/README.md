@@ -28,8 +28,6 @@ The file structure for building an app using Bones is as follows:
   index.php
 /resources
   bootstrap.php
-  cli.php
-  cron.php
   events.php
   filters.php
   routes.php
@@ -40,9 +38,11 @@ The file structure for building an app using Bones is as follows:
 - `/app`- All of your app's namespaced classes reside here. These include controllers, exceptions, models and services.
 - `/config`- All of your app's configuration files reside here.
 - `/public`- Public web root of the application. 
-- `/resources`- All of your app's resources reside here. These include the bootstrap and command line file, cron jobs, events, filters and routes. Resources may also include global helper functions, translations, views, or any other custom resource you choose to use.
+- `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. Resources may also include global helper functions, translations, views, or any other custom resource you choose to use.
 - `/storage`- All locally stored files reside here. This includes files written by the app, publicly shared files, as well as any other files you wish to store. 
 - `.env`- All environment variables are saved here. **This file should never be made public or committed to your application's source control.**
+
+**NOTE:** If your public web root is not `/public`, the path must be updated in `/public/index.php` as well as `/bones`.
 
 ## Configuration
 
@@ -105,12 +105,12 @@ Bones may automatically place certain libraries into the services container.
 These include:
 
 - [Command line](libraries/cli.md)
-- [Cron jobs](libraries/cron.md)
 - [Database](libraries/database.md)
 - [Filesystem](libraries/filesystem.md)
 - [Hooks](libraries/hooks.md)
 - [HTTP Response](libraries/http-response.md)
 - [Logs](libraries/logs.md)
 - [Router](libraries/router.md)
+- [Scheduler](libraries/scheduler.md)
 - [Translation](libraries/translation.md)
 - [Views](libraries/views.md)

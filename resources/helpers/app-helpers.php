@@ -146,6 +146,35 @@ function get_env(string $key, $default = NULL)
 }
 
 /**
+ * @return string
+ */
+
+function get_interface(): string
+{
+    return App::getInterface();
+}
+
+/**
+ * @return bool
+ *
+ */
+
+function is_cli(): bool
+{
+    return App::getInterface() == App::INTERFACE_CLI;
+}
+
+/**
+ * @return bool
+ *
+ */
+
+function is_http(): bool
+{
+    return App::getInterface() == App::INTERFACE_HTTP;
+}
+
+/**
  * @param string $key
  * @param null $default
  *
@@ -310,28 +339,4 @@ function create_key(int $characters = 32): string
 function abort(int $code, string $message = '', array $headers = [], bool $reset_response = false): void
 {
     App::abort($code, $message, $headers, $reset_response);
-}
-
-/**
- * @return bool
- *
- * @see Bayfront\Bones\App::isCLI()
- *
- */
-
-function is_cli(): bool
-{
-    return App::isCLI();
-}
-
-/**
- * @return bool
- *
- * @see Bayfront\Bones\App::isCron()
- *
- */
-
-function is_cron(): bool
-{
-    return App::isCron();
 }

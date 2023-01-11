@@ -60,7 +60,7 @@ abstract class ExceptionHandler
     public function respond(Response $response, Throwable $e): void
     {
 
-        if (App::isCLI()) {
+        if (App::getInterface() == App::INTERFACE_CLI) {
 
             $run = new Run;
 
