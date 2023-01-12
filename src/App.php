@@ -61,7 +61,7 @@ class App
     /**
      * Starts the app.
      *
-     * @param string $base_path (Path to app's project root)
+     * @param string $base_path (Base path to app)
      * @param string $public_path (Path to /public)
      * @param string $interface
      *
@@ -94,11 +94,11 @@ class App
         // ------------------------- Define constants -------------------------
 
         define('BONES_START', microtime(true));
-        define('APP_ROOT_PATH', rtrim($base_path, '/')); // Remove trailing slash
+        define('APP_BASE_PATH', rtrim($base_path, '/')); // Remove trailing slash
         define('APP_PUBLIC_PATH', rtrim($public_path, '/')); // Remove trailing slash
-        define('BONES_ROOT_PATH', rtrim(dirname(__FILE__, 2), '/')); // Root path to the Bones directory
+        define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/')); // Base path to the Bones directory
 
-        require(BONES_ROOT_PATH . '/resources/constants.php');
+        require(BONES_BASE_PATH . '/resources/constants.php');
 
         // ------------------------- Define interface -------------------------
 
@@ -110,8 +110,8 @@ class App
 
         // ------------------------- Load environment variables -------------------------
 
-        if (file_exists(APP_ROOT_PATH . '/.env')) {
-            Dotenv::createImmutable(APP_ROOT_PATH)->load();
+        if (file_exists(APP_BASE_PATH . '/.env')) {
+            Dotenv::createImmutable(APP_BASE_PATH)->load();
         }
 
         // ------------------------- Load app helpers -------------------------
@@ -122,6 +122,8 @@ class App
 
         if (Time::isTimezone(get_config('app.timezone'))) {
             date_default_timezone_set(get_config('app.timezone'));
+        } else {
+            date_default_timezone_set('UTC');
         }
 
         // ------------------------- Debug mode errors -------------------------

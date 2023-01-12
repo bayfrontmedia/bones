@@ -13,7 +13,7 @@ Custom helpers should be included via the [use_helper()](#use_helper) function.
 The following helpers are automatically included by Bones:
 
 - [get_datetime](#get_datetime)
-- [root_path](#root_path)
+- [base_path](#base_path)
 - [public_path](#public_path)
 - [config_path](#config_path)
 - [resources_path](#resources_path)
@@ -106,16 +106,16 @@ $datetime = get_datetime();
 
 <hr />
 
-### root_path
+### base_path
 
 **Description:**
 
-Returns the fully qualified path to the `APP_ROOT_PATH` directory, 
+Returns the fully qualified path to the `APP_BASE_PATH` directory, 
 ensuring a leading slash, no trailing slash and single forward slashes.
 
 **Parameters:**
 
-- `$path = ''` (string): Path relative to the `APP_ROOT_PATH` directory
+- `$path = ''` (string): Path relative to the `APP_BASE_PATH` directory
 
 **Returns:**
 
@@ -124,7 +124,7 @@ ensuring a leading slash, no trailing slash and single forward slashes.
 **Example:**
 
 ```
-$root_path = root_path();
+$base_path = base_path();
 ```
 
 <hr />

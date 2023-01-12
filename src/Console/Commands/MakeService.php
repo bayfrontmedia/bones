@@ -40,7 +40,7 @@ class MakeService extends Command
 
             $name = ucfirst($input->getArgument('name'));
 
-            $dir = root_path('/' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Services');
+            $dir = base_path('/' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Services');
 
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);

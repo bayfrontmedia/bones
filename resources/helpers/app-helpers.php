@@ -30,18 +30,18 @@ function get_datetime(int $timestamp = 0): string
 }
 
 /**
- * Returns the fully qualified path to the APP_ROOT_PATH directory,
+ * Returns the fully qualified path to the APP_BASE_PATH directory,
  * ensuring a leading slash, no trailing slash and single forward slashes.
  *
- * @param string $path (Path relative to the APP_ROOT_PATH directory)
+ * @param string $path (Path relative to the APP_BASE_PATH directory)
  *
  * @return string
  *
  */
 
-function root_path(string $path = ''): string
+function base_path(string $path = ''): string
 {
-    return str_replace('//', '/', '/' . trim(APP_ROOT_PATH . '/' . $path, '/'));
+    return str_replace('//', '/', '/' . trim(APP_BASE_PATH . '/' . $path, '/'));
 }
 
 /**

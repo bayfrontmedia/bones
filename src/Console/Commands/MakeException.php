@@ -40,7 +40,7 @@ class MakeException extends Command
 
             $name = ucfirst($input->getArgument('name'));
 
-            $dir = root_path('/' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Exceptions');
+            $dir = base_path('/' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Exceptions');
 
             if (!is_dir($dir)) {
                 mkdir($dir, 0755, true);
