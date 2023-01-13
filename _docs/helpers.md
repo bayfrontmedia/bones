@@ -41,9 +41,7 @@ The following helpers are automatically included by Bones when their associated 
 **Hooks helpers**
 
 - [get_hooks](#get_hooks)
-- [add_event](#add_event)
 - [do_event](#do_event)
-- [add_filter](#add_filter)
 - [do_filter](#do_filter)
 
 **Router helpers**

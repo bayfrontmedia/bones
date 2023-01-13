@@ -12,8 +12,11 @@ return [
     'debug_mode' => get_env('APP_DEBUG_MODE'),
     'environment' => get_env('APP_ENVIRONMENT'), // e.g.: "development", "staging", "production"
     'timezone' => get_env('APP_TIMEZONE'), // See: https://www.php.net/manual/en/timezones.php
-    'events_enabled' => get_env('APP_EVENTS_ENABLED'),
-    'filters_enabled' => get_env('APP_FILTERS_ENABLED')
+    'filters_enabled' => get_env('APP_FILTERS_ENABLED'),
+    'actions' => [
+        'autoload' => true,
+        'load' => []
+    ]
 ];
 ```
 
@@ -43,10 +46,12 @@ This can prove helpful, for example, when defining routes or for logging purpose
 
 A valid [timezone](https://www.php.net/manual/en/timezones.php) should be defined.
 
-## events_enabled
-
-Enable/disable app events. Value must be a `boolean`. See [Hooks](libraries/hooks.md) for more information.
-
 ## filters_enabled
 
 Enable/disable app filters. Value must be a `boolean`. See [Hooks](libraries/hooks.md) for more information.
+
+## actions
+
+An array used to manage queuing [actions](actions.md).
+First, Bones will attempt to automatically load all actions if the `actions.autoload` config value is `true`.
+If `false`, Bones will only load actions whose fully qualified class names exist in the `actions.load` config array.

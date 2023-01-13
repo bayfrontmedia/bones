@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Interfaces\ActionInterface;
 use Bayfront\Hooks\Hooks;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -11,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EventList extends Command
+class ActionList extends Command
 {
 
     protected $hooks;
@@ -31,9 +32,10 @@ class EventList extends Command
     protected function configure()
     {
 
-        $this->setName('event:list')
-            ->setDescription('List all hooked events')
+        $this->setName('action:list')
+            ->setDescription('List all registered actions')
             ->addOption('event', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
+            ->addOption('sort', null, InputOption::VALUE_REQUIRED)
             ->addOption('json', null, InputOption::VALUE_NONE);
 
     }
@@ -72,12 +74,22 @@ class EventList extends Command
                     $function = '[' . strtoupper(gettype(Arr::get($queue, 'function'))) . ']';
 
                     if (is_string(Arr::get($queue, 'function'))) {
+
                         $function = Arr::get($queue, 'function', '');
+
+                    } else if (is_array(Arr::get($queue, 'function'))) {
+
+                        if (Arr::get($queue, 'function')[0] instanceof ActionInterface) {
+
+                            $function = get_class(Arr::get($queue, 'function')[0]);
+
+                        }
+
                     }
 
                     $return[] = [
+                        'action' => $function,
                         'event' => $event,
-                        'function' => $function,
                         'priority' => Arr::get($queue, 'priority')
                     ];
 
@@ -92,7 +104,7 @@ class EventList extends Command
         } else {
 
             if (empty($return)) {
-                $output->writeln('<info>No events found.</info>');
+                $output->writeln('<info>No actions found.</info>');
             } else {
 
                 $rows = [];
@@ -100,15 +112,25 @@ class EventList extends Command
                 foreach ($return as $v) {
 
                     $rows[] = [
+                        $v['action'],
                         $v['event'],
-                        $v['function'],
                         $v['priority']
                     ];
 
                 }
 
+                $sort = strtolower((string)$input->getOption('sort'));
+
+                if ($sort == 'event') {
+                    $rows = Arr::multisort($rows, '1');
+                } else if ($sort == 'priority') {
+                    $rows = Arr::multisort($rows, '2');
+                } else { // Action
+                    $rows = Arr::multisort($rows, '0');
+                }
+
                 $table = new Table($output);
-                $table->setHeaders(['Event', 'Function', 'Priority'])->setRows($rows);
+                $table->setHeaders(['Action', 'Event', 'Priority'])->setRows($rows);
                 $table->render();
 
             }

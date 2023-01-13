@@ -17,6 +17,7 @@ The file structure for building an app using Bones is as follows:
 
 ```
 /app
+  /Actions
   /Console
     /Commands
   /Controllers
@@ -31,7 +32,6 @@ The file structure for building an app using Bones is as follows:
   index.php
 /resources
   bootstrap.php
-  events.php
   filters.php
   routes.php
 /storage
@@ -39,7 +39,7 @@ The file structure for building an app using Bones is as follows:
 ```
 
 - `/app`- All of your app's namespaced classes reside here. 
-These include things such as controllers, exceptions, models and services.
+These include things such as actions, console commands, controllers, exceptions, models and services.
 - `/config`- All of your app's configuration files reside here.
 - `/public`- Public web root of the application. 
 - `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. 
@@ -69,7 +69,6 @@ APP_KEY=SECURE_APP_KEY
 APP_DEBUG_MODE=true
 APP_ENVIRONMENT=dev
 APP_TIMEZONE=America/New_York
-APP_EVENTS_ENABLED=true
 APP_FILTERS_ENABLED=true
 
 ROUTER_HOST=example.com
@@ -97,6 +96,7 @@ The [get_config](helpers.md#get_config) helper can be used to retrieve config va
 ## Documentation
 
 - [App configuration](app.md)
+- [Actions](actions.md)
 - [Bootstrap](bootstrap.md)
 - [Constants](constants.md)
 - [Container](container.md)

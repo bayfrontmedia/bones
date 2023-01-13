@@ -42,7 +42,7 @@ class About extends Command
             'Debug mode' => get_env('APP_DEBUG_MODE') ? 'True' : 'False',
             'Environment' => get_env('APP_ENVIRONMENT'),
             'Timezone' => date_default_timezone_get(),
-            'Events enabled' => get_env('APP_EVENTS_ENABLED') ? 'True' : 'False',
+            'Event enabled' => get_env('APP_EVENTS_ENABLED') ? 'True' : 'False',
             'Filters enabled' => get_env('APP_FILTERS_ENABLED') ? 'True' : 'False',
             'Base path' => base_path()
 

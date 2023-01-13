@@ -22,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `app.http` event.
 - Added `App::getInterface()` method.
 - Added new CLI commands using Symfony Console.
-- Added `BONES_START` and `BONES_END` constants. 
+- Added `BONES_START` and `BONES_END` constants.
+- Added support for [actions](_docs/actions.md) in favor of procedural event hooks.
 
 ### Changed
 
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the need for `resources/cli.php` in favor of `php bones` CLI commands.
 - Removed the [CLImate library ](https://github.com/thephpleague/climate) in favor of Symfony Console.
 - Removed `view_or_fallback` helper.
+- Removed some hooks helpers.
 
 ### Fixed
 

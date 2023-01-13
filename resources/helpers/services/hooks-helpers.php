@@ -20,25 +20,6 @@ function get_hooks(): Hooks
 }
 
 /**
- * Adds a hook for a given event name.
- *
- * See: https://github.com/bayfrontmedia/php-hooks#addevent
- *
- * @param string $name (Name of event)
- * @param callable $function
- * @param int $priority (Hooks will be executed by order of priority in descending order)
- *
- * @return void
- *
- * @throws NotFoundException
- */
-
-function add_event(string $name, callable $function, int $priority = 5): void
-{
-    get_hooks()->addEvent($name, $function, $priority);
-}
-
-/**
  * Execute queued hooks for a given event in order of priority.
  *
  * See: https://github.com/bayfrontmedia/php-hooks#doevent
@@ -54,25 +35,6 @@ function add_event(string $name, callable $function, int $priority = 5): void
 function do_event(string $name, ...$arg): void
 {
     get_hooks()->doEvent($name, ...$arg);
-}
-
-/**
- * Adds a hook for a given filter name.
- *
- * See: https://github.com/bayfrontmedia/php-hooks#addfilter
- *
- * @param string $name (Name of filter)
- * @param callable $function
- * @param int $priority (Filters will be executed in order of priority in descending order)
- *
- * @return void
- *
- * @throws NotFoundException
- */
-
-function add_filter(string $name, callable $function, int $priority = 5): void
-{
-    get_hooks()->addFilter($name, $function, $priority);
 }
 
 /**

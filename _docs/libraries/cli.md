@@ -22,11 +22,13 @@ php bones about --json
 php bones container:list
 php bones container:list --json
 
-# List all registered event hooks for all events
-php bones event:list
-php bones event:list --json
-# Event hooks can be returned for specific events
-php bones event:list --event=bones.init --event=app.bootstrap
+# List all registered actions for all events
+php bones action:list
+php bones action:list --json
+# Actions can be returned for specific events
+php bones action:list --event=bones.init --event=app.bootstrap
+# Actions can be sorted by "event", "priority", or "action" (default)
+php bones action:list --sort=event
 
 # List all registered filter hooks for all filters
 php bones filter:list
@@ -41,6 +43,9 @@ php bones install:bare
 
 # Create a cryptographically secure key
 php bones key:create
+
+# Make a new event action
+php bones make:action NAME
 
 # Make a new console command
 php bones make:command NAME

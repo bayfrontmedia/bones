@@ -5,10 +5,11 @@ namespace Bayfront\Bones;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
 use Bayfront\Bones\Console\Commands\ContainerList;
-use Bayfront\Bones\Console\Commands\EventList;
+use Bayfront\Bones\Console\Commands\ActionList;
 use Bayfront\Bones\Console\Commands\FilterList;
 use Bayfront\Bones\Console\Commands\InstallBare;
 use Bayfront\Bones\Console\Commands\KeyCreate;
+use Bayfront\Bones\Console\Commands\MakeAction;
 use Bayfront\Bones\Console\Commands\MakeCommand;
 use Bayfront\Bones\Console\Commands\MakeController;
 use Bayfront\Bones\Console\Commands\MakeException;
@@ -17,12 +18,14 @@ use Bayfront\Bones\Console\Commands\MakeService;
 use Bayfront\Bones\Console\Commands\RouteList;
 use Bayfront\Bones\Console\Commands\ScheduleList;
 use Bayfront\Bones\Console\Commands\ScheduleRun;
+use Bayfront\Bones\Exceptions\ActionException;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\FileNotFoundException;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Exceptions\InvalidConfigurationException;
 use Bayfront\Bones\Exceptions\ModelException;
 use Bayfront\Bones\Exceptions\ServiceException;
+use Bayfront\Bones\Interfaces\ActionInterface;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
@@ -43,6 +46,7 @@ use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Translation\AdapterException;
+use DirectoryIterator;
 use Dotenv\Dotenv;
 use Exception;
 use ReflectionException;
@@ -62,6 +66,43 @@ class App
     /** @var Container $container */
 
     private static $container; // Container instance
+
+    /**
+     * Load valid and active actions as a hooked event.
+     *
+     * @param Hooks $hooks
+     * @param $class
+     * @return void
+     * @throws ActionException
+     * @throws ContainerException
+     */
+
+    private static function loadAction(Hooks $hooks, $class)
+    {
+
+        $action = self::$container->create($class);
+
+        if ($action instanceof ActionInterface) {
+
+            if ($action->isActive()) {
+
+                $events = $action->getEvents();
+
+                foreach ($events as $event => $priority) {
+                    $hooks->addEvent($event, [$action, 'action'], (int)$priority);
+                }
+
+            } else {
+                unset($event);
+            }
+
+        } else {
+
+            throw new ActionException('Unable to start: Invalid action (' . $action . ')');
+
+        }
+
+    }
 
     /**
      * Starts the app.
@@ -269,7 +310,6 @@ class App
         // ------------------------- Check for required app resource files -------------------------
 
         if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/events.php') ||
             !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
             !file_exists(APP_RESOURCES_PATH . '/routes.php')) {
 
@@ -305,8 +345,37 @@ class App
             include(APP_RESOURCES_PATH . '/filters.php');
         }
 
-        if (get_config('app.events_enabled', false)) {
-            include(APP_RESOURCES_PATH . '/events.php');
+        // Load actions
+
+        $dir = base_path('/app/Actions');
+
+        if (get_config('app.actions.autoload', false) && is_dir($dir)) {
+
+            $list = new DirectoryIterator($dir);
+
+            foreach ($list as $item) {
+
+                if ($item->isFile()) {
+
+                    $class = get_config('app.namespace', '') . 'Actions\\' . basename($item->getFileName(), '.php');
+
+                    self::loadAction($hooks, $class);
+
+                }
+            }
+
+        } else {
+
+            $list = get_config('app.actions.load', []);
+
+            if (!empty($list)) {
+
+                foreach ($list as $item) {
+                    self::loadAction($hooks, $item);
+                }
+
+            }
+
         }
 
         // ------------------------- Cron scheduler (required) -------------------------
@@ -471,7 +540,7 @@ class App
          */
 
         /*
-         * @throws Bayfront\Hooks\EventException
+         * @throws Bayfront\Hooks\ActionException
          */
 
         $hooks->doEvent('bones.init');
@@ -481,7 +550,7 @@ class App
         include(APP_RESOURCES_PATH . '/bootstrap.php');
 
         /*
-         * @throws Bayfront\Hooks\EventException
+         * @throws Bayfront\Hooks\ActionException
          */
 
         $hooks->doEvent('app.bootstrap');
@@ -500,10 +569,11 @@ class App
 
             $console->add(new About());
             $console->add(new ContainerList(self::$container));
-            $console->add(new EventList($hooks));
+            $console->add(new ActionList($hooks));
             $console->add(new FilterList($hooks));
             $console->add(new InstallBare());
             $console->add(new KeyCreate());
+            $console->add(new MakeAction());
             $console->add(new MakeCommand());
             $console->add(new MakeController());
             $console->add(new MakeException());
@@ -519,7 +589,7 @@ class App
         } else { // HTTP
 
             /*
-             * @throws Bayfront\Hooks\EventException
+             * @throws Bayfront\Hooks\ActionException
              */
 
             $hooks->doEvent('app.http');
@@ -539,7 +609,7 @@ class App
         define('BONES_END', microtime(true));
 
         /*
-         * @throws Bayfront\Hooks\EventException
+         * @throws Bayfront\Hooks\ActionException
          */
 
         $hooks->doEvent('bones.shutdown');
