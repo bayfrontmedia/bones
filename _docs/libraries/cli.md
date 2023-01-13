@@ -22,7 +22,7 @@ php bones about --json
 php bones container:list
 php bones container:list --json
 
-# List all registered actions for all events
+# List all registered actions for all events (valid for the CLI interface)
 php bones action:list
 php bones action:list --json
 # Actions can be returned for specific events

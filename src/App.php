@@ -345,39 +345,6 @@ class App
             include(APP_RESOURCES_PATH . '/filters.php');
         }
 
-        // Load actions
-
-        $dir = base_path('/app/Actions');
-
-        if (get_config('app.actions.autoload', false) && is_dir($dir)) {
-
-            $list = new DirectoryIterator($dir);
-
-            foreach ($list as $item) {
-
-                if ($item->isFile()) {
-
-                    $class = get_config('app.namespace', '') . 'Actions\\' . basename($item->getFileName(), '.php');
-
-                    self::loadAction($hooks, $class);
-
-                }
-            }
-
-        } else {
-
-            $list = get_config('app.actions.load', []);
-
-            if (!empty($list)) {
-
-                foreach ($list as $item) {
-                    self::loadAction($hooks, $item);
-                }
-
-            }
-
-        }
-
         // ------------------------- Cron scheduler (required) -------------------------
 
         $scheduler_config = [
@@ -529,6 +496,39 @@ class App
             ]);
 
             require(BONES_RESOURCES_PATH . '/helpers/services/veil-helpers.php');
+
+        }
+
+        // ------------------------- Load actions -------------------------
+
+        $dir = base_path('/app/Actions');
+
+        if (get_config('app.actions.autoload', false) && is_dir($dir)) {
+
+            $list = new DirectoryIterator($dir);
+
+            foreach ($list as $item) {
+
+                if ($item->isFile()) {
+
+                    $class = get_config('app.namespace', '') . 'Actions\\' . basename($item->getFileName(), '.php');
+
+                    self::loadAction($hooks, $class);
+
+                }
+            }
+
+        } else {
+
+            $list = get_config('app.actions.load', []);
+
+            if (!empty($list)) {
+
+                foreach ($list as $item) {
+                    self::loadAction($hooks, $item);
+                }
+
+            }
 
         }
 

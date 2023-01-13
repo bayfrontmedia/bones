@@ -130,6 +130,20 @@ class InstallBare extends Command
                 $output->writeln('<error>Skipping logs config file: File already exists</error>');
             }
 
+            $output->writeln('Installing log related actions...');
+
+            $bones_log_actions_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Actions/AddExtraToLogChannels.php';
+
+            $app_log_actions_file = base_path('/app/Actions/AddExtraToLogChannels.php');
+
+            if (!file_exists($app_log_actions_file)) {
+
+                copy($bones_log_actions_file, $app_log_actions_file);
+
+            } else {
+                $output->writeln('<error>Skipping logs action: File already exists</error>');
+            }
+
         }
 
         // ------------------------- Translate -------------------------

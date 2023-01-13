@@ -114,7 +114,6 @@ These include:
 - [Command line](libraries/cli.md)
 - [Database](libraries/database.md)
 - [Filesystem](libraries/filesystem.md)
-- [Hooks](libraries/hooks.md)
 - [HTTP Response](libraries/http-response.md)
 - [Logs](libraries/logs.md)
 - [Router](libraries/router.md)
