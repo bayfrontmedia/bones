@@ -5,6 +5,7 @@ namespace Bayfront\Bones;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
 use Bayfront\Bones\Console\Commands\ContainerList;
+use Bayfront\Bones\Console\Commands\InstallBare;
 use Bayfront\Bones\Console\Commands\KeyCreate;
 use Bayfront\Bones\Console\Commands\MakeCommand;
 use Bayfront\Bones\Console\Commands\MakeController;
@@ -495,6 +496,7 @@ class App
 
             $console->add(new About());
             $console->add(new ContainerList(self::$container));
+            $console->add(new InstallBare());
             $console->add(new KeyCreate());
             $console->add(new MakeCommand());
             $console->add(new MakeController());
