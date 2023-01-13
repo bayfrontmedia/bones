@@ -22,6 +22,18 @@ php bones about --json
 php bones container:list
 php bones container:list --json
 
+# List all registered event hooks for all events
+php bones event:list
+php bones event:list --json
+# Event hooks can be returned for specific events
+php bones event:list --event=bones.init --event=app.bootstrap
+
+# List all registered filter hooks for all filters
+php bones filter:list
+php bones filter:list --json
+# Filter hooks can be returned for specific filters
+php bones filter:list --filter=router.parameters
+
 # Install Bones
 php bones install:bare
 # To install optional services, use the following options:
@@ -45,6 +57,19 @@ php bones make:model NAME
 
 # Make a new service
 php bones make:service NAME
+
+# List routes
+php bones route:list
+php bones route:list --json
+# Routes can be returned for specific request methods:
+# NOTE: The additional method "named" will return all named routes
+php bones route:list --method=get --method=named
+# Routes can be returned for specific hosts:
+php bones route:list --host=example.com
+
+# List all scheduled jobs
+php bones schedule:list
+php bones schedule:list --json
 
 # Run all scheduled jobs
 php bones schedule:run

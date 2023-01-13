@@ -5,6 +5,8 @@ namespace Bayfront\Bones;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
 use Bayfront\Bones\Console\Commands\ContainerList;
+use Bayfront\Bones\Console\Commands\EventList;
+use Bayfront\Bones\Console\Commands\FilterList;
 use Bayfront\Bones\Console\Commands\InstallBare;
 use Bayfront\Bones\Console\Commands\KeyCreate;
 use Bayfront\Bones\Console\Commands\MakeCommand;
@@ -12,6 +14,8 @@ use Bayfront\Bones\Console\Commands\MakeController;
 use Bayfront\Bones\Console\Commands\MakeException;
 use Bayfront\Bones\Console\Commands\MakeModel;
 use Bayfront\Bones\Console\Commands\MakeService;
+use Bayfront\Bones\Console\Commands\RouteList;
+use Bayfront\Bones\Console\Commands\ScheduleList;
 use Bayfront\Bones\Console\Commands\ScheduleRun;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\FileNotFoundException;
@@ -496,6 +500,8 @@ class App
 
             $console->add(new About());
             $console->add(new ContainerList(self::$container));
+            $console->add(new EventList($hooks));
+            $console->add(new FilterList($hooks));
             $console->add(new InstallBare());
             $console->add(new KeyCreate());
             $console->add(new MakeCommand());
@@ -503,6 +509,8 @@ class App
             $console->add(new MakeException());
             $console->add(new MakeModel());
             $console->add(new MakeService());
+            $console->add(new RouteList($router));
+            $console->add(new ScheduleList($schedule));
             $console->add(new ScheduleRun($schedule));
 
             $console->setAutoExit(false);

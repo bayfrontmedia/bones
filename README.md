@@ -30,7 +30,7 @@ This project is open source and available under the [MIT License](LICENSE).
 > **Note:** This repository contains the core code of the Bones framework.
 > If you want to build an application using Bones, use one of the repositories listed below.
 
-### Bones Skeleton
+### Bones App
 
 [Bones App](https://github.com/bayfrontmedia/bones-app) is the simplest bare-bones configuration 
 to begin building an application using the Bones framework.

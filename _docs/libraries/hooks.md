@@ -42,6 +42,9 @@ This file is required by Bones.
 
 The PHP Hooks library will automatically be available in this file as `$hooks`.
 
+To get a list of all hooked events, the `php bones event:list` command can be used.
+For more information, see [CLI](cli.md).
+
 ## Filters
 
 ### Default Bones filters
@@ -57,3 +60,6 @@ You can manage filters in the `/resources/filters.php` file.
 This file is required by Bones.
 
 The PHP Hooks library will automatically be available in this file as `$hooks`.
+
+To get a list of all hooked filters, the `php bones filter:list` command can be used.
+For more information, see [CLI](cli.md).

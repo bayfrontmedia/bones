@@ -45,3 +45,6 @@ $router->setHost(get_config('router.host'))
 ```
 
 The above example uses a custom filter named `router.route_prefix`, and adds a named route to `/storage`. 
+
+To get a list of all defined routes, the `php bones route:list` command can be used.
+For more information, see [CLI](cli.md).
