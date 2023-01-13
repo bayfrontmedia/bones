@@ -9,8 +9,8 @@ This library will be added to the services container as `filesystem` if a valid 
 ```
 return [
     'local' => [ // Name of disk
-        'default' => true, // One disk must be marked as default
-        'adapter' => 'Local', // Class name in Bayfront\Filesystem\Adapters namespace
+        'default' => true,
+        'adapter' => 'Local',
         'root' => storage_path(),
         'permissions' => [
             'file' => [
@@ -22,10 +22,7 @@ return [
                 'private' => 0700,
             ]
         ],
-        'cache' => [ // Optional key
-            'location' => 'Memory' // Class name in Bayfront\Filesystem\Cache namespace
-        ],
-        'url' => 'https://www.example.com/path/to/root' // Optional. No trailing slash.
+        'url' => 'https://www.example.com/storage' // Optional. No trailing slash
     ]
 ];
 ``` 

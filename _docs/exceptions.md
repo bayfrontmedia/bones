@@ -14,7 +14,7 @@ All exceptions must extend `Bayfront\Bones\Exceptions\BonesException`.
 The easiest way of creating a new exception is from the command line:
 
 ```
-php /path/to/resources/cli.php
+php bones make:exception NAME
 ```
 
 ## Exception handler

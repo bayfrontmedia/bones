@@ -29,8 +29,7 @@ class ScheduleRun extends Command
     {
 
         $this->setName('schedule:run')
-            ->setDescription('Run scheduled tasks')
-            ->setHelp('Runs all scheduled tasks that are due.');
+            ->setDescription('Run scheduled tasks');
 
     }
 

@@ -2,11 +2,14 @@
 
 All controllers should reside in the `/app/Controllers` directory, and extend a [Bones controller](#bones-controllers).
 
-[Bones Controllers](#bones-controllers) may throw a `Bayfront\Bones\Exceptions\ControllerException` exception in the constructor.
+[Bones Controllers](#bones-controllers) may throw a `Bayfront\Bones\Exceptions\ControllerException` 
+exception in the constructor.
 
-If a controller needs its own constructor, be sure to invoke `parent::__construct()` within it. Keep in mind that controller constructors cannot accept any parameters.
+If a controller needs its own constructor, be sure to invoke `parent::__construct()` within it. 
+Keep in mind that controller constructors cannot accept any parameters.
 
-Controllers should be instantiated via the router using defined routes in the `/resources/routes.php` file. Any parameters that need to be passed to the controller should be injected into the method via the router.
+Controllers should be instantiated via the router using defined routes in the `/resources/routes.php` file. 
+Any parameters that need to be passed to the controller should be injected into the method via the router.
 
 ## Bones controllers
 
@@ -50,5 +53,6 @@ Each executes its own event.
 The easiest way of creating a new controller is from the command line:
 
 ```
-php /path/to/resources/cli.php
+php bones make:controller NAME
+php bones make:controller NAME --type:web
 ```

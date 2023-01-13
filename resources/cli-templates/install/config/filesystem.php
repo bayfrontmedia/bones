@@ -6,7 +6,7 @@
  */
 
 return [
-    'local' => [
+    'local' => [ // Name of disk
         'default' => true,
         'adapter' => 'Local',
         'root' => storage_path(),
@@ -20,6 +20,6 @@ return [
                 'private' => 0700,
             ]
         ],
-        'url' => 'https://www.example.com/storage' // No trailing slash
+        'url' => 'https://www.example.com/storage' // Optional. No trailing slash
     ]
 ];

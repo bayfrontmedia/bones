@@ -23,5 +23,5 @@ The `app.model` event is executed whenever a model is constructed.
 The easiest way of creating a new model is from the command line:
 
 ```
-php /path/to/resources/cli.php
+php bones make:model NAME
 ```

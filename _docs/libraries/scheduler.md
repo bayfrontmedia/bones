@@ -11,13 +11,13 @@ Scheduled jobs are typically setup as a cron job on the server.
 * * * * * /path/to/php/bin cd /path/to/your/app && php bones schedule:run >> /dev/null 2>&1
 ```
 
-This file is loaded immediately after the `app.bootstrap` event.
+The scheduled jobs will run immediately after the `app.cli` event.
 The `app.schedule.start` event is fired just before the jobs are ran.
 The `app.schedule.end` event fires just after the jobs are completed, and includes the `$result` as a parameter.
 
 ## Configuration
 
-In order to customize the handling of scheduled jobs, a configuration file must be located at `/resources/scheduler.php`.
+In order to customize the handling of scheduled jobs, a configuration file may be added at `/resources/scheduler.php`.
 
 **Example (default values):**
 

@@ -6,14 +6,14 @@
  */
 
 return [
-    'App' => [
+    'prod' => [ // Channel name
         'default' => true,
         'enabled' => true,
         'handlers' => [
             'RotatingFileHandler' => [
                 'params' => [
                     'filename' => storage_path('/app/logs/app.log'),
-                    'maxFiles' => 90,
+                    'maxFiles' => 30,
                     'level' => 'INFO'
                 ],
                 'formatter' => [
@@ -23,7 +23,20 @@ return [
                         'dateFormat' => 'Y-m-d H:i:s T'
                     ]
                 ]
-            ],
+            ]
+        ],
+        'processors' => [
+            'IntrospectionProcessor' => [
+                'params' => [
+                    'level' => 'ERROR'
+                ]
+            ]
+        ]
+    ],
+    'dev' => [ // Channel name
+        'default' => false,
+        'enabled' => true,
+        'handlers' => [
             'BrowserConsoleHandler' => [
                 'params' => [
                     'level' => 'DEBUG'
@@ -37,6 +50,5 @@ return [
                 ]
             ]
         ]
-    ],
-
+    ]
 ];

@@ -22,37 +22,51 @@ php bones about --json
 php bones container:list
 php bones container:list --json
 
+# Install Bones
+php bones install:bare
+# To install optional services, use the following options:
+--db --filesystem --logs --translation --veil
+
 # Create a cryptographically secure key
 php bones key:create
 
 # Make a new console command
-php bones make:command
+php bones make:command NAME
 
 # Make a new controller
-php bones make:controller
-php bones make:controller --type=web
+php bones make:controller NAME
+php bones make:controller NAME --type=web
 
 # Make a new exception
-php bones make:exception
+php bones make:exception NAME
 
 # Make a new model
-php bones make:model
+php bones make:model NAME
 
 # Make a new service
-php bones make:service
+php bones make:service NAME
+
+# Run all scheduled jobs
+php bones schedule:run
 ```
 
-## Custom commands
+## Creating a new command
 
-You can create your own custom console commands using `php bones make:command`.
+The easiest way of creating a new custom console command is from the command line:
+
+```
+php bones make:command NAME
+```
+
 Once the command is created, it needs to be registered with the console application.
 This is easily done using the `app.cli` event:
 
 ```php
 function event_app_cli(Application $console)
 {
-    $console->add(new CustomCommand());
+    $console->add(new CustomCommandName());
 }
+add_event('app.cli', 'event_app_cli');
 ```
 
 For more information, see: [https://symfony.com/doc/current/console#creating-a-command](https://symfony.com/doc/current/console#creating-a-command)

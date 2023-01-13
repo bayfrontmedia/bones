@@ -11,7 +11,7 @@ This allows them to be managed by the container, which also handles dependency i
 The easiest way of creating a new service is from the command line:
 
 ```
-php /path/to/resources/cli.php
+php bones make:service NAME
 ```
 
 ## Bones services

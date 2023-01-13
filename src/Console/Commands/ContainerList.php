@@ -5,6 +5,7 @@ namespace Bayfront\Bones\Console\Commands;
 use Bayfront\Container\Container;
 use Exception;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -50,9 +51,21 @@ class ContainerList extends Command
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {
+
+            $rows = [];
+
             foreach ($return as $v) {
-                $output->writeLn($v);
+
+                $rows[] = [
+                    $v
+                ];
+
             }
+
+            $table = new Table($output);
+            $table->setHeaders(['ID'])->setRows($rows);
+            $table->render();
+
         }
 
         return Command::SUCCESS;

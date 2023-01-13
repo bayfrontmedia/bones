@@ -7,7 +7,7 @@ This library will be added to the services container as `logs` if a valid [confi
 **Example:**
 ```
 return [
-    'App' => [
+    'prod' => [ // Channel name
         'default' => true,
         'enabled' => true,
         'handlers' => [
@@ -15,16 +15,32 @@ return [
                 'params' => [
                     'filename' => storage_path('/app/logs/app.log'),
                     'maxFiles' => 30,
-                    'level' => (get_env('APP_ENVIRONMENT') == 'production') ? 'INFO' : 'DEBUG'
+                    'level' => 'INFO'
                 ],
                 'formatter' => [
                     'name' => 'LineFormatter',
                     'params' => [
                         'format' => "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
-                        'dateFormat' => 'Y-m-d H:i:s T',
-                        'allowInlineLineBreaks' => false,
-                        'ignoreEmptyContextAndExtra' => false
+                        'dateFormat' => 'Y-m-d H:i:s T'
                     ]
+                ]
+            ]
+        ],
+        'processors' => [
+            'IntrospectionProcessor' => [
+                'params' => [
+                    'level' => 'ERROR'
+                ]
+            ]
+        ]
+    ],
+    'dev' => [ // Channel name
+        'default' => false,
+        'enabled' => true,
+        'handlers' => [
+            'BrowserConsoleHandler' => [
+                'params' => [
+                    'level' => 'DEBUG'
                 ]
             ]
         ],

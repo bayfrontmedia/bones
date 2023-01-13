@@ -19,7 +19,9 @@ return [
 ];
 ```
 
-The `host` and `route_prefix` keys are not required by Route It, but it may be helpful to define these values in your `.env` file, and use them when defining your routes.
+The `host` and `route_prefix` keys are not required by Route It, but it may be helpful to define these values 
+in your `.env` file, and use them when defining your routes. This allows for the values to differ 
+depending on the environment.
 
 ## Routes
 
@@ -35,10 +37,11 @@ use Bayfront\RouteIt\Router;
 
 $router->setHost(get_config('router.host'))
     ->setRoutePrefix(do_filter('router.route_prefix', get_config('router.route_prefix')))
+    ->addNamedRoute('/storage', 'storage')
     ->addFallback('ANY', function () {
         abort(404);
     })
     ->get('/', 'Home:index', [], 'home');
 ```
 
-The above example uses a custom filter named `router.route_prefix`. 
+The above example uses a custom filter named `router.route_prefix`, and adds a named route to `/storage`. 

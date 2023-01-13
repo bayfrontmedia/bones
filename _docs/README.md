@@ -2,13 +2,14 @@
 
 ## Terminology
 
-- **Controller:** Similar to an air traffic controller, a controller is responsible for gathering and handling all incoming and outgoing
-data.
+- **Controller:** Similar to an air traffic controller, a controller is responsible for gathering and handling all 
+incoming and outgoing data for a particular request.
 - **Helper:** A helper is a global function (or group of functions) introduced to the app by including a specific file.
-- **Service:** A service is a class or library not intended to be used or maintained outside a specific Bones application.
-- **Model:** A model is a class to be used from within a controller to provide required data needed to build a response.
+- **Service:** A service is a class not intended to be used or maintained outside a specific Bones application.
+- **Model:** A model is a class to be used from within a controller to provide required data.
 - **Route:** A route is the destination for an incoming HTTP request.
-- **View:** A view is a file used to build the HTML that will be returned to the browser. They are either called from within a controller, or directly from a defined route.
+- **View:** A view is a file used to build the HTML that will be returned to the browser. 
+They are either called from within a controller, or directly from a defined route.
 
 ## File structure
 
@@ -16,6 +17,8 @@ The file structure for building an app using Bones is as follows:
 
 ```
 /app
+  /Console
+    /Commands
   /Controllers
   /Exceptions
   /Models
@@ -35,12 +38,16 @@ The file structure for building an app using Bones is as follows:
 .env
 ```
 
-- `/app`- All of your app's namespaced classes reside here. These include things such as controllers, exceptions, models and services.
+- `/app`- All of your app's namespaced classes reside here. 
+These include things such as controllers, exceptions, models and services.
 - `/config`- All of your app's configuration files reside here.
 - `/public`- Public web root of the application. 
-- `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. Resources may also include global helper functions, translations, views, or any other custom resource you choose to use.
-- `/storage`- All locally stored files reside here. This includes files written by the app, publicly shared files, as well as any other files you wish to store. 
-- `.env`- All environment variables are saved here. **This file should never be made public or committed to your application's source control.**
+- `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. 
+Resources may also include global helper functions, translations, views, or any other custom resource you choose to use.
+- `/storage`- All locally stored files reside here. This includes files written by the app, publicly shared files, 
+as well as any other files you wish to store. 
+- `.env`- All environment variables are saved here. 
+**This file should never be made public or committed to your application's source control.**
 
 **NOTE:** If your public web root is not `/public`, the path must be updated in `/public/index.php` as well as `/bones`.
 

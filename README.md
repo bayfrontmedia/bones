@@ -32,7 +32,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ### Bones Skeleton
 
-[Bones Skeleton](https://github.com/bayfrontmedia/bones-skeleton) is the simplest bare-bones configuration to begin building an application using the Bones framework.
+[Bones App](https://github.com/bayfrontmedia/bones-app) is the simplest bare-bones configuration 
+to begin building an application using the Bones framework.
 
 ## Usage
 
