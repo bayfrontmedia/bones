@@ -79,7 +79,6 @@ The following helpers are automatically included by Bones when their associated 
 - [get_veil](#get_veil)
 - [get_view](#get_view)
 - [view](#view)
-- [view_or_fallback](#view_or_fallback)
 
 <hr />
 
@@ -1471,37 +1470,4 @@ See: [https://github.com/bayfrontmedia/veil#view](https://github.com/bayfrontmed
 
 ```
 view('/path/to/file');
-```
-
-<hr />
-
-### view_or_fallback
-
-**Description:**
-
-Echo compiled template file, or dispatch to fallback if not existing.
-
-Returned value is filtered through the `veil.view` hook.
-
-**NOTE:** This helper also requires the router service to be present in the container.
-
-**Parameters:**
-
-- `$file` (string): Path to file from base path, excluding file extension
-- `$data = []` (array): Data to pass to view in dot notation
-- `$minify = false` (bool): Minify compiled HTML?
-
-**Returns:**
-
-- (mixed)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-- `Bayfront\RouteIt\DispatchException`
-
-**Example:**
-
-```
-view_or_fallback('/path/to/file');
 ```

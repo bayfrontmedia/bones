@@ -155,6 +155,8 @@ function get_interface(): string
 }
 
 /**
+ * Is interface CLI?
+ *
  * @return bool
  *
  */
@@ -165,6 +167,8 @@ function is_cli(): bool
 }
 
 /**
+ * Is interface HTTP?
+ *
  * @return bool
  *
  */

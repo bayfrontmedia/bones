@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the need for `resources/cron.php` in favor of `php bones schedule:run`
 - Removed the need for `resources/cli.php` in favor of `php bones` CLI commands.
 - Removed the [CLImate library ](https://github.com/thephpleague/climate) in favor of Symfony Console.
+- Removed `view_or_fallback` helper.
 
 ### Fixed
 
