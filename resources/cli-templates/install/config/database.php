@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * For more information, see:
+ * https://github.com/bayfrontmedia/simple-pdo#usage
+ */
+
 return [
     'primary' => [ // Connection name
         'default' => true, // One connection on the array must be defined as default

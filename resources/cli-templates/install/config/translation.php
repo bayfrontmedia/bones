@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * For more information, see:
+ * https://github.com/bayfrontmedia/translation#usage
+ */
+
 return [
     'enabled' => true,
     'adapter' => 'Local',
