@@ -62,6 +62,22 @@ class InstallBare extends Command
             $output->writeln('<error>Skipping .env file: File already exists</error>');
         }
 
+        // ------------------------- Cron config -------------------------
+
+        $output->writeln('Creating cron config file...');
+
+        $bones_cron_file = BONES_RESOURCES_PATH . '/cli-templates/install/config/cron.php';
+
+        $app_cron_file = config_path('/cron.php');
+
+        if (!file_exists($app_cron_file)) {
+
+            copy($bones_cron_file, $app_cron_file);
+
+        } else {
+            $output->writeln('<error>Skipping cron config file: File already exists</error>');
+        }
+
         // ------------------------- Default actions -------------------------
 
         $output->writeln('Adding default actions...');

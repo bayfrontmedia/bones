@@ -92,7 +92,7 @@ class ScheduleList extends Command
 
                 $rows = [];
 
-                foreach ($return as $k => $v) {
+                foreach ($return as $v) {
 
                     $rows[] = [
                         $v['name'],
