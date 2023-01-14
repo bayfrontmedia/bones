@@ -39,9 +39,9 @@ abstract class Controller
 
         try {
 
-            $this->response = $this->container->get('response');
+            $this->response = $this->container->get('Bayfront\HttpResponse\Response');
 
-            $this->container->get('hooks')->doEvent('app.controller');
+            $this->container->get('Bayfront\Hooks\Hooks')->doEvent('app.controller');
 
         } catch (NotFoundException $e) {
 

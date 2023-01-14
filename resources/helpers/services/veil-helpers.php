@@ -17,7 +17,7 @@ use Bayfront\Veil\Veil;
 
 function get_veil(): Veil
 {
-    return App::getFromContainer('veil');
+    return App::getFromContainer('Bayfront\Veil\Veil');
 }
 
 /**

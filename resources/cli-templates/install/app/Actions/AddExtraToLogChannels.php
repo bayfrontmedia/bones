@@ -22,7 +22,7 @@ class AddExtraToLogChannels extends Action implements ActionInterface
 
     public function isActive(): bool
     {
-        return $this->container->has('logs');
+        return $this->container->has('Bayfront\MonologFactory\LoggerFactory');
     }
 
     /**
@@ -46,11 +46,11 @@ class AddExtraToLogChannels extends Action implements ActionInterface
     public function action(...$arg)
     {
 
-        if (!$this->container->has('logs')) {
+        if (!$this->container->has('Bayfront\MonologFactory\LoggerFactory')) {
             return;
         }
 
-        $logs = $this->container->get('logs');
+        $logs = $this->container->get('Bayfront\MonologFactory\LoggerFactory');
 
         $channels = $logs->getChannels();
 

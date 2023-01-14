@@ -47,7 +47,7 @@ class ScheduleJobs extends Action implements ActionInterface
     {
 
         /** @var Cron $schedule */
-        $schedule = $this->container->get('schedule');
+        $schedule = $this->container->get('Bayfront\CronScheduler\Cron');
 
         // Add jobs
 

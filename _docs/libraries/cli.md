@@ -28,6 +28,13 @@ php bones action:list --event=bones.init --event=app.bootstrap
 # Actions can be sorted by "event", "priority", or "action" (default)
 php bones action:list --sort=event
 
+# List all aliases
+php bones alias:list
+# Return as JSON
+php bones alias:list --json
+# Aliases can be sorted by "class", "used" (if in container) or "alias" (default)
+php bones alias:list --sort=class
+
 # Clear all cache
 php bones cache:clear
 # Clear specific type of cache

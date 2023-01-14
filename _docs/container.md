@@ -1,31 +1,36 @@
 # Services container
 
-The services container is responsible for resolving and optionally storing class instances using dependency injection. 
+The [Container](https://github.com/bayfrontmedia/container) library is used as the services container for Bones.
+The services container is responsible for resolving and optionally storing class instances using dependency injection.
 
-The Bones services container can be retrieved via the [get_container](helpers.md#get_container) helper. 
+The container can be retrieved via the [get_container](helpers.md#get_container) helper. 
 Services inside the container can be retrieved via the [get_from_container](helpers.md#get_from_container) helper.
 
+Both the `in_container` and `get_from_container` [helper functions](helpers.md) will resolve classes either by their class name,
+or their [alias](app.md#app-configuration), if existing.
+
 Bones utilizes a variety of libraries to provide all of its required services. 
-When Bones is initialized, all required services are bound to the container and available for use, referenced by their ID (see table below).
+When Bones is initialized, all required services are bound to the container and available for use, 
+referenced by their class name and alias (see table below).
 
-Additional documentation for each library can be found by visiting its URL.
-
-| Service                                     | Library                                                                   | Container ID | 
-|---------------------------------------------|---------------------------------------------------------------------------|--------------|
-| Container                                   | [Container](https://github.com/bayfrontmedia/container)                   |              |
-| [HTTP Response](libraries/http-response.md) | [PHP HTTP Response](https://github.com/bayfrontmedia/php-http-response)   | `response`   |
-| [Hooks](libraries/hooks.md)                 | [PHP Hooks](https://github.com/bayfrontmedia/php-hooks)                   | `hooks`      |
-| [Scheduler](libraries/scheduler.md)         | [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler)         | `schedule`   |
-| [Router](libraries/router.md)               | [Route It](https://github.com/bayfrontmedia/route-it)                     | `router`     |
-| [Database](libraries/database.md)*          | [Simple PDO](https://github.com/bayfrontmedia/simple-pdo)                 | `db`         |
-| [Filesystem](libraries/filesystem.md)*      | [Filesystem Factory](https://github.com/bayfrontmedia/filesystem-factory) | `filesystem` |
-| [Logs](libraries/logs.md)*                  | [Monolog Factory](https://github.com/bayfrontmedia/monolog-factory)       | `logs`       |
-| [Translation](libraries/translation.md)*    | [Translation](https://github.com/bayfrontmedia/translation)               | `translate`  |
-| [Views](libraries/views.md)*                | [Veil](https://github.com/bayfrontmedia/veil)                             | `veil`       |
-| [CLI](libraries/cli.md)**                   | [Symfony Console](https://github.com/symfony/console)                     | `console`    |
+| Service                                     | Class                                     | Alias       | 
+|---------------------------------------------|-------------------------------------------|-------------|
+| [HTTP Response](libraries/http-response.md) | `Bayfront\HttpResponse\Response`          | `response`  |
+| [Hooks](libraries/hooks.md)                 | `Bayfront\Hooks\Hooks `                   | `hooks`     |
+| [Scheduler](libraries/scheduler.md)         | `Bayfront\CronScheduler\Cron`             | `schedule`  |
+| [Router](libraries/router.md)               | `Bayfront\RouteIt\Router`                 | `router`    |
+| [Database](libraries/database.md)*          | `Bayfront\PDO\DbFactory`                  | `db`        |
+| [Filesystem](libraries/filesystem.md)*      | `Bayfront\Filesystem\Filesystem`          | `files`     |
+| [Logs](libraries/logs.md)*                  | `Bayfront\MonologFactory\LoggerFactory`   | `logs`      |
+| [Translation](libraries/translation.md)*    | `Bayfront\Translation\Translate`          | `translate` |
+| [Views](libraries/views.md)*                | `Bayfront\Veil\Veil`                      | `veil`      |
+| [CLI](libraries/cli.md)**                   | `Symfony\Component\Console\Application`   | `console`   |
 
 **NOTE:**
 
 \* These services are optional, and will only exist in the container if the associated config file exists in the `/config` directory.
 
 \** The `console` service will only exist in the container when the app interface is `CLI`.
+
+Alias names must be unique, although the same class can be used for multiple aliases.
+Alias names used by Bones (see table above) are protected and cannot be overwritten or reused by your app.

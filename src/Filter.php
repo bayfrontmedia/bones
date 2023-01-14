@@ -40,7 +40,7 @@ abstract class Filter implements FilterInterface
 
         try {
 
-            $this->response = $this->container->get('response');
+            $this->response = $this->container->get('Bayfront\HttpResponse\Response');
 
         } catch (NotFoundException $e) {
 

@@ -17,7 +17,7 @@ use Bayfront\MonologFactory\LoggerFactory;
 
 function get_logs(): LoggerFactory
 {
-    return App::getFromContainer('logs');
+    return App::getFromContainer('Bayfront\MonologFactory\LoggerFactory');
 }
 
 /**

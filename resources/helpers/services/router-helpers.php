@@ -17,7 +17,7 @@ use Bayfront\RouteIt\Router;
 
 function get_router(): Router
 {
-    return App::getFromContainer('router');
+    return App::getFromContainer('Bayfront\RouteIt\Router');
 }
 
 /**

@@ -22,7 +22,7 @@ class VeilViewRouteTag extends Filter implements FilterInterface
 
     public function isActive(): bool
     {
-        return $this->container->has('veil') && $this->container->has('router');
+        return $this->container->has('Bayfront\Veil\Veil') && $this->container->has('Bayfront\RouteIt\Router');
     }
 
     /**

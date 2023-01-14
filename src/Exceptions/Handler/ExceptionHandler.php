@@ -157,11 +157,11 @@ abstract class ExceptionHandler
 
             } else { // Not in debug mode
 
-                if (App::getContainer()->has('veil')) { // Veil is optional, so check if it exists
+                if (App::getContainer()->has('Bayfront\Veil\Veil')) { // Veil is optional, so check if it exists
 
                     try { // Attempt to find a template for this HTTP status code
 
-                        $response->setBody(App::getFromContainer('veil')->getView('/errors/' . $response->getStatusCode()['code'], $data));
+                        $response->setBody(App::getFromContainer('Bayfront\Veil\Veil')->getView('/errors/' . $response->getStatusCode()['code'], $data));
 
                     } catch (NotFoundException | FileNotFoundException $e) { // Body as text (template does not exist)
 

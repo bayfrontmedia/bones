@@ -4,6 +4,7 @@ namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
+use Bayfront\Bones\Console\Commands\AliasList;
 use Bayfront\Bones\Console\Commands\CacheClear;
 use Bayfront\Bones\Console\Commands\ContainerList;
 use Bayfront\Bones\Console\Commands\ActionList;
@@ -33,6 +34,7 @@ use Bayfront\Bones\Interfaces\FilterInterface;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
+use Bayfront\CronScheduler\Cron;
 use Bayfront\Filesystem\Exceptions\ConfigurationException;
 use Bayfront\Filesystem\Filesystem;
 use Bayfront\Hooks\Hooks;
@@ -238,7 +240,7 @@ class App
 
                 /** @var Response $response */
 
-                $response = App::getFromContainer('response');
+                $response = App::getFromContainer('Bayfront\HttpResponse\Response');
 
             } else {
 
@@ -254,9 +256,9 @@ class App
              * Pass the exception and response as arguments to the event.
              */
 
-            if (App::getContainer()->has('hooks')) {
+            if (App::getContainer()->has('Bayfront\Hooks\Hooks')) {
 
-                App::getFromContainer('hooks')->doEvent('bones.exception', $e, $response);
+                App::getFromContainer('Bayfront\Hooks\Hooks')->doEvent('bones.exception', $e, $response);
 
             }
 
@@ -365,9 +367,12 @@ class App
 
         // ------------------------- Response (required) -------------------------
 
-        $response = new Response();
+        /*
+         * @throws Bayfront\Container\ContainerException
+         */
 
-        self::$container->put('response', $response);
+        $response = self::$container->set('Bayfront\HttpResponse\Response',
+            'Bayfront\HttpResponse\Response');
 
         // ------------------------- Hooks (required) -------------------------
 
@@ -375,9 +380,8 @@ class App
          * @throws Bayfront\Container\ContainerException
          */
 
-        /** @var Hooks $hooks */
-
-        $hooks = self::$container->set('hooks', 'Bayfront\Hooks\Hooks');
+        $hooks = self::$container->set('Bayfront\Hooks\Hooks',
+            'Bayfront\Hooks\Hooks');
 
         require(BONES_RESOURCES_PATH . '/helpers/services/hooks-helpers.php');
 
@@ -405,13 +409,20 @@ class App
          * @throws Bayfront\Container\ContainerException
          */
 
-        $schedule = self::$container->set('schedule', 'Bayfront\CronScheduler\Cron', $scheduler_config);
+        $schedule = self::$container->set('Bayfront\CronScheduler\Cron',
+            'Bayfront\CronScheduler\Cron',
+            $scheduler_config);
 
         // ------------------------- Router (required) -------------------------
 
-        $router = new Router(get_config('router', []));
+        /*
+         * @throws Bayfront\Container\ContainerException
+         */
 
-        self::$container->put('router', $router);
+        $router = self::$container->set('Bayfront\RouteIt\Router',
+            'Bayfront\RouteIt\Router', [
+                'options' => get_config('router', [])
+            ]);
 
         require(BONES_RESOURCES_PATH . '/helpers/services/router-helpers.php');
 
@@ -429,9 +440,9 @@ class App
              * @throws Bayfront\PDO\Exceptions\UnableToConnectException
              */
 
-            $db = DbFactory::create(get_config('database'));
-
-            self::$container->put('db', $db);
+            $db = self::$container->set('Bayfront\PDO\DbFactory',
+                'Bayfront\PDO\DbFactory',
+                get_config('database'));
 
         }
 
@@ -443,9 +454,8 @@ class App
              * @throws ConfigurationException
              */
 
-            $filesystem = new Filesystem(get_config('filesystem', []));
-
-            self::$container->put('filesystem', $filesystem);
+            $filesystem = self::$container->set('Bayfront\Filesystem\Filesystem',
+                'Bayfront\Filesystem\Filesystem');
 
         }
 
@@ -457,9 +467,10 @@ class App
              * @throws Bayfront\LoggerFactory\Exceptions\LoggerException
              */
 
-            $logger = new LoggerFactory(get_config('logs'));
-
-            self::$container->put('logs', $logger);
+            $logs = self::$container->set('Bayfront\MonologFactory\LoggerFactory',
+                'Bayfront\MonologFactory\LoggerFactory', [
+                    'config' => get_config('logs')
+                ]);
 
             require(BONES_RESOURCES_PATH . '/helpers/services/logs-helpers.php');
 
@@ -502,10 +513,11 @@ class App
 
                 if (isset($adapter)) {
 
-                    self::$container->set('translate', 'Bayfront\Translation\Translate', [
-                        'storage' => $adapter,
-                        'locale' => get_config('translation.locale', '')
-                    ]);
+                    $translate = self::$container->set('Bayfront\Translation\Translate',
+                        'Bayfront\Translation\Translate', [
+                            'storage' => $adapter,
+                            'locale' => get_config('translation.locale', '')
+                        ]);
 
                     require(BONES_RESOURCES_PATH . '/helpers/services/translate-helpers.php');
 
@@ -527,9 +539,10 @@ class App
 
         if (is_array(get_config('veil'))) {
 
-            self::$container->set('veil', 'Bayfront\Veil\Veil', [
-                'options' => get_config('veil')
-            ]);
+            $veil = self::$container->set('Bayfront\Veil\Veil',
+                'Bayfront\Veil\Veil', [
+                    'options' => get_config('veil')
+                ]);
 
             require(BONES_RESOURCES_PATH . '/helpers/services/veil-helpers.php');
 
@@ -714,13 +727,15 @@ class App
 
             $console = new Application();
 
-            self::$container->put('console', $console);
+            self::$container->put('Symfony\Component\Console\Application',
+                $console);
 
             $hooks->doEvent('app.cli', $console);
 
             $console->add(new About());
             $console->add(new ContainerList(self::$container));
             $console->add(new ActionList($hooks));
+            $console->add(new AliasList(self::$container));
             $console->add(new CacheClear());
             $console->add(new FilterList($hooks));
             $console->add(new InstallBare());
@@ -845,8 +860,32 @@ class App
         return self::$container;
     }
 
+    protected static $bones_aliases = [ // Aliases for classes in the container
+        'response' => 'Bayfront\HttpResponse\Response',
+        'hooks' => 'Bayfront\Hooks\Hooks',
+        'schedule' => 'Bayfront\CronScheduler\Cron',
+        'router' => 'Bayfront\RouteIt\Router',
+        'db' => 'Bayfront\PDO\DbFactory',
+        'files' => 'Bayfront\Filesystem\Filesystem',
+        'logs' => 'Bayfront\MonologFactory\LoggerFactory',
+        'translate' => 'Bayfront\Translation\Translate',
+        'veil' => 'Bayfront\Veil\Veil',
+        'console' => 'Symfony\Component\Console\Application'
+    ];
+
     /**
-     * Does container have an instance with ID.
+     * Return all known aliases, giving priority to $bones_aliases.
+     *
+     * @return array
+     */
+
+    public static function getAliases(): array
+    {
+        return array_merge(get_config('app.aliases', []), self::$bones_aliases);
+    }
+
+    /**
+     * Does container have an instance with ID or alias.
      *
      * @param string $id
      *
@@ -855,11 +894,21 @@ class App
 
     public static function inContainer(string $id): bool
     {
+
+        // Check alias
+
+        if (isset(self::getAliases()[$id]) && self::$container->has(self::getAliases()[$id])) {
+            return true;
+        }
+
+        // Class
+
         return self::$container->has($id);
+
     }
 
     /**
-     * Returns instance from the service container by ID.
+     * Returns instance from the service container by ID or alias.
      *
      * @param string $id
      *
@@ -870,7 +919,17 @@ class App
 
     public static function getFromContainer(string $id)
     {
+
+        // Check alias
+
+        if (isset(self::getAliases()[$id]) && self::$container->has(self::getAliases()[$id])) {
+            return self::$container->get(self::getAliases()[$id]);
+        }
+
+        // Class
+
         return self::$container->get($id);
+
     }
 
     /**
@@ -1112,7 +1171,7 @@ class App
 
         /** @var Response $response */
 
-        $response = self::$container->get('response');
+        $response = self::$container->get('Bayfront\HttpResponse\Response');
 
         if (true === $reset_response) {
 

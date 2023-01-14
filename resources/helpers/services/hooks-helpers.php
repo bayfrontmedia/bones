@@ -16,7 +16,7 @@ use Bayfront\Hooks\Hooks;
 
 function get_hooks(): Hooks
 {
-    return App::getFromContainer('hooks');
+    return App::getFromContainer('Bayfront\Hooks\Hooks');
 }
 
 /**

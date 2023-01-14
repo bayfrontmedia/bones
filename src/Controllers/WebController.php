@@ -27,13 +27,13 @@ abstract class WebController extends Controller
 
         try {
 
-            if ($this->container->has('veil')) { // Veil is optional, so check if it exists
+            if ($this->container->has('Bayfront\Veil\Veil')) { // Veil is optional, so check if it exists
 
-                $this->veil = $this->container->get('veil');
+                $this->veil = $this->container->get('Bayfront\Veil\Veil');
 
             }
 
-            $this->container->get('hooks')->doEvent('app.controller.web');
+            $this->container->get('Bayfront\Hooks\Hooks')->doEvent('app.controller.web');
 
         } catch (NotFoundException $e) {
 

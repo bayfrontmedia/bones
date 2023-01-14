@@ -46,15 +46,15 @@ abstract class Model
 
         try {
 
-            if ($this->container->has('filesystem')) {
-                $this->filesystem = $this->container->get('filesystem');
+            if ($this->container->has('Bayfront\Filesystem\Filesystem')) {
+                $this->filesystem = $this->container->get('Bayfront\Filesystem\Filesystem');
             }
 
-            if ($this->container->has('db')) {
-                $this->db = $this->container->get('db');
+            if ($this->container->has('Bayfront\PDO\DbFactory')) {
+                $this->db = $this->container->get('Bayfront\PDO\DbFactory');
             }
 
-            $this->container->get('hooks')->doEvent('app.model');
+            $this->container->get('Bayfront\Hooks\Hooks')->doEvent('app.model');
 
         } catch (NotFoundException $e) {
 

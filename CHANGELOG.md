@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for [actions](_docs/actions.md) in favor of procedural event hooks.
 - Added support for [filters](_docs/filters.md) in favor of procedural filter hooks.
 - Added caching for actions and filters.
+- Added aliases for services in the container.
 
 ### Changed
 
@@ -34,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved handling CLI and cron jobs to after the app bootstrap file is included and `app.bootstrap` event is executed.
 - Renamed `BONES_ROOT_PATH` and `APP_ROOT_PATH` to `BONES_BASE_PATH` and `APP_BASE_PATH` respectively, as these are more semantically correct. 
 - Updated how the exception handler responds as JSON.
+- All Bones services are now being saved in the container as the fully qualified class name to utilize 
+dependency injection.
 
 ### Removed
 

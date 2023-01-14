@@ -40,7 +40,7 @@ abstract class Action implements ActionInterface
 
         try {
 
-            $this->response = $this->container->get('response');
+            $this->response = $this->container->get('Bayfront\HttpResponse\Response');
 
         } catch (NotFoundException $e) {
 

@@ -23,7 +23,7 @@ class VeilViewSayTag extends Filter implements FilterInterface
 
     public function isActive(): bool
     {
-        return $this->container->has('veil') && $this->container->has('translation');
+        return $this->container->has('Bayfront\Veil\Veil') && $this->container->has('Bayfront\Translation\Translate');
     }
 
     /**

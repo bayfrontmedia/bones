@@ -17,7 +17,7 @@ use Bayfront\Translation\TranslationException;
 
 function get_translate(): Translate
 {
-    return App::getFromContainer('translate');
+    return App::getFromContainer('Bayfront\Translation\Translate');
 }
 
 /**

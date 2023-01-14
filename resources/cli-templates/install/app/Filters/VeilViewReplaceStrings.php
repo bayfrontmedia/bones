@@ -21,7 +21,7 @@ class VeilViewReplaceStrings extends Filter implements FilterInterface
 
     public function isActive(): bool
     {
-        return $this->container->has('veil');
+        return $this->container->has('Bayfront\Veil\Veil');
     }
 
     /**

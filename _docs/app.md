@@ -21,7 +21,8 @@ return [
         'cache' => get_env('APP_ENVIRONMENT') !== 'dev',
         'autoload' => true,
         'load' => []
-    ]
+    ],
+    'aliases' => []
 ];
 ```
 
@@ -65,3 +66,24 @@ For more information, see [actions](actions.md).
 
 An array used to manage queuing [filters](filters.md).
 These are loaded in the same manner as [actions](#actions).
+
+## aliases
+
+An array used to define aliases for classes in the container. Typically, classes are saved in the container using its
+fully namespaced class name. Aliases allow to use the [helper functions](helpers.md) `in_container` and `get_from_container` 
+using a more user-friendly ID.
+
+Each array key is a unique alias whose value is a string of the fully namespaced class name matching an ID
+which would exist in the container.
+
+Example:
+
+```php
+[
+    'alias' => 'Namespaced\ClassName'
+]
+```
+
+Bones utilizes its own protected aliases for some of [its services](container.md).
+A list of aliases can be returned with the `php bones alias:list` command.
+For more information, see [command line](libraries/cli.md).

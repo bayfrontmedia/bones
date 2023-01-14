@@ -366,7 +366,7 @@ $container = get_container();
 
 **Description:**
 
-Does container have an instance with ID.
+Does container have an instance with ID or alias.
 
 **Parameters:**
 
@@ -390,7 +390,7 @@ if (in_container('db')) {
 
 **Description:**
 
-Returns instance from the service container by ID.
+Returns instance from the service container by ID or alias.
 
 **Parameters:**
 
@@ -437,7 +437,7 @@ will allow it to be used by the container whenever another class requires it as 
 ```
 $class_name = new Namespace\ClassName();
 
-put_in_container('ClassName', $class_name);
+put_in_container(get_class($class_name), $class_name);
 ```
 
 <hr />
@@ -473,7 +473,7 @@ will allow it to be used by the container whenever another class requires it as 
 ```
 try {
 
-    $class_name = set_in_container('ClassName', 'Namespace\ClassName');
+    $class_name = set_in_container('Namespace\ClassName', 'Namespace\ClassName');
 
 } catch (ContainerException $e) {
     die($e->getMessage());
