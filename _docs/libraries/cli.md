@@ -18,10 +18,6 @@ Command line functionality includes:
 php bones about
 php bones about --json
 
-# List items in container
-php bones container:list
-php bones container:list --json
-
 # List all registered actions for all events (valid for the CLI interface)
 php bones action:list
 php bones action:list --json
@@ -35,6 +31,10 @@ php bones cache:clear
 # Clear specific type of cache
 # Valid types include: "actions", "filters" and "all".
 php bones cache:clear actions filters
+
+# List items in container
+php bones container:list
+php bones container:list --json
 
 # List all registered filters for all values (valid for the CLI interface)
 php bones filter:list

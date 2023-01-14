@@ -99,6 +99,20 @@ class ActionList extends Command
 
         }
 
+        // Sort
+
+        $sort = strtolower((string)$input->getOption('sort'));
+
+        if ($sort == 'event') {
+            $return = Arr::multisort($return, 'event');
+        } else if ($sort == 'priority') {
+            $return = Arr::multisort($return, 'priority');
+        } else { // Action
+            $return = Arr::multisort($return, 'action');
+        }
+
+        // Return
+
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {
@@ -119,16 +133,6 @@ class ActionList extends Command
 
                 }
 
-                $sort = strtolower((string)$input->getOption('sort'));
-
-                if ($sort == 'event') {
-                    $rows = Arr::multisort($rows, '1');
-                } else if ($sort == 'priority') {
-                    $rows = Arr::multisort($rows, '2');
-                } else { // Action
-                    $rows = Arr::multisort($rows, '0');
-                }
-
                 $table = new Table($output);
                 $table->setHeaders(['Action', 'Event', 'Priority'])->setRows($rows);
                 $table->render();
@@ -138,6 +142,7 @@ class ActionList extends Command
         }
 
         return Command::SUCCESS;
+
     }
 
 }

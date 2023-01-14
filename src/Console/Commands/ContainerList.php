@@ -48,6 +48,8 @@ class ContainerList extends Command
 
         $return = $this->container->getContents();
 
+        ksort($return); // Sort
+
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {

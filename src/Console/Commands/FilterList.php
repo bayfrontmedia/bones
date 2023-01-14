@@ -99,6 +99,18 @@ class FilterList extends Command
 
         }
 
+        $sort = strtolower((string)$input->getOption('sort'));
+
+        if ($sort == 'value') {
+            $return = Arr::multisort($return, 'filter');
+        } else if ($sort == 'priority') {
+            $return = Arr::multisort($return, 'priority');
+        } else { // Filter
+            $return = Arr::multisort($return, 'function');
+        }
+
+        // Return
+
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {
@@ -117,16 +129,6 @@ class FilterList extends Command
                         $v['priority']
                     ];
 
-                }
-
-                $sort = strtolower((string)$input->getOption('sort'));
-
-                if ($sort == 'value') {
-                    $rows = Arr::multisort($rows, '1');
-                } else if ($sort == 'priority') {
-                    $rows = Arr::multisort($rows, '2');
-                } else { // Filter
-                    $rows = Arr::multisort($rows, '0');
                 }
 
                 $table = new Table($output);

@@ -57,6 +57,8 @@ class ScheduleList extends Command
 
         }
 
+        ksort($return); // Sort
+
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {

@@ -42,8 +42,10 @@ class About extends Command
             'Debug mode' => get_env('APP_DEBUG_MODE') ? 'True' : 'False',
             'Environment' => get_env('APP_ENVIRONMENT'),
             'Timezone' => date_default_timezone_get(),
-            'Event enabled' => get_env('APP_EVENTS_ENABLED') ? 'True' : 'False',
-            'Filters enabled' => get_env('APP_FILTERS_ENABLED') ? 'True' : 'False',
+            'Cache actions' => get_config('app.actions.cache') ? 'True' : 'False',
+            'Autoload actions' => get_config('app.actions.autoload') ? 'True' : 'False',
+            'Cache filters' => get_config('app.filters.cache') ? 'True' : 'False',
+            'Autoload filters' => get_config('app.filters.autoload') ? 'True' : 'False',
             'Base path' => base_path()
 
         ];

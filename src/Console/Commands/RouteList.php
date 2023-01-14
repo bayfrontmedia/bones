@@ -113,6 +113,24 @@ class RouteList extends Command
 
         }
 
+        // Sort
+
+        $sort = strtolower((string)$input->getOption('sort'));
+
+        if ($sort == 'host') {
+            $return = Arr::multisort($return, 'host');
+        } else if ($sort == 'path') {
+            $return = Arr::multisort($return, 'path');
+        } else if ($sort == 'name') {
+            $return = Arr::multisort($return, 'name');
+        } else if ($sort == 'destination') {
+            $return = Arr::multisort($return, 'destination');
+        } else { // Method
+            $return = Arr::multisort($return, 'method');
+        }
+
+        // Return
+
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($return));
         } else {
@@ -133,20 +151,6 @@ class RouteList extends Command
                         $v['destination']
                     ];
 
-                }
-
-                $sort = strtolower((string)$input->getOption('sort'));
-
-                if ($sort == 'host') {
-                    $rows = Arr::multisort($rows, '1');
-                } else if ($sort == 'path') {
-                    $rows = Arr::multisort($rows, '2');
-                } else if ($sort == 'name') {
-                    $rows = Arr::multisort($rows, '3');
-                } else if ($sort == 'destination') {
-                    $rows = Arr::multisort($rows, '4');
-                } else { // Method
-                    $rows = Arr::multisort($rows, '0');
                 }
 
                 $table = new Table($output);
