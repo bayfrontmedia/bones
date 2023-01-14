@@ -33,7 +33,7 @@ class KeyCreate extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $output->writeln(App::createKey());
+        $output->writeln('<info>' . App::createKey() . '</info>');
 
         return Command::SUCCESS;
     }

@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Console\Commands;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
@@ -46,11 +47,15 @@ class ScheduleRun extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $output->writeln('<info>Begin running scheduled jobs...</info>');
+
         do_event('app.schedule.start');
 
         $result = $this->schedule->run();
 
         do_event('app.schedule.end', $result);
+
+        $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
 
         return Command::SUCCESS;
 

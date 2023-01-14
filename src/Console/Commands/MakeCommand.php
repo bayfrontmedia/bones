@@ -50,7 +50,7 @@ class MakeCommand extends Command
 
             if (!copy($template, $file_name)) {
 
-                $output->writeln('Unable to create command: Failed to copy file');
+                $output->writeln('<error>Unable to create command: Failed to copy file</error>');
 
                 return Command::FAILURE;
 
@@ -84,17 +84,17 @@ class MakeCommand extends Command
 
                 unlink($file_name);
 
-                $output->writeLn('Unable to create command: Failed to write file.');
+                $output->writeLn('<error>Unable to create command: Failed to write file.</error>');
 
             }
 
-            $output->writeln('Command created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Console/Commands/' . $name);
+            $output->writeln('<info>Command created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Console/Commands/' . $name . '</info>');
 
             return Command::SUCCESS;
 
         } else {
 
-            $output->writeln('Unable to create command: Template not found');
+            $output->writeln('<error>Unable to create command: Template not found</error>');
 
             return Command::FAILURE;
 

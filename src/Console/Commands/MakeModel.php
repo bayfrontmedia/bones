@@ -50,7 +50,7 @@ class MakeModel extends Command
 
             if (!copy($template, $file_name)) {
 
-                $output->writeln('Unable to create model: Failed to copy file');
+                $output->writeln('<error>Unable to create model: Failed to copy file</error>');
 
                 return Command::FAILURE;
 
@@ -74,17 +74,17 @@ class MakeModel extends Command
 
                 unlink($file_name);
 
-                $output->writeLn('Unable to create model: Failed to write file.');
+                $output->writeLn('<error>Unable to create model: Failed to write file.</error>');
 
             }
 
-            $output->writeln('Model created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Models/' . $name);
+            $output->writeln('<info>Model created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Models/' . $name . '</info>');
 
             return Command::SUCCESS;
 
         } else {
 
-            $output->writeln('Unable to create model: Template not found');
+            $output->writeln('<error>Unable to create model: Template not found</error>');
 
             return Command::FAILURE;
 

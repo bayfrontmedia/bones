@@ -56,7 +56,7 @@ class MakeController extends Command
 
             if (!copy($template, $file_name)) {
 
-                $output->writeln('Unable to create controller: Failed to copy file');
+                $output->writeln('<error>Unable to create controller: Failed to copy file</error>');
 
                 return Command::FAILURE;
 
@@ -80,17 +80,17 @@ class MakeController extends Command
 
                 unlink($file_name);
 
-                $output->writeLn('Unable to create controller: Failed to write file.');
+                $output->writeLn('<error>Unable to create controller: Failed to write file.</error>');
 
             }
 
-            $output->writeln('Controller created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Controllers/' . $name);
+            $output->writeln('<info>Controller created at: ' . strtolower(rtrim(get_config('app.namespace'), '\\')) . '/Controllers/' . $name . '</info>');
 
             return Command::SUCCESS;
 
         } else {
 
-            $output->writeln('Unable to create controller: Template not found');
+            $output->writeln('<error>Unable to create controller: Template not found</error>');
 
             return Command::FAILURE;
 
