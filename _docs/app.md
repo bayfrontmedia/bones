@@ -70,7 +70,7 @@ These are loaded in the same manner as [actions](#actions).
 ## aliases
 
 An array used to define aliases for classes in the container. Typically, classes are saved in the container using its
-fully namespaced class name. Aliases allow to use the [helper functions](helpers.md) `in_container` and `get_from_container` 
+fully namespaced class name. Aliases allow you to use the [helper functions](helpers.md) `in_container` and `get_from_container` 
 using a more user-friendly ID.
 
 Each array key is a unique alias whose value is a string of the fully namespaced class name matching an ID

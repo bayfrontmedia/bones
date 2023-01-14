@@ -2,10 +2,9 @@
 
 namespace Bayfront\Bones;
 
-use Bayfront\Bones\Interfaces\ActionInterface;
 use Bayfront\Container\Container;
 
-abstract class Action implements ActionInterface
+abstract class Action
 {
 
     /*

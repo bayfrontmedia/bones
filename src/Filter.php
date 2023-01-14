@@ -2,10 +2,9 @@
 
 namespace Bayfront\Bones;
 
-use Bayfront\Bones\Interfaces\FilterInterface;
 use Bayfront\Container\Container;
 
-abstract class Filter implements FilterInterface
+abstract class Filter
 {
 
     /*
