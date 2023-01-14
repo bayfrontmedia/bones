@@ -11,7 +11,7 @@ Models should be instantiated via the `get_model()` helper.
 This allows them to be managed by the container so that any classes existing in the container
 can be injected into the constructor.
 
-The `app.model` event is executed whenever a model is constructed.
+The `app.model` event is executed whenever a model is constructed and passes the class instance as a parameter.
 
 ## Creating a new model
 

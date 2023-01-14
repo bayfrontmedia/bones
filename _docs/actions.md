@@ -51,7 +51,8 @@ using `php bones schedule:run`. The `$result` is passed as a parameter.
 - `app.http`: Executes when the app interface is `HTTP` just before the router dispatches the request.
 - `app.controller`: Executes when any controller is constructed.
 - `app.controller.web`: Executes when `Bayfront\Controllers\WebController` is constructed.
-- `app.model`: Executes when a model is constructed.
+- `app.model`: Executes when a model is constructed. The model's class instance is passed as a parameter.
+- `app.service`: Executes when a service is constructed. The service's class instance is passed as a parameter.
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. This event accepts two parameters: the thrown exception object and the [HTTP Response](container.md) library.
 - `bones.shutdown`: Executes as the last event.
 

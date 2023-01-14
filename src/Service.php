@@ -4,21 +4,21 @@ namespace Bayfront\Bones;
 
 use Bayfront\Hooks\Hooks;
 
-abstract class Model
+abstract class Service
 {
 
     /*
-     * All models will extend this.
+     * All services will extend this.
      */
 
     /**
-     * Model constructor.
+     * Service constructor.
      *
      */
 
     public function __construct(Hooks $hooks)
     {
-        $hooks->doEvent('app.model', $this);
+        $hooks->doEvent('app.service', $this);
     }
 
 }
