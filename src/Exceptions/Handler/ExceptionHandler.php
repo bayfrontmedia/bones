@@ -79,10 +79,14 @@ abstract class ExceptionHandler
         $message = $e->getMessage();
 
         $data = [
-            'status' => (string)$response->getStatusCode()['code'],
-            'title' => $response->getStatusCode()['phrase'],
-            'detail' => $message,
-            'code' => (string)$e->getCode(),
+            'success' => false,
+            'error' => [
+                'status' => (string)$response->getStatusCode()['code'],
+                'phrase' => $response->getStatusCode()['phrase'],
+                'message' => $message,
+                'code' => (string)$e->getCode(),
+                'timestamp' => date('c')
+            ]
         ];
 
         if (function_exists('get_config') && true === get_config('app.debug_mode')) {
@@ -118,23 +122,14 @@ abstract class ExceptionHandler
             if (!isset($headers['Content-Type'])) { // A more specific Content-Type may have already been set
 
                 $response->setHeaders([
-                    'Content-Type' => 'application/vnd.api+json'
+                    'Content-Type' => 'application/json'
                 ]);
 
             }
 
             if (!Validate::json($message)) { // Only modify the message if it is not yet JSON
 
-                /*
-                 * Format as JSON:API error
-                 * See: https://jsonapi.org/format/#errors
-                 */
-
-                $message = json_encode([
-                    'errors' => [
-                        $data
-                    ]
-                ]);
+                $message = json_encode($data);
 
             }
 
@@ -206,9 +201,9 @@ abstract class ExceptionHandler
 
         $body .= '<li><strong>Status:</strong> ' . $data['status'] . '</li>';
 
-        $body .= '<li><strong>Title:</strong> ' . $data['title'] . '</li>';
+        $body .= '<li><strong>Phrase:</strong> ' . $data['phrase'] . '</li>';
 
-        $body .= '<li><strong>Detail:</strong> ' . $data['detail'] . '</li>';
+        $body .= '<li><strong>Message:</strong> ' . $data['message'] . '</li>';
 
         $body .= '<li><strong>Code:</strong> ' . $data['code'] . '</li>';
 
