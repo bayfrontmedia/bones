@@ -69,7 +69,7 @@ it should never be made public or committed to your application's version contro
 APP_KEY=SECURE_APP_KEY
 APP_DEBUG_MODE=true
 APP_ENVIRONMENT=dev
-APP_TIMEZONE=America/New_York
+APP_TIMEZONE=UTC
 
 ROUTER_HOST=example.com
 ROUTER_ROUTE_PREFIX=

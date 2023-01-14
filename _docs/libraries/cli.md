@@ -30,6 +30,12 @@ php bones action:list --event=bones.init --event=app.bootstrap
 # Actions can be sorted by "event", "priority", or "action" (default)
 php bones action:list --sort=event
 
+# Clear all cache
+php bones cache:clear
+# Clear specific type of cache
+# Valid types include: "actions", "filters" and "all".
+php bones cache:clear actions filters
+
 # List all registered filters for all values (valid for the CLI interface)
 php bones filter:list
 php bones filter:list --json

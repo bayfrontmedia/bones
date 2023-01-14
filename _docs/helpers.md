@@ -248,6 +248,7 @@ get_env('APP_TIMEZONE');
 **Description:**
 
 Return app interface.
+This can be matched against valid values of: `App::INTERFACE_CLI`, `App::INTERFACE_HTTP`.
 
 **Parameters:**
 
@@ -260,7 +261,9 @@ Return app interface.
 **Example:**
 
 ```
-get_interface()
+if (get_interface() === App::INTERFACE_HTTP) {
+    // Do something
+}
 ```
 
 <hr />

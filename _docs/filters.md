@@ -26,6 +26,17 @@ How filters are loaded depends on the [app config settings](app.md#filters).
 To get a list of all hooked filters (valid for the CLI interface), the `php bones filter:list` command can be used.
 For more information, see [CLI](libraries/cli.md).
 
+## Caching
+
+Due to the resource-intensive nature of loading all the filters, when the `filters.cache` config array is `true`,
+all the instantiated filters will be cached in `storage/app/cache`.
+
+For this reason, it is important that any environment-specific logic is kept in the `action` method, as `isActive`
+will not be rechecked when reading from the cache.
+
+When any changes to filters have been made, the filter cache will need to be cleared.
+You can do so by using the `php bones cache:clear filters` command.
+
 ## Values
 
 By default, Bones is set up to filter the following values:

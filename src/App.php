@@ -4,6 +4,7 @@ namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Console\Commands\About;
+use Bayfront\Bones\Console\Commands\CacheClear;
 use Bayfront\Bones\Console\Commands\ContainerList;
 use Bayfront\Bones\Console\Commands\ActionList;
 use Bayfront\Bones\Console\Commands\FilterList;
@@ -536,32 +537,73 @@ class App
 
         // ------------------------- Load actions -------------------------
 
-        $dir = base_path('/app/Actions');
+        if (get_config('app.actions.cache', false)
+            && file_exists(storage_path('/app/cache/actions.ser'))) {
 
-        if (get_config('app.actions.autoload', false) && is_dir($dir)) {
+            $unserialized_actions = unserialize(file_get_contents(storage_path('/app/cache/actions.ser')));
 
-            $list = new DirectoryIterator($dir);
+            foreach ($unserialized_actions as $name => $actions) {
 
-            foreach ($list as $item) {
+                foreach ($actions as $action) {
 
-                if ($item->isFile()) {
-
-                    $class = get_config('app.namespace', '') . 'Actions\\' . basename($item->getFileName(), '.php');
-
-                    self::loadAction($hooks, $class);
+                    $hooks->addEvent($name, Arr::get($action, 'function'), Arr::get($action, 'priority'));
 
                 }
+
             }
 
-        } else {
+            unset($unserialized_actions);
 
-            $list = get_config('app.actions.load', []);
+        } else { // No cache exists
 
-            if (!empty($list)) {
+            $dir = base_path('/app/Actions');
+
+            if (get_config('app.actions.autoload', false) && is_dir($dir)) {
+
+                $list = new DirectoryIterator($dir);
 
                 foreach ($list as $item) {
-                    self::loadAction($hooks, $item);
+
+                    if ($item->isFile()) {
+
+                        $class = get_config('app.namespace', '') . 'Actions\\' . basename($item->getFileName(), '.php');
+
+                        self::loadAction($hooks, $class);
+
+                    }
                 }
+
+            } else {
+
+                $list = get_config('app.actions.load', []);
+
+                if (!empty($list)) {
+
+                    foreach ($list as $item) {
+                        self::loadAction($hooks, $item);
+                    }
+
+                }
+
+            }
+
+            // Cache
+
+            if (get_config('app.actions.cache', false)) {
+
+                if (!is_dir(storage_path('/app/cache'))) {
+                    mkdir(storage_path('/app/cache'), 0755, true);
+                }
+
+                $serialized_actions = serialize($hooks->getEvents());
+
+                if (!file_put_contents(storage_path('/app/cache/actions.ser'), $serialized_actions)) {
+
+                    throw new ActionException('Unable to cache actions');
+
+                }
+
+                unset($serialized_actions);
 
             }
 
@@ -569,32 +611,73 @@ class App
 
         // ------------------------- Load filters -------------------------
 
-        $dir = base_path('/app/Filters');
+        if (get_config('app.filters.cache', false)
+            && file_exists(storage_path('/app/cache/filters.ser'))) {
 
-        if (get_config('app.filters.autoload', false) && is_dir($dir)) {
+            $unserialized_filters = unserialize(file_get_contents(storage_path('/app/cache/filters.ser')));
 
-            $list = new DirectoryIterator($dir);
+            foreach ($unserialized_filters as $name => $actions) {
 
-            foreach ($list as $item) {
+                foreach ($actions as $action) {
 
-                if ($item->isFile()) {
-
-                    $class = get_config('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
-
-                    self::loadFilter($hooks, $class);
+                    $hooks->addFilter($name, Arr::get($action, 'function'), Arr::get($action, 'priority'));
 
                 }
+
             }
 
-        } else {
+            unset($unserialized_filters);
 
-            $list = get_config('app.filters.load', []);
+        } else { // No cache exists
 
-            if (!empty($list)) {
+            $dir = base_path('/app/Filters');
+
+            if (get_config('app.filters.autoload', false) && is_dir($dir)) {
+
+                $list = new DirectoryIterator($dir);
 
                 foreach ($list as $item) {
-                    self::loadFilter($hooks, $item);
+
+                    if ($item->isFile()) {
+
+                        $class = get_config('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
+
+                        self::loadFilter($hooks, $class);
+
+                    }
                 }
+
+            } else {
+
+                $list = get_config('app.filters.load', []);
+
+                if (!empty($list)) {
+
+                    foreach ($list as $item) {
+                        self::loadFilter($hooks, $item);
+                    }
+
+                }
+
+            }
+
+            // Cache
+
+            if (get_config('app.filters.cache', false)) {
+
+                if (!is_dir(storage_path('/app/cache'))) {
+                    mkdir(storage_path('/app/cache'), 0755, true);
+                }
+
+                $serialized_filters = serialize($hooks->getFilters());
+
+                if (!file_put_contents(storage_path('/app/cache/filters.ser'), $serialized_filters)) {
+
+                    throw new ActionException('Unable to cache filters');
+
+                }
+
+                unset($serialized_filters);
 
             }
 
@@ -638,6 +721,7 @@ class App
             $console->add(new About());
             $console->add(new ContainerList(self::$container));
             $console->add(new ActionList($hooks));
+            $console->add(new CacheClear());
             $console->add(new FilterList($hooks));
             $console->add(new InstallBare());
             $console->add(new KeyCreate());

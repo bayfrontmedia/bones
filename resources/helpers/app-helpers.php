@@ -146,6 +146,9 @@ function get_env(string $key, $default = NULL)
 }
 
 /**
+ * Return app interface.
+ * This can be matched against valid values of: App::INTERFACE_CLI, App::INTERFACE_HTTP.
+ *
  * @return string
  */
 

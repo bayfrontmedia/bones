@@ -13,10 +13,12 @@ return [
     'environment' => get_env('APP_ENVIRONMENT'), // e.g.: "development", "staging", "production"
     'timezone' => get_env('APP_TIMEZONE'), // See: https://www.php.net/manual/en/timezones.php
     'actions' => [
+        'cache' => get_env('APP_ENVIRONMENT') !== 'dev',
         'autoload' => true,
         'load' => []
     ],
     'filters' => [
+        'cache' => get_env('APP_ENVIRONMENT') !== 'dev',
         'autoload' => true,
         'load' => []
     ]
@@ -54,6 +56,10 @@ A valid [timezone](https://www.php.net/manual/en/timezones.php) should be define
 An array used to manage queuing [actions](actions.md).
 First, Bones will attempt to automatically load all actions if the `actions.autoload` config value is `true`.
 If `false`, Bones will only load actions whose fully qualified class names exist in the `actions.load` config array.
+
+When `actions.cache` is `true`, all instantiated actions will be cached.
+
+For more information, see [actions](actions.md).
 
 ## filters
 
