@@ -209,6 +209,15 @@ function get_container(): Container
 }
 
 /**
+ * @return array
+ */
+
+function get_aliases(): array
+{
+    return App::getAliases();
+}
+
+/**
  * @param string $id
  *
  * @return bool

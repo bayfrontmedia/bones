@@ -24,6 +24,7 @@ The following helpers are automatically included by Bones:
 - [is_http](#is_http)
 - [get_config](#get_config)
 - [get_container](#get_container)
+- [get_aliases](#get_aliases)
 - [in_container](#in_container)
 - [get_from_container](#get_from_container)
 - [put_in_container](#put_in_container)
@@ -358,6 +359,28 @@ Returns instance of the service container.
 
 ```
 $container = get_container();
+```
+
+<hr />
+
+### get_aliases
+
+**Description:**
+
+Return all known aliases, giving priority to Bones protected aliases.
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (array)
+
+**Example:**
+
+```
+$aliases = get_aliases();
 ```
 
 <hr />

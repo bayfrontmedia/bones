@@ -46,10 +46,6 @@ class AddExtraToLogChannels extends Action implements ActionInterface
     public function action(...$arg)
     {
 
-        if (!$this->container->has('Bayfront\MonologFactory\LoggerFactory')) {
-            return;
-        }
-
         $logs = $this->container->get('Bayfront\MonologFactory\LoggerFactory');
 
         $channels = $logs->getChannels();

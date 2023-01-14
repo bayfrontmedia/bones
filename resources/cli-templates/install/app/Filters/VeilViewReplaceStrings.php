@@ -9,8 +9,6 @@ use Bayfront\Bones\Interfaces\FilterInterface;
  * VeilViewReplaceStrings filter.
  *
  * Replace strings in Veil views.
- *
- * Created for Bones v2.0.0
  */
 class VeilViewReplaceStrings extends Filter implements FilterInterface
 {

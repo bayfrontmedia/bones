@@ -14,7 +14,8 @@ Services available within a model:
 - Database as `$this->db` (if existing in container)
 
 Models should be instantiated via the `get_model()` helper.
-This allows them to be managed by the container, which also handles dependency injection.
+This allows them to be managed by the container so that any classes existing in the container
+can be injected into the constructor.
 
 The `app.model` event is executed whenever a model is constructed.
 

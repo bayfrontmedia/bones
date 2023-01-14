@@ -19,7 +19,8 @@ All actions must extend `Bayfront\Bones\Action` and implement `Bayfront\Bones\In
 **Services available**
 
 - Container as `$this->container`
-- HTTP response as `$this->response`
+
+Since actions are managed by the container, any classes existing in the container can be injected into the constructor.
 
 How actions are loaded depends on the [app config settings](app.md#actions).
 

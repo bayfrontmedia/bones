@@ -11,8 +11,6 @@ use Bayfront\Translation\TranslationException;
  * VeilViewSayTag filter.
  *
  * Add say tag to return translation strings to Veil views.
- *
- * Created for Bones v2.0.0
  */
 class VeilViewSayTag extends Filter implements FilterInterface
 {

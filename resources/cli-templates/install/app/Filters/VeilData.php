@@ -10,8 +10,6 @@ use Bayfront\Bones\Interfaces\FilterInterface;
  * VeilData filter.
  *
  * Add info to the Veil data array.
- *
- * Created for Bones v2.0.0
  */
 class VeilData extends Filter implements FilterInterface
 {

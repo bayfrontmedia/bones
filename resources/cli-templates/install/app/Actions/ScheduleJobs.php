@@ -4,7 +4,6 @@ namespace App\Actions;
 
 use Bayfront\Bones\Action;
 use Bayfront\Bones\Interfaces\ActionInterface;
-use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
 use Bayfront\CronScheduler\SyntaxException;
@@ -14,6 +13,17 @@ use Bayfront\CronScheduler\SyntaxException;
  */
 class ScheduleJobs extends Action implements ActionInterface
 {
+
+    protected $schedule;
+
+    public function __construct(Cron $schedule)
+    {
+
+        $this->schedule = $schedule;
+
+        parent::__construct();
+
+    }
 
     /**
      * @inheritDoc
@@ -38,7 +48,6 @@ class ScheduleJobs extends Action implements ActionInterface
 
     /**
      * @inheritDoc
-     * @throws NotFoundException
      * @throws LabelExistsException
      * @throws SyntaxException
      */
@@ -46,12 +55,9 @@ class ScheduleJobs extends Action implements ActionInterface
     public function action(...$arg)
     {
 
-        /** @var Cron $schedule */
-        $schedule = $this->container->get('Bayfront\CronScheduler\Cron');
-
         // Add jobs
 
-        $schedule->call('sample-job', function () {
+        $this->schedule->call('sample-job', function () {
             sleep(1);
         })->annually();
 

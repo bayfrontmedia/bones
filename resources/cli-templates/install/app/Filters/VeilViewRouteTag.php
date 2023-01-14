@@ -10,8 +10,6 @@ use Bayfront\Container\NotFoundException;
  * VeilViewRouteTag filter.
  *
  * Add route tag to return named routes to Veil views.
- *
- * Created for Bones v2.0.0
  */
 class VeilViewRouteTag extends Filter implements FilterInterface
 {

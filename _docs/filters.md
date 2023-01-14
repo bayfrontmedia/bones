@@ -19,7 +19,8 @@ All filters must extend `Bayfront\Bones\Filter` and implement `Bayfront\Bones\In
 **Services available**
 
 - Container as `$this->container`
-- HTTP response as `$this->response`
+
+Since filters are managed by the container, any classes existing in the container can be injected into the constructor.
 
 How filters are loaded depends on the [app config settings](app.md#filters).
 
