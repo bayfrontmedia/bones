@@ -31,8 +31,8 @@ For more information, see [CLI](libraries/cli.md).
 Due to the resource-intensive nature of loading all the actions, when the `actions.cache` config array is `true`,
 all the instantiated actions will be cached in `storage/app/cache`.
 
-For this reason, it is important that any environment-specific logic is kept in the `action` method, as `isActive`
-will not be rechecked when reading from the cache.
+For this reason, it is important that any environment and interface-specific logic is kept in the `action` method, 
+as `isActive` will not be rechecked when reading from the cache.
 
 When any changes to actions have been made, the action cache will need to be cleared.
 You can do so by using the `php bones cache:clear actions` command.
@@ -44,8 +44,9 @@ Bones is set up to use the following events, in order of execution:
 - `bones.init`: Executes just after Bones has initialized.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded.
 - `app.cli`: Executes when the app interface is `CLI`. The Symfony Console application is passed as a parameter.
-- `app.schedule.start`: Executes before running scheduled jobs (cron)
-- `app.schedule.end`: Executes after all scheduled jobs are completed. The `$result` is passed as a parameter.
+- `app.schedule.start`: Executes before running scheduled jobs from the command line using `php bones schedule:run`
+- `app.schedule.end`: Executes after all scheduled jobs are completed from the command line 
+using `php bones schedule:run`. The `$result` is passed as a parameter.
 - `app.http`: Executes when the app interface is `HTTP` just before the router dispatches the request.
 - `app.controller`: Executes when any controller is constructed.
 - `app.controller.web`: Executes when `Bayfront\Controllers\WebController` is constructed.

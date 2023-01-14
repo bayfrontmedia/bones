@@ -31,8 +31,8 @@ For more information, see [CLI](libraries/cli.md).
 Due to the resource-intensive nature of loading all the filters, when the `filters.cache` config array is `true`,
 all the instantiated filters will be cached in `storage/app/cache`.
 
-For this reason, it is important that any environment-specific logic is kept in the `action` method, as `isActive`
-will not be rechecked when reading from the cache.
+For this reason, it is important that any environment and interface-specific logic is kept in the `action` method, 
+as `isActive` will not be rechecked when reading from the cache.
 
 When any changes to filters have been made, the filter cache will need to be cleared.
 You can do so by using the `php bones cache:clear filters` command.

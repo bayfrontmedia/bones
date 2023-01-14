@@ -8,6 +8,11 @@ use Bayfront\Container\NotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\MonologFactory\Exceptions\ChannelNotFoundException;
 
+/**
+ * AddExtraToLogChannels action.
+ *
+ * Adds IP and request URL when app interface is HTTP.
+ */
 class AddExtraToLogChannels extends Action implements ActionInterface
 {
 
@@ -17,7 +22,7 @@ class AddExtraToLogChannels extends Action implements ActionInterface
 
     public function isActive(): bool
     {
-        return is_http() && $this->container->has('logs');
+        return $this->container->has('logs');
     }
 
     /**
@@ -28,7 +33,7 @@ class AddExtraToLogChannels extends Action implements ActionInterface
     {
 
         return [
-            'bones.init' => 5
+            'app.http' => 5
         ];
     }
 
@@ -40,6 +45,10 @@ class AddExtraToLogChannels extends Action implements ActionInterface
 
     public function action(...$arg)
     {
+
+        if (!$this->container->has('logs')) {
+            return;
+        }
 
         $logs = $this->container->get('logs');
 

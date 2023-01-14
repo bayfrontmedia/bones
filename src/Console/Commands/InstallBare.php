@@ -38,7 +38,7 @@ class InstallBare extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $output->writeln('Installing Bones...');
+        $output->writeln('<info>Installing Bones...</info>');
 
         // ------------------------- .env -------------------------
 
@@ -60,6 +60,22 @@ class InstallBare extends Command
 
         } else {
             $output->writeln('<error>Skipping .env file: File already exists</error>');
+        }
+
+        // ------------------------- Default actions -------------------------
+
+        $output->writeln('Adding default actions...');
+
+        $bones_actions_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Actions/ScheduleJobs.php';
+
+        $app_actions_file = base_path('/app/Actions/ScheduleJobs.php');
+
+        if (!file_exists($app_actions_file)) {
+
+            copy($bones_actions_file, $app_actions_file);
+
+        } else {
+            $output->writeln('<error>Skipping ScheduleJobs action: File already exists</error>');
         }
 
         // ------------------------- db -------------------------
