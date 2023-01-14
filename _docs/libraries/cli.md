@@ -16,10 +16,12 @@ Command line functionality includes:
 ```shell
 # Get app info
 php bones about
+# Return as JSON
 php bones about --json
 
 # List all registered actions for all events (valid for the CLI interface)
 php bones action:list
+# Return as JSON
 php bones action:list --json
 # Actions can be returned for specific events
 php bones action:list --event=bones.init --event=app.bootstrap
@@ -34,10 +36,12 @@ php bones cache:clear actions filters
 
 # List items in container
 php bones container:list
+# Return as JSON
 php bones container:list --json
 
 # List all registered filters for all values (valid for the CLI interface)
 php bones filter:list
+# Return as JSON
 php bones filter:list --json
 # Filters can be returned for specific values
 php bones filter:list --value=router.parameters
@@ -73,6 +77,7 @@ php bones make:service NAME
 
 # List routes
 php bones route:list
+# Return as JSON
 php bones route:list --json
 # Routes can be returned for specific request methods:
 # NOTE: The additional method "named" will return all named routes
@@ -84,7 +89,10 @@ php bones route:list --sort=path
 
 # List all scheduled jobs
 php bones schedule:list
+# Return as JSON
 php bones schedule:list --json
+# Schedules can be sorted by "schedule", "prev", "next" or "name" (default)
+php bones schedule:list --sort=next
 
 # Run all scheduled jobs
 php bones schedule:run
