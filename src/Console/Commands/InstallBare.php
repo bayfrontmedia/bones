@@ -178,6 +178,29 @@ class InstallBare extends Command
                 $output->writeln('<error>Skipping sample translations: Directory already exists</error>');
             }
 
+            $output->writeln('Installing translation filters...');
+
+            // Filters
+
+            $bones_translate_filter_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Filters/VeilViewSayTag.php';
+
+            $app_translate_filter_file = base_path('/app/Filters/VeilViewSayTag.php');
+
+            if (!file_exists($app_translate_filter_file)) {
+
+                copy($bones_translate_filter_file, $app_translate_filter_file);
+
+            } else {
+                $output->writeln('<error>Skipping Translate filter: File already exists</error>');
+            }
+
+            /*
+             * TODO: Add filters and events based on locale.
+             * See: https://github.com/bayfrontmedia/bones-web/blob/2cc42041a5b13a66520162fd6330ead8d046873d/resources/filters.php#L21
+             * See: https://github.com/bayfrontmedia/bones-web/blob/2cc42041a5b13a66520162fd6330ead8d046873d/resources/events.php#L61
+             *
+             */
+
         }
 
         // ------------------------- Veil -------------------------
@@ -197,6 +220,52 @@ class InstallBare extends Command
             } else {
                 $output->writeln('<error>Skipping Veil config file: File already exists</error>');
             }
+
+            $output->writeln('Installing Veil filters...');
+
+            // Filter 1
+
+            $bones_veil_filter_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Filters/VeilData.php';
+
+            $app_veil_filter_file = base_path('/app/Filters/VeilData.php');
+
+            if (!file_exists($app_veil_filter_file)) {
+
+                copy($bones_veil_filter_file, $app_veil_filter_file);
+
+            } else {
+                $output->writeln('<error>Skipping Veil filter: File already exists</error>');
+            }
+
+            // Filter 2
+
+            $bones_veil_filter2_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Filters/VeilViewReplaceStrings.php';
+
+            $app_veil_filter2_file = base_path('/app/Filters/VeilViewReplaceStrings.php');
+
+            if (!file_exists($app_veil_filter2_file)) {
+
+                copy($bones_veil_filter2_file, $app_veil_filter2_file);
+
+            } else {
+                $output->writeln('<error>Skipping Veil filter: File already exists</error>');
+            }
+
+            // Filter 3
+
+            $bones_veil_filter3_file = BONES_RESOURCES_PATH . '/cli-templates/install/app/Filters/VeilViewRouteTag.php';
+
+            $app_veil_filter3_file = base_path('/app/Filters/VeilViewRouteTag.php');
+
+            if (!file_exists($app_veil_filter3_file)) {
+
+                copy($bones_veil_filter3_file, $app_veil_filter3_file);
+
+            } else {
+                $output->writeln('<error>Skipping Veil filter: File already exists</error>');
+            }
+
+            // TODO: Write route and sample view. Add views for error codes.
 
         }
 

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new CLI commands using Symfony Console.
 - Added `BONES_START` and `BONES_END` constants.
 - Added support for [actions](_docs/actions.md) in favor of procedural event hooks.
+- Added support for [filters](_docs/filters.md) in favor of procedural filter hooks.
 
 ### Changed
 
