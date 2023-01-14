@@ -30,11 +30,13 @@ php bones action:list --event=bones.init --event=app.bootstrap
 # Actions can be sorted by "event", "priority", or "action" (default)
 php bones action:list --sort=event
 
-# List all registered filter hooks for all filters
+# List all registered filters for all values (valid for the CLI interface)
 php bones filter:list
 php bones filter:list --json
-# Filter hooks can be returned for specific filters
-php bones filter:list --filter=router.parameters
+# Filters can be returned for specific values
+php bones filter:list --value=router.parameters
+# Filters can be sorted by "value", "priority", or "filter" (default)
+php bones filter:list --sort=value
 
 # Install Bones
 php bones install:bare

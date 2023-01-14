@@ -34,7 +34,7 @@ class FilterList extends Command
 
         $this->setName('filter:list')
             ->setDescription('List all registered filters')
-            ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
+            ->addOption('value', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
             ->addOption('sort', null, InputOption::VALUE_REQUIRED)
             ->addOption('json', null, InputOption::VALUE_NONE);
 
@@ -54,19 +54,19 @@ class FilterList extends Command
 
         $return = [];
 
-        $return_filters = $input->getOption('filter');
+        $return_values = $input->getOption('value');
 
         // Lowercase all as in_array is case-sensitive
 
-        foreach ($return_filters as $k => $v) {
-            $return_filters[$k] = strtolower($v);
+        foreach ($return_values as $k => $v) {
+            $return_values[$k] = strtolower($v);
         }
 
         foreach ($filters as $filter => $queued) {
 
             // Lowercase method as in_array is case-sensitive
 
-            if ((empty($return_filters) || in_array(strtolower($filter), $return_filters))
+            if ((empty($return_values) || in_array(strtolower($filter), $return_values))
                 && is_array($queued)) {
 
                 foreach ($queued as $queue) {
@@ -121,16 +121,16 @@ class FilterList extends Command
 
                 $sort = strtolower((string)$input->getOption('sort'));
 
-                if ($sort == 'filter') {
+                if ($sort == 'value') {
                     $rows = Arr::multisort($rows, '1');
                 } else if ($sort == 'priority') {
                     $rows = Arr::multisort($rows, '2');
-                } else { // Function
+                } else { // Filter
                     $rows = Arr::multisort($rows, '0');
                 }
 
                 $table = new Table($output);
-                $table->setHeaders(['Action', 'Filter', 'Priority'])->setRows($rows);
+                $table->setHeaders(['Filter', 'Value', 'Priority'])->setRows($rows);
                 $table->render();
 
             }
