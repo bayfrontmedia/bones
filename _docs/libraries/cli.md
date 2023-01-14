@@ -73,6 +73,8 @@ php bones route:list --json
 php bones route:list --method=get --method=named
 # Routes can be returned for specific hosts:
 php bones route:list --host=example.com
+# Routes can be sorted by "host", "path", "name", "destination" or "method" (default)
+php bones route:list --sort=path
 
 # List all scheduled jobs
 php bones schedule:list

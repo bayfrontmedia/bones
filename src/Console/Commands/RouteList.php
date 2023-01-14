@@ -35,6 +35,7 @@ class RouteList extends Command
             ->setDescription('List all routes')
             ->addOption('method', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
             ->addOption('host', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
+            ->addOption('sort', null, InputOption::VALUE_REQUIRED)
             ->addOption('json', null, InputOption::VALUE_NONE);
 
     }
@@ -132,6 +133,20 @@ class RouteList extends Command
                         $v['destination']
                     ];
 
+                }
+
+                $sort = strtolower((string)$input->getOption('sort'));
+
+                if ($sort == 'host') {
+                    $rows = Arr::multisort($rows, '1');
+                } else if ($sort == 'path') {
+                    $rows = Arr::multisort($rows, '2');
+                } else if ($sort == 'name') {
+                    $rows = Arr::multisort($rows, '3');
+                } else if ($sort == 'destination') {
+                    $rows = Arr::multisort($rows, '4');
+                } else { // Method
+                    $rows = Arr::multisort($rows, '0');
                 }
 
                 $table = new Table($output);
