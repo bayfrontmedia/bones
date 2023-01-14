@@ -22,6 +22,7 @@ The file structure for building an app using Bones is as follows:
     /Commands
   /Controllers
   /Exceptions
+  /Filters
   /Models
   /Services
 /config
@@ -39,7 +40,7 @@ The file structure for building an app using Bones is as follows:
 ```
 
 - `/app`- All of your app's namespaced classes reside here. 
-These include things such as actions, console commands, controllers, exceptions, models and services.
+These include things such as actions, console commands, controllers, exceptions, filters, models and services.
 - `/config`- All of your app's configuration files reside here.
 - `/public`- Public web root of the application. 
 - `/resources`- All of your app's resources reside here. These include the bootstrap file, events, filters and routes. 
@@ -69,7 +70,6 @@ APP_KEY=SECURE_APP_KEY
 APP_DEBUG_MODE=true
 APP_ENVIRONMENT=dev
 APP_TIMEZONE=America/New_York
-APP_FILTERS_ENABLED=true
 
 ROUTER_HOST=example.com
 ROUTER_ROUTE_PREFIX=
@@ -102,6 +102,7 @@ The [get_config](helpers.md#get_config) helper can be used to retrieve config va
 - [Container](container.md)
 - [Controllers](controllers.md)
 - [Exceptions](exceptions.md)
+- [Filters](filters.md)
 - [Helpers](helpers.md)
 - [Models](models.md)
 - [Services](services.md)

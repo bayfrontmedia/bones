@@ -21,7 +21,7 @@ All actions must extend `Bayfront\Bones\Action` and implement `Bayfront\Bones\In
 - Container as `$this->container`
 - HTTP response as `$this->response`
 
-How actions are loaded depends on the [app config settings](app.md).
+How actions are loaded depends on the [app config settings](app.md#actions).
 
 To get a list of all hooked actions (valid for the CLI interface), the `php bones action:list` command can be used.
 For more information, see [CLI](libraries/cli.md).

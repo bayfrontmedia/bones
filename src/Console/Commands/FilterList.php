@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Interfaces\FilterInterface;
 use Bayfront\Hooks\Hooks;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -32,8 +33,9 @@ class FilterList extends Command
     {
 
         $this->setName('filter:list')
-            ->setDescription('List all hooked filters')
+            ->setDescription('List all registered filters')
             ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY)
+            ->addOption('sort', null, InputOption::VALUE_REQUIRED)
             ->addOption('json', null, InputOption::VALUE_NONE);
 
     }
@@ -72,12 +74,22 @@ class FilterList extends Command
                     $function = '[' . strtoupper(gettype(Arr::get($queue, 'function'))) . ']';
 
                     if (is_string(Arr::get($queue, 'function'))) {
+
                         $function = Arr::get($queue, 'function', '');
+
+                    } else if (is_array(Arr::get($queue, 'function'))) {
+
+                        if (Arr::get($queue, 'function')[0] instanceof FilterInterface) {
+
+                            $function = get_class(Arr::get($queue, 'function')[0]);
+
+                        }
+
                     }
 
                     $return[] = [
-                        'filter' => $filter,
                         'function' => $function,
+                        'filter' => $filter,
                         'priority' => Arr::get($queue, 'priority')
                     ];
 
@@ -100,15 +112,25 @@ class FilterList extends Command
                 foreach ($return as $v) {
 
                     $rows[] = [
-                        $v['filter'],
                         $v['function'],
+                        $v['filter'],
                         $v['priority']
                     ];
 
                 }
 
+                $sort = strtolower((string)$input->getOption('sort'));
+
+                if ($sort == 'filter') {
+                    $rows = Arr::multisort($rows, '1');
+                } else if ($sort == 'priority') {
+                    $rows = Arr::multisort($rows, '2');
+                } else { // Function
+                    $rows = Arr::multisort($rows, '0');
+                }
+
                 $table = new Table($output);
-                $table->setHeaders(['Filter', 'Function', 'Priority'])->setRows($rows);
+                $table->setHeaders(['Action', 'Filter', 'Priority'])->setRows($rows);
                 $table->render();
 
             }

@@ -13,6 +13,7 @@ use Bayfront\Bones\Console\Commands\MakeAction;
 use Bayfront\Bones\Console\Commands\MakeCommand;
 use Bayfront\Bones\Console\Commands\MakeController;
 use Bayfront\Bones\Console\Commands\MakeException;
+use Bayfront\Bones\Console\Commands\MakeFilter;
 use Bayfront\Bones\Console\Commands\MakeModel;
 use Bayfront\Bones\Console\Commands\MakeService;
 use Bayfront\Bones\Console\Commands\RouteList;
@@ -21,11 +22,13 @@ use Bayfront\Bones\Console\Commands\ScheduleRun;
 use Bayfront\Bones\Exceptions\ActionException;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\FileNotFoundException;
+use Bayfront\Bones\Exceptions\FilterException;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Exceptions\InvalidConfigurationException;
 use Bayfront\Bones\Exceptions\ModelException;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Bones\Interfaces\ActionInterface;
+use Bayfront\Bones\Interfaces\FilterInterface;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
@@ -99,6 +102,43 @@ class App
         } else {
 
             throw new ActionException('Unable to start: Invalid action (' . $action . ')');
+
+        }
+
+    }
+
+    /**
+     * Load valid and active filters as a hooked filter.
+     *
+     * @param Hooks $hooks
+     * @param $class
+     * @return void
+     * @throws ContainerException
+     * @throws FilterException
+     */
+
+    private static function loadFilter(Hooks $hooks, $class)
+    {
+
+        $filter = self::$container->create($class);
+
+        if ($filter instanceof FilterInterface) {
+
+            if ($filter->isActive()) {
+
+                $filters = $filter->getFilters();
+
+                foreach ($filters as $filter_name => $priority) {
+                    $hooks->addFilter($filter_name, [$filter, 'action'], (int)$priority);
+                }
+
+            } else {
+                unset($filter);
+            }
+
+        } else {
+
+            throw new FilterException('Unable to start: Invalid filter (' . $filter . ')');
 
         }
 
@@ -301,8 +341,8 @@ class App
             'debug_mode',
             'environment',
             'timezone',
-            'events_enabled',
-            'filters_enabled'
+            'actions',
+            'filters'
         ])) {
             throw new InvalidConfigurationException('Unable to start: invalid app configuration');
         }
@@ -310,7 +350,6 @@ class App
         // ------------------------- Check for required app resource files -------------------------
 
         if (!file_exists(APP_RESOURCES_PATH . '/bootstrap.php') ||
-            !file_exists(APP_RESOURCES_PATH . '/filters.php') ||
             !file_exists(APP_RESOURCES_PATH . '/routes.php')) {
 
             throw new FileNotFoundException('Unable to start: missing required app resource files');
@@ -340,10 +379,6 @@ class App
         $hooks = self::$container->set('hooks', 'Bayfront\Hooks\Hooks');
 
         require(BONES_RESOURCES_PATH . '/helpers/services/hooks-helpers.php');
-
-        if (get_config('app.filters_enabled', false)) {
-            include(APP_RESOURCES_PATH . '/filters.php');
-        }
 
         // ------------------------- Cron scheduler (required) -------------------------
 
@@ -532,6 +567,39 @@ class App
 
         }
 
+        // ------------------------- Load filters -------------------------
+
+        $dir = base_path('/app/Filters');
+
+        if (get_config('app.filters.autoload', false) && is_dir($dir)) {
+
+            $list = new DirectoryIterator($dir);
+
+            foreach ($list as $item) {
+
+                if ($item->isFile()) {
+
+                    $class = get_config('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
+
+                    self::loadFilter($hooks, $class);
+
+                }
+            }
+
+        } else {
+
+            $list = get_config('app.filters.load', []);
+
+            if (!empty($list)) {
+
+                foreach ($list as $item) {
+                    self::loadFilter($hooks, $item);
+                }
+
+            }
+
+        }
+
         // ------------------------- First event -------------------------
 
         /*
@@ -577,6 +645,7 @@ class App
             $console->add(new MakeCommand());
             $console->add(new MakeController());
             $console->add(new MakeException());
+            $console->add(new MakeFilter());
             $console->add(new MakeModel());
             $console->add(new MakeService());
             $console->add(new RouteList($router));

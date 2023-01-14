@@ -2,17 +2,17 @@
 
 namespace Bayfront\Bones;
 
-use Bayfront\Bones\Exceptions\ActionException;
-use Bayfront\Bones\Interfaces\ActionInterface;
+use Bayfront\Bones\Exceptions\FilterException;
+use Bayfront\Bones\Interfaces\FilterInterface;
 use Bayfront\Container\Container;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpResponse\Response;
 
-abstract class Action implements ActionInterface
+abstract class Filter implements FilterInterface
 {
 
     /*
-     * All Actions will extend this.
+     * All Filters will extend this.
      */
 
     /**
@@ -28,9 +28,9 @@ abstract class Action implements ActionInterface
     protected $response;
 
     /**
-     * Action constructor
+     * Filter constructor
      *
-     * @throws ActionException
+     * @throws FilterException
      */
 
     public function __construct()
@@ -44,7 +44,7 @@ abstract class Action implements ActionInterface
 
         } catch (NotFoundException $e) {
 
-            throw new ActionException('Unable to construct action: ' . get_called_class(), 0, $e);
+            throw new FilterException('Unable to construct filter: ' . get_called_class(), 0, $e);
 
         }
 
