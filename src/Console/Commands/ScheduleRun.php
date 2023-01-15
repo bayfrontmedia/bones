@@ -49,7 +49,7 @@ class ScheduleRun extends Command
 
         $output->writeln('<info>Begin running scheduled jobs...</info>');
 
-        do_event('app.schedule.start');
+        do_event('app.schedule.start', $this->schedule);
 
         $result = $this->schedule->run();
 

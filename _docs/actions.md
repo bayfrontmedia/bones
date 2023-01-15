@@ -45,7 +45,8 @@ Bones is set up to use the following events, in order of execution:
 - `bones.init`: Executes just after Bones has initialized.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded.
 - `app.cli`: Executes when the app interface is `CLI`. The Symfony Console application is passed as a parameter.
-- `app.schedule.start`: Executes before running scheduled jobs from the command line using `php bones schedule:run`
+- `app.schedule.start`: Executes before running scheduled jobs from the command line using `php bones schedule:run`. 
+The scheduler's class instance is passed as a parameter.
 - `app.schedule.end`: Executes after all scheduled jobs are completed from the command line 
 using `php bones schedule:run`. The `$result` is passed as a parameter.
 - `app.http`: Executes when the app interface is `HTTP` just before the router dispatches the request.

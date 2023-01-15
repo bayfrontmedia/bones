@@ -28,5 +28,11 @@ return [
 ];
 ```
 
+## Usage
+
+The easiest way of scheduling jobs is by creating an action that hooks to the `app.cli` event.
+Although a scheduled action can be hooked to the `app.schedule.start` event, it would not show
+when running the `php bones schedule:list` command, as the schedule is not being run.
+
 All output from the scheduled jobs will be saved to the output file specified.
 For more information, see [Cron Scheduler](https://github.com/bayfrontmedia/cron-scheduler#creating-an-instance).
