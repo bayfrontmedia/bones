@@ -93,6 +93,54 @@ The [get_config](helpers.md#get_config) helper can be used to retrieve config va
 
 **Because the configuration files are typically committed to your application's version control, they should never contain sensitive information such as account credentials.**
 
+## Installation
+
+The best way to install Bones is from the [command line](libraries/cli.md).
+
+```shell
+# Install Bones
+php bones install:bare
+# To install optional services, use the following options:
+--db --filesystem --logs --translation --veil
+```
+
+Upon installation, certain actions and/or filters may be created.
+These can be disabled or removed if desired.
+
+### Actions
+
+**ScheduleJobs**
+
+Upon installation, the action `ScheduleJobs` is created as a starting point to begin adding scheduled jobs.
+
+**AddExtraToLogChannels**
+
+When logs are installed, the action `AddExtraToLogChannels` will be created,
+which adds the IP and request URL when app interface is HTTP.
+
+### Filters
+
+**VeilData**
+
+When Veil is installed, the filter `VeilData` will be created,
+which can be used to automatically inject data into all Veil views using the `veil.data` filter.
+
+**VeilViewReplaceStrings**
+
+When Veil is installed, the filter `VeilViewReplaceStrings` will be created,
+which can be used to censor/replace case-sensitive and case-insensitive strings
+from within views using the `veil.view` filter.
+
+**VeilViewRouteTag**
+
+When Veil is installed, the filter `VeilViewRouteTag` will be created,
+which allows you to use the `@route:` template tag to automatically insert the URL of any named routes into Veil views.
+
+**VeilViewSayTag**
+
+When translation is installed, the filter `VeilViewSayTag` will be created,
+which allows you to use the `@say:` template tag to automatically insert translations into Veil views.
+
 ## Documentation
 
 - [App configuration](app.md)
