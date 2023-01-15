@@ -26,7 +26,10 @@ depending on the environment.
 ## Routes
 
 Routes should be defined in `/resources/routes.php`.
-This file is required by Bones.
+This file is required by Bones. Two variables will be available to use from within this file:
+
+- Container as `$container`
+- `Bayfront\RouteIt\Router` instance as `$router`
 
 **Example:**
 

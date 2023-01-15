@@ -45,6 +45,7 @@ use Bayfront\PDO\Exceptions\ConfigurationException as PDOConfigurationException;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\UnableToConnectException;
 use Bayfront\RouteIt\DispatchException;
+use Bayfront\RouteIt\Router;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Translation\AdapterException;
 use DirectoryIterator;
@@ -140,6 +141,20 @@ class App
 
         }
 
+    }
+
+    /**
+     * Include routes file without exposing the entire start() method.
+     *
+     * @param Container $container
+     * @param Router $router
+     * @return void
+     * @noinspection PhpUnusedParameterInspection
+     */
+
+    private static function loadRoutes(Container $container, Router $router): void
+    {
+        require(resources_path('/routes.php'));
     }
 
     /**
@@ -423,7 +438,7 @@ class App
 
         // Include routes
 
-        include(APP_RESOURCES_PATH . '/routes.php');
+        self::loadRoutes(self::getContainer(), $router);
 
         // ------------------------- Database (optional) -------------------------
 
@@ -706,7 +721,7 @@ class App
 
         // ------------------------- Bootstrap app / event -------------------------
 
-        include(APP_RESOURCES_PATH . '/bootstrap.php');
+        require(APP_RESOURCES_PATH . '/bootstrap.php');
 
         /*
          * @throws Bayfront\Hooks\ActionException
