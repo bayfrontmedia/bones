@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All Bones services are now being saved in the container as the fully qualified class name to utilize 
 dependency injection.
 - Updated how the `App::start()` method loads routes by adding a private `loadRoutes` method.
+- Updated how the `App::start()` method loads the bootstrap file by adding a private `loadBootstrap` method.
 
 ### Removed
 

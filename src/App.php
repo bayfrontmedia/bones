@@ -158,6 +158,19 @@ class App
     }
 
     /**
+     * Include bootstrap file without exposing the entire start() method.
+     *
+     * @param Container $container
+     * @return void
+     * @noinspection PhpUnusedParameterInspection
+     */
+
+    private static function loadBootstrap(Container $container): void
+    {
+        require(resources_path('/bootstrap.php'));
+    }
+
+    /**
      * Starts the app.
      *
      * @param string $base_path (Base path to app)
@@ -721,7 +734,7 @@ class App
 
         // ------------------------- Bootstrap app / event -------------------------
 
-        require(APP_RESOURCES_PATH . '/bootstrap.php');
+        self::loadBootstrap(self::getContainer());
 
         /*
          * @throws Bayfront\Hooks\ActionException
