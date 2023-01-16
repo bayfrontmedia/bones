@@ -114,14 +114,11 @@ php bones make:command NAME
 ```
 
 Once the command is created, it needs to be registered with the console application.
-This is easily done using the `app.cli` event:
+This is easily done from an action attached to the `app.cli` event:
 
 ```php
-function event_app_cli(Application $console)
-{
-    $console->add(new CustomCommandName());
-}
-add_event('app.cli', 'event_app_cli');
+// $console as Symfony Console application instance
+$console->add(new CustomCommandName());  
 ```
 
 For more information, see: [https://symfony.com/doc/current/console#creating-a-command](https://symfony.com/doc/current/console#creating-a-command)
