@@ -41,7 +41,6 @@ use Bayfront\HttpResponse\Response;
 use Bayfront\MonologFactory\Exceptions\FormatterException;
 use Bayfront\MonologFactory\Exceptions\HandlerException;
 use Bayfront\MonologFactory\Exceptions\ProcessorException;
-use Bayfront\PDO\DbFactory;
 use Bayfront\PDO\Exceptions\ConfigurationException as PDOConfigurationException;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\UnableToConnectException;
