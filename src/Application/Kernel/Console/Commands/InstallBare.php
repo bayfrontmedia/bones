@@ -298,10 +298,10 @@ class InstallBare extends Command
 
         // ------------------------- Composer -------------------------
 
-        //ConsoleUtilities::msgInstalling('dependencies', $output);
-        //shell_exec('composer install');
+        ConsoleUtilities::msgInstalling('dependencies', $output);
+        shell_exec('composer update');
 
-        $output->writeln('<info>NOTE: It is recommended to update dependencies using "composer update"</info>');
+        //$output->writeln('<info>NOTE: It is recommended to update dependencies using "composer update"</info>');
         $output->writeln('<info>Bones installation complete! (v' . App::getBonesVersion() . ')</info>');
         $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/README.md</info>');
 
