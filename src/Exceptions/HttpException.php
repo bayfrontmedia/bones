@@ -2,12 +2,9 @@
 
 namespace Bayfront\Bones\Exceptions;
 
-/*
- * Thrown as an exception from an HTTP request.
- *
- * Used by App::abort()
+/**
+ * Thrown from an HTTP request.
  */
-
 class HttpException extends BonesException
 {
 

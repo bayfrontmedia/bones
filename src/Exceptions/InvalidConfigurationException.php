@@ -2,10 +2,9 @@
 
 namespace Bayfront\Bones\Exceptions;
 
-/*
- * Thrown when a configuration array is invalid.
+/**
+ * Thrown when configuration is invalid.
  */
-
 class InvalidConfigurationException extends BonesException
 {
 

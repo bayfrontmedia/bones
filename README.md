@@ -1,4 +1,4 @@
-# Bones
+## Bones
 
 A PHP framework used to build web apps using the MVC (model-view-controller) design pattern.
 
@@ -6,7 +6,7 @@ A PHP framework used to build web apps using the MVC (model-view-controller) des
 - [Author](#author)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Documentation](#documentation)
 
 ## License
 
@@ -23,18 +23,16 @@ This project is open source and available under the [MIT License](LICENSE).
 
 * PHP >= 7.2.0
 * JSON PHP extension
-* PDO PHP extension (optional, depending on features used)
 
 ## Installation
 
-> **Note:** This repository contains the core code of the Bones framework.
-> If you want to build an application using Bones, use one of the repositories listed below.
+> **NOTE:** This project contains the core code of the Bones framework.
+> To build an application using Bones, it is recommended to use one of the projects listed below:
 
 ### Bones App
 
-[Bones App](https://github.com/bayfrontmedia/bones-app) is the simplest bare-bones configuration 
-to begin building an application using the Bones framework.
+[Bones App](https://github.com/bayfrontmedia/bones-app) is the simplest "bare-bones" way to build an application using Bones.
 
-## Usage
+## Documentation
 
-Please see the [documentation](_docs/README.md).
+Documentation for Bones can be found [here](docs/README.md)

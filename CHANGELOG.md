@@ -12,47 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [2.0.0]- Upcoming
+## [2.0.0]- 2023.01.24
 
 ### Added
 
-- Added `redirect` helper function.
-- Added a separate web controller and `app.controller.web` event.
-- Added `app.model` event.
-- Added `app.http` event.
-- Added `App::getInterface()` method.
-- Added new CLI commands using Symfony Console.
-- Added `BONES_START` and `BONES_END` constants.
-- Added support for [actions](_docs/actions.md) in favor of procedural event hooks.
-- Added support for [filters](_docs/filters.md) in favor of procedural filter hooks.
-- Added caching for actions and filters.
-- Added aliases for services in the container.
-
-### Changed
-
-- Moved `$this->veil` if existing in container from `Bayfront\Bones\Controller` to `Bayfront\Bones\Controllers\Web`.
-- Moved `$this->filesystem` from `Bayfront\Bones\Controller` to `Bayfront\Bones\Model` and made it optional.
-- Moved handling CLI and cron jobs to after the app bootstrap file is included and `app.bootstrap` event is executed.
-- Renamed `BONES_ROOT_PATH` and `APP_ROOT_PATH` to `BONES_BASE_PATH` and `APP_BASE_PATH` respectively, as these are more semantically correct. 
-- Updated how the exception handler responds as JSON.
-- All Bones services are now being saved in the container as the fully qualified class name to utilize 
-dependency injection.
-- Updated how the `App::start()` method loads routes by adding a private `loadRoutes` method.
-- Updated how the `App::start()` method loads the bootstrap file by adding a private `loadBootstrap` method.
-
-### Removed
-
-- Removed support for the [Session Manager](https://github.com/bayfrontmedia/session-manager) library
-- Removed the need for `resources/cron.php` in favor of `php bones schedule:run`
-- Removed the need for `resources/cli.php` in favor of `php bones` CLI commands.
-- Removed the [CLImate library ](https://github.com/thephpleague/climate) in favor of Symfony Console.
-- Removed `view_or_fallback` helper.
-- Removed some hooks helpers.
-
-### Fixed
-
-- Fixed bug where `bones.shutdown` event was not being triggered via CLI and cron.
-- Fixed bug where objects created via the CLI were not being capitalized correctly.
+- Complete refactoring of project. 
 
 ## [1.4.1]- 2022.01.19
 
@@ -122,7 +86,7 @@ dependency injection.
     - `in_container`
     - `put_in_container`
     - `set_in_container`
-    
+
 - Added the `BonesAuth` service.
 
 ### Changed
