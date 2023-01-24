@@ -58,15 +58,11 @@ class InstallBare extends Command
 
             ConsoleUtilities::msgInstalling($name, $output);
 
-            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/bare/.env';
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/bare/.env.example';
 
             $dest_file = App::basePath('/.env');
 
             ConsoleUtilities::copyFile($src_file, $dest_file);
-
-            ConsoleUtilities::replaceFileContents($dest_file, [
-                'SECURE_APP_KEY' => App::createKey()
-            ]);
 
             ConsoleUtilities::msgInstalled($name, $output);
 
@@ -74,8 +70,24 @@ class InstallBare extends Command
             ConsoleUtilities::msgFileExists($name, $output);
         } catch (UnableToCopyException $e) {
             ConsoleUtilities::msgUnableToCopy($name, $output);
+        }
+
+        try {
+
+            $name = 'app key';
+
+            ConsoleUtilities::msgEnvAdding($name, $output);
+
+            $dest_file = App::basePath('/.env');
+
+            ConsoleUtilities::replaceFileContents($dest_file, [
+                'SECURE_APP_KEY' => App::createKey()
+            ]);
+
+            ConsoleUtilities::msgEnvInstalled($name, $output);
+
         } catch (ConsoleException $e) {
-            ConsoleUtilities::msgFailedToWrite($name, $output);
+            ConsoleUtilities::msgEnvFailedToWrite($name, $output);
         }
 
         // ------------------------- Default exception handler -------------------------

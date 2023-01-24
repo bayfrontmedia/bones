@@ -109,7 +109,7 @@ class InstallService extends Command
 
             } else {
 
-                $env_db_contents = file_get_contents(Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/db/.env');
+                $env_db_contents = file_get_contents(Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/db/.env.example');
 
                 if (!file_put_contents(App::basePath('/.env'), $env_db_contents, FILE_APPEND)) {
 
@@ -278,7 +278,7 @@ class InstallService extends Command
 
             } else {
 
-                $env_router_contents = file_get_contents(Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/.env');
+                $env_router_contents = file_get_contents(Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/.env.example');
 
                 if (!file_put_contents(App::basePath('/.env'), $env_router_contents, FILE_APPEND)) {
 
