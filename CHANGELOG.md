@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.0.0]- 2023.01.24
+
+### Added
+
+- Complete refactoring of project. 
+
 ## [1.4.1]- 2022.01.19
 
 ### Added
@@ -80,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `in_container`
     - `put_in_container`
     - `set_in_container`
-    
+
 - Added the `BonesAuth` service.
 
 ### Changed

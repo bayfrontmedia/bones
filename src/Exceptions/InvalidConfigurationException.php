@@ -1,18 +1,10 @@
 <?php
 
-/**
- * @package bones
- * @link https://github.com/bayfrontmedia/bones
- * @author John Robinson <john@bayfrontmedia.com>
- * @copyright 2020-2021 Bayfront Media
- */
-
 namespace Bayfront\Bones\Exceptions;
 
-/*
- * Thrown when a configuration array is invalid.
+/**
+ * Thrown when configuration is invalid.
  */
-
 class InvalidConfigurationException extends BonesException
 {
 
