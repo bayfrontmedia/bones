@@ -6,7 +6,7 @@ Bones customizes the use of this library with its built-in service at `Bayfront\
 which is added to the service container with alias `filters`.
 
 The concept of filters is that certain values are [filtered](#filters), adding the ability to alter the value
-before it is used by the app. 
+before it is sent in the response. 
 One or multiple [subscriptions](#creating-a-subscription) can be assigned to each filter.
 
 Since the service container is used to instantiate the filter subscribers, you can type-hint any dependencies
@@ -87,7 +87,7 @@ $filtered = $filters->doFilter('example.filter', $filtered);
 
 ## Creating a subscription
 
-To create a filter subscriber, use the `make:filter` [console command](#console-commands).
+To create a filter subscriber, use the `php bones make:filter` [console command](#console-commands).
 
 ## Filters
 
@@ -97,5 +97,5 @@ Bones does not utilize any filters, except for those which may be created when i
 
 The following [console commands](../usage/console.md) can be used with relation to filters:
 
-- `filter:list`
-- `make:filter`
+- `php bones filter:list`
+- `php bones make:filter`

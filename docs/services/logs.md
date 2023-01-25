@@ -61,7 +61,7 @@ return [
 
 ## Installation
 
-The logs service can be installed with the `install:service --logs` [console command](../usage/console.md).
+The logs service can be installed with the `php bones install:service --logs` [console command](../usage/console.md).
 
 Installing the logs service will perform the following actions:
 

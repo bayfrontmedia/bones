@@ -58,8 +58,6 @@ class Bootstrap extends EventSubscriber implements EventSubscriberInterface
         $this->response->setHeaders([
             'X-Application' => 'Bones',
             'X-Application-Version' => App::getBonesVersion()
-        ])->removeHeaders([
-            'X-Powered-By'
         ]);
 
     }

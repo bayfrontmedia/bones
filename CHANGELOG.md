@@ -12,15 +12,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.0.2]- 2022.01.25
+
+### Added
+
+- Added deploy backup path to the `php bones about:app` command.
+
+### Changed
+
+- Updated the `Bootstrap` event subscriber when running the `php bones install:bare` command.
+- Updated the default template styling installed with the `php bones install:service --veil` command.
+- Moved `DeployApp` and `DeployPurge` console commands to install with `php bones install:bare`.
+- Renamed the `php bones about:app` command to `php bones about:bones`.
+- Updated documentation.
+
+### Removed
+
+- Removed all occurrences of `shell_exec` in console commands since this may not be available to use in all environments.
+
 ## [2.0.1]- 2023.01.24
 
 ### Changed
 
-- Added `composer update` to `install:bare` console command.
+- Added `composer update` to `php bones install:bare` console command.
 
 ### Fixed
 
-- Fixed bug in `install:bare` when copying `APP_KEY` to `.env`.
+- Fixed bug in `php bones install:bare` when copying `APP_KEY` to `.env`.
 - Fixed bug in install console commands where `.env` file was omitted from Git.
 
 ## [2.0.0]- 2023.01.24

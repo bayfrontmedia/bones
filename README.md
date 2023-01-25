@@ -35,4 +35,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Documentation
 
-Documentation for Bones can be found [here](docs/README.md)
+Documentation for Bones can be found [here](docs/README.md).

@@ -119,7 +119,7 @@ class InstallBare extends Command
             ConsoleUtilities::msgFailedToWrite($name, $output);
         }
 
-        // Errors controller
+        // ------------------------- Errors controller -------------------------
 
         $name = 'Errors controller';
 
@@ -190,6 +190,66 @@ class InstallBare extends Command
             $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/bare/app/Events/Dev.php';
 
             $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Events') . '/Dev.php';
+
+            ConsoleUtilities::copyFile($src_file, $dest_file);
+
+            ConsoleUtilities::replaceFileContents($dest_file, [
+                '_namespace_' => rtrim(App::getConfig('app.namespace'), '\\'),
+                '_bones_version_' => App::getBonesVersion()
+            ]);
+
+            ConsoleUtilities::msgInstalled($name, $output);
+
+        } catch (FileAlreadyExistsException $e) {
+            ConsoleUtilities::msgFileExists($name, $output);
+        } catch (UnableToCopyException $e) {
+            ConsoleUtilities::msgUnableToCopy($name, $output);
+        } catch (ConsoleException $e) {
+            ConsoleUtilities::msgFailedToWrite($name, $output);
+        }
+
+        // ------------------------- Custom commands -------------------------
+
+        // DeployApp
+
+        try {
+
+            $name = 'DeployApp command';
+
+            ConsoleUtilities::msgInstalling($name, $output);
+
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/bare/app/Console/Commands/DeployApp.php';
+
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Console/Commands') . '/DeployApp.php';
+
+            ConsoleUtilities::copyFile($src_file, $dest_file);
+
+            ConsoleUtilities::replaceFileContents($dest_file, [
+                '_namespace_' => rtrim(App::getConfig('app.namespace'), '\\'),
+                '_bones_version_' => App::getBonesVersion()
+            ]);
+
+            ConsoleUtilities::msgInstalled($name, $output);
+
+        } catch (FileAlreadyExistsException $e) {
+            ConsoleUtilities::msgFileExists($name, $output);
+        } catch (UnableToCopyException $e) {
+            ConsoleUtilities::msgUnableToCopy($name, $output);
+        } catch (ConsoleException $e) {
+            ConsoleUtilities::msgFailedToWrite($name, $output);
+        }
+
+        // DeployPurge
+
+        try {
+
+            $name = 'DeployPurge command';
+
+            ConsoleUtilities::msgInstalling($name, $output);
+
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/bare/app/Console/Commands/DeployPurge.php';
+
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Console/Commands') . '/DeployPurge.php';
 
             ConsoleUtilities::copyFile($src_file, $dest_file);
 
@@ -311,9 +371,9 @@ class InstallBare extends Command
         // ------------------------- Composer -------------------------
 
         ConsoleUtilities::msgInstalling('dependencies', $output);
-        shell_exec('composer update');
+        //shell_exec('composer update');
 
-        //$output->writeln('<info>NOTE: It is recommended to update dependencies using "composer update"</info>');
+        $output->writeln('<info>*** NOTE: It is recommended to update dependencies using "composer update" ***</info>');
         $output->writeln('<info>Bones installation complete! (v' . App::getBonesVersion() . ')</info>');
         $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/README.md</info>');
 

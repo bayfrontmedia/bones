@@ -4,11 +4,9 @@ namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
-use Bayfront\Bones\Application\Kernel\Console\Commands\AboutApp;
+use Bayfront\Bones\Application\Kernel\Console\Commands\AboutBones;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
-use Bayfront\Bones\Application\Kernel\Console\Commands\DeployApp;
-use Bayfront\Bones\Application\Kernel\Console\Commands\DeployPurge;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallBare;
@@ -128,7 +126,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '2.0.0');
+        Constants::define('BONES_VERSION', '2.0.2');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -188,7 +186,7 @@ class Bones
                 /** @var EventService $events */
                 $events = self::$container->get('Bayfront\Bones\Application\Services\EventService');
 
-                $events->doEvent('bones.exception', $e, $response);
+                $events->doEvent('bones.exception', $response, $e);
 
             }
 
@@ -462,11 +460,9 @@ class Bones
 
         // ------------------------- Load Bones commands -------------------------
 
-        $console->add(new AboutApp());
+        $console->add(new AboutBones());
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
-        $console->add(new DeployApp());
-        $console->add(new DeployPurge());
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
         $console->add(new InstallBare());

@@ -17,9 +17,9 @@ Command line functionality includes:
 
 ```shell
 # Information about this Bones application
-php bones about:app
+php bones about:bones
 # Return as JSON
-php bones about:app --json
+php bones about:bones --json
 
 # List all registered aliases
 php bones alias:list
@@ -33,19 +33,6 @@ php bones container:list
 # Return as JSON
 php bones container:list --json
 # Services can be sorted by "alias" or "id" (default)
-
-# Deploy application
-# TARGET examples: origin/master (branch), v1.0.0 (tag), or commit hash
-php bones deploy:app TARGET
-# Deploy app and create backup of current files
-php bones deploy:app TARGET --backup
-
-# Purge deployment backups
-# --days= Purge backups older than number of days
-# --limit= Purge oldest backups over limit
-php bones deploy:purge --days=90 --limit=50
-# Purge all backups
-php bones deploy:purge --limit=0
 
 # List all event subscriptions
 php bones event:list

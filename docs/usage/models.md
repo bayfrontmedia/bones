@@ -15,4 +15,4 @@ in its constructor, and the container will use dependency injection to resolve t
 
 The following [console commands](console.md) can be used with relation to models:
 
-- `make:model`
+- `php bones make:model`

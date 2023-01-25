@@ -28,16 +28,21 @@ One of the main purposes of Bones is to be as minimal as possible.
 For this reason, you don’t have to use any of the optional services - Bones doesn't even require a router! 
 Add any service you'd like to use to the container in the [bootstrap file](bootstrap.md).
 
-## Retrieving the container
+## Interacting with the container
 
-Having to retrieve the container instance in order to interact with it directly should be rare,
-as all direct interaction should be done in the `/resources/bootstrap.php` file.
+Having to interact with the container instance directly should be rare,
+as most direct interaction should be done in the `/resources/bootstrap.php` file.
 
-However, if the need should arise, you can retrieve the container using the [getContainer](../utilities/app.md#getcontainer) app utility.
+However, if the need should arise, you can interact with the container 
+using the following app utilities:
+
+- [getContainer](../utilities/app.md#getcontainer)
+- [make](../utilities/app.md#make)
+- [get](../utilities/app.md#get)
 
 ## Console commands
 
 The following [console commands](console.md) can be used with relation to the container:
 
-- `alias:list`
-- `container:list`
+- `php bones alias:list`
+- `php bones container:list`

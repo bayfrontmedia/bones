@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AboutApp extends Command
+class AboutBones extends Command
 {
 
     /**
@@ -20,7 +20,7 @@ class AboutApp extends Command
     protected function configure()
     {
 
-        $this->setName('about:app')
+        $this->setName('about:bones')
             ->setDescription('Information about this Bones application')
             ->addOption('json', null, InputOption::VALUE_NONE);
 
@@ -49,6 +49,10 @@ class AboutApp extends Command
             'Base path' => App::basePath()
 
         ];
+
+        if (App::getConfig('app.backup_path')) {
+            $about['Deploy backup path'] = rtrim(App::getConfig('app.deploy.backup_path'), '/') . '/';
+        }
 
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($about));

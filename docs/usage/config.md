@@ -101,6 +101,6 @@ For more information, see [console](../usage/console.md).
 
 ## deploy
 
-The `deploy` array is optional. This may be used by the `deploy:app` and `deploy:purge` [console commands](../usage/console.md).
+The `deploy` array is optional. This may be used by the `php bones deploy:app` and `php bones deploy:purge` [console commands](../usage/console.md).
 
 The `backup_path` key specifies the path where deployment backups will be saved on the server.

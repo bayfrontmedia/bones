@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Application\Kernel\Console\Commands;
+namespace _namespace_\Console\Commands;
 
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
@@ -10,6 +10,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * DeployApp Command.
+ *
+ * This console command is designed to help facilitate the app deployment process.
+ *
+ * Created with Bones v_bones_version_
+ */
 class DeployApp extends Command
 {
 
@@ -41,13 +48,13 @@ class DeployApp extends Command
 
         if ($input->getOption('backup')) {
 
-            if (!App::getConfig('app.deploy.backup_path')
-                || App::getConfig('app.deploy.backup_path') == ''
-                || App::getConfig('app.deploy.backup_path') == '/') {
+            if (!App::getConfig('app.backup_path')
+                || App::getConfig('app.backup_path') == ''
+                || App::getConfig('app.backup_path') == '/') {
 
                 $output->writeln('<error>Unable to create backup: No backup path specified in app config file</error>');
                 $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/usage/config.md#deploy</info>');
-                
+
             } else {
 
                 $output->writeln('Backing up...');
@@ -60,7 +67,7 @@ class DeployApp extends Command
                     $git_hash = substr(trim(file_get_contents($git_path . '/' . $git_head)), 0, 7);
 
                     $backup_name = date('Y-m-d_H-i-s') . '_' . $git_hash;
-                    $backup_location = rtrim(App::getConfig('app.deploy.backup_path'), '/') . '/' . $backup_name;
+                    $backup_location = rtrim(App::getConfig('app.backup_path'), '/') . '/' . $backup_name;
 
                     if (!is_dir($backup_location)) {
                         mkdir($backup_location, 0755, true);
@@ -85,18 +92,18 @@ class DeployApp extends Command
         //shell_exec('git fetch --all');
         //shell_exec('git checkout --force ' . $target);
 
-        shell_exec('git fetch --all');
-        shell_exec('git reset --hard HEAD');
-        shell_exec('git merge ' . $target);
-
         //shell_exec('git fetch --all');
-        //shell_exec('git reset --hard ' . $target);
+        //shell_exec('git reset --hard HEAD');
+        //shell_exec('git merge ' . $target);
+
+        shell_exec('git fetch --all');
+        shell_exec('git reset --hard ' . $target);
         //shell_exec('git clean -f -d');
-        //shell_exec('git pull');
+        shell_exec('git pull');
 
         $output->writeln('Updating dependencies...');
 
-        //shell_exec('composer update');
+        shell_exec('composer update');
 
         $output->writeln('<info>Deployment complete!</info>');
 

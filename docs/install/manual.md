@@ -1,4 +1,4 @@
-# Install: Bare
+# Install: Manual
 
 It is recommended you install a supported [Bones project](../../README.md#installation) to help get you started.
 
@@ -10,7 +10,8 @@ The following steps will take you through the process of manually installing the
 composer require bayfrontmedia/bones
 ```
 
-Ensure the following autoload directives are added to your `composer.json` file:
+Create an `app/` directory in the base path of your project, 
+and ensure the following autoload directives are added to your `composer.json` file:
 
 ```
 "autoload": {
@@ -20,12 +21,19 @@ Ensure the following autoload directives are added to your `composer.json` file:
 }
 ```
 
-Any namespace other than `App` can be used. Just be sure to update the `namespace` key in the app [configuration file](#add-required-config-file).
+Any namespace other than `App` can be used, as long as the path to `app/` remains the same. 
+Just be sure to update the `namespace` key in the app [configuration file](#add-required-config-file).
 
 ### Add required environment variables
 
 The method in which you add environment variables may vary depending on your server setup.
-Typically, this is done by creating a `.env` file at the base path of your project.
+Typically, this is done by creating an `.env` file at the base path of your project.
+
+The [getEnv](../utilities/app.md#getenv) app utility can be used to retrieve environment variables from this file,
+and this should typically only be done from within configuration files.
+
+**Because the `.env` file contains sensitive information,
+it should never be made public or committed to your application's source control**
 
 ```dotenv
 APP_KEY=SECURE_APP_KEY
@@ -38,7 +46,7 @@ APP_DEPLOY_BACKUP_PATH=/path/to/deployment/backups
 ```
 
 > **NOTE:** Be sure to define a cryptographically secure app key for the APP_KEY variable.
-One can be created using the `key:create` command once Bones is installed.
+One can be created using the `php bones key:create` command once Bones is installed.
 
 ### Add required config file
 
@@ -156,6 +164,7 @@ Or, change "storage" to whatever you want the public storage directory to be nam
 
 At this point, installation of Bones should be complete.
 
-To utilize the CLI interface, navigate to the base path of your project and type the command: `php bones about:app`.
+To utilize the CLI interface, navigate to the base path of your project and type the command: `php bones about:bones`.
 
 To utilize the HTTP interface, navigate to the public web root of your project in a browser.
+Unless the HTTP request is being handled by a [router](../services/router.md) or some other event subscriber, a blank page will be returned.

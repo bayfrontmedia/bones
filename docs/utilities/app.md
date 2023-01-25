@@ -1,6 +1,7 @@
 # Utilities: App
 
-The app utilities allow you to easily use and reference data related to the application.
+The app utility has the namespace `Bayfront\Bones\Application\Utilities\App` and allows you to easily use 
+and reference data related to the application.
 All methods are static.
 
 ## Constants
@@ -325,7 +326,7 @@ $key = App::createKey();
 
 **Console command:**
 
-A key can also be created using the [console command](../usage/console.md) `key:create`.
+A key can also be created using the [console command](../usage/console.md) `php bones key:create`.
 
 <hr />
 
