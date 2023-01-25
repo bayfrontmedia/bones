@@ -1,8 +1,9 @@
 # Install: Manual
 
-It is recommended you install a supported [Bones project](../../README.md#installation) to help get you started.
+It is recommended to install a supported [Bones project](../../README.md#installation) to help get you started.
 
-The following steps will take you through the process of manually installing the bare minimum Bones application.
+The following steps will take you through the process of manually installing 
+the minimum requirements for a Bones application.
 
 ## Add Bones to Composer
 
@@ -36,13 +37,13 @@ and this should typically only be done from within configuration files.
 it should never be made public or committed to your application's source control**
 
 ```dotenv
-#---- Start Bones (bare) ----#
+#---- Start Bones ----#
 APP_KEY=SECURE_APP_KEY
 APP_DEBUG=true
 # Valid environments: dev, staging, qa, prod
 APP_ENVIRONMENT=dev
 APP_TIMEZONE=UTC
-#---- End Bones (bare) ----#
+#---- End Bones ----#
 ```
 
 > **NOTE:** Be sure to define a cryptographically secure app key for the APP_KEY variable.

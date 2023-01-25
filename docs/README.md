@@ -2,7 +2,7 @@
 
 ## Installation
 
-Please the [README](../README.md#installation) for a list of official Bones projects.
+It is recommended to install a supported [Bones project](../README.md#installation) to help you get started.
 
 For manual installation instructions, see [manual installation](install/manual.md).
 
@@ -46,12 +46,6 @@ and any other files you wish to store.
 **This file should never be made public or committed to your application's source control.**
 
 ## Configuration
-
-### Environment variables
-
-Add required environment variables as described in the [manual installation instructions](install/manual.md#add-required-environment-variables).
-
-### Configuration arrays
 
 General application configuration is done via config files in the `/config` directory.
 These files typically return an array.
