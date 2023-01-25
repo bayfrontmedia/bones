@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated the `Bootstrap` event subscriber when running the `php bones install:bare` command.
 - Updated the default template styling installed with the `php bones install:service --veil` command.
 - Moved `DeployApp` and `DeployPurge` console commands to install with `php bones install:bare`.
+- Renamed the `php bones about:app` command to `php bones about:bones`.
 - Updated documentation.
 
 ### Removed

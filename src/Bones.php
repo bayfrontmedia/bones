@@ -4,7 +4,7 @@ namespace Bayfront\Bones;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
-use Bayfront\Bones\Application\Kernel\Console\Commands\AboutApp;
+use Bayfront\Bones\Application\Kernel\Console\Commands\AboutBones;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
@@ -460,7 +460,7 @@ class Bones
 
         // ------------------------- Load Bones commands -------------------------
 
-        $console->add(new AboutApp());
+        $console->add(new AboutBones());
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
         $console->add(new EventList($events));

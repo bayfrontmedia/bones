@@ -164,7 +164,7 @@ Or, change "storage" to whatever you want the public storage directory to be nam
 
 At this point, installation of Bones should be complete.
 
-To utilize the CLI interface, navigate to the base path of your project and type the command: `php bones about:app`.
+To utilize the CLI interface, navigate to the base path of your project and type the command: `php bones about:bones`.
 
 To utilize the HTTP interface, navigate to the public web root of your project in a browser.
 Unless the HTTP request is being handled by a [router](../services/router.md) or some other event subscriber, a blank page will be returned.

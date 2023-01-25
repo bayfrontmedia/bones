@@ -17,9 +17,9 @@ Command line functionality includes:
 
 ```shell
 # Information about this Bones application
-php bones about:app
+php bones about:bones
 # Return as JSON
-php bones about:app --json
+php bones about:bones --json
 
 # List all registered aliases
 php bones alias:list
