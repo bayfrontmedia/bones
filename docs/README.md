@@ -48,24 +48,7 @@ and any other files you wish to store.
 
 ### Environment variables
 
-Environment variables are typically set in the `.env` file in the root directory.
-
-The [getEnv](utilities/app.md#getenv) app utility can be used to retrieve environment variables.
-
-**Because the `.env` file contains sensitive information,
-it should never be made public or committed to your application's source control**
-
-**Example:**
-
-```
-APP_KEY=SECURE_APP_KEY
-APP_DEBUG=false
-# Valid environments: dev, staging, qa, prod
-APP_ENVIRONMENT=dev
-APP_TIMEZONE=UTC
-# Optional path to deployment backups
-APP_DEPLOY_BACKUP_PATH=/path/to/deployment/backups
-```
+Add required environment variables as described in the [manual installation instructions](https://github.com/bayfrontmedia/bones/blob/dev/docs/install/bare.md#add-required-environment-variables).
 
 ### Configuration arrays
 

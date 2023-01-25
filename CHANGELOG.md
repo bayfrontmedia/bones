@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated the `Bootstrap` event subscriber when running the `bones install:bare` command.
 - Updated the default template styling installed with the `bones install:service --veil` command.
+- Updated documentation.
 
 ## [2.0.1]- 2023.01.24
 
