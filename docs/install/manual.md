@@ -36,13 +36,13 @@ and this should typically only be done from within configuration files.
 it should never be made public or committed to your application's source control**
 
 ```dotenv
+#---- Start Bones (bare) ----#
 APP_KEY=SECURE_APP_KEY
 APP_DEBUG=true
 # Valid environments: dev, staging, qa, prod
 APP_ENVIRONMENT=dev
 APP_TIMEZONE=UTC
-# Optional path to deployment backups
-APP_DEPLOY_BACKUP_PATH=/path/to/deployment/backups
+#---- End Bones (bare) ----#
 ```
 
 > **NOTE:** Be sure to define a cryptographically secure app key for the APP_KEY variable.

@@ -49,7 +49,7 @@ and any other files you wish to store.
 
 ### Environment variables
 
-Add required environment variables as described in the [manual installation instructions](https://github.com/bayfrontmedia/bones/blob/dev/docs/install/manual.md#add-required-environment-variables).
+Add required environment variables as described in the [manual installation instructions](install/manual.md#add-required-environment-variables).
 
 ### Configuration arrays
 

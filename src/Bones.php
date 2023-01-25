@@ -9,7 +9,6 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
-use Bayfront\Bones\Application\Kernel\Console\Commands\InstallBare;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallService;
 use Bayfront\Bones\Application\Kernel\Console\Commands\KeyCreate;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeCommand;
@@ -465,7 +464,6 @@ class Bones
         $console->add(new ContainerList(self::$container));
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
-        $console->add(new InstallBare());
         $console->add(new InstallService());
         $console->add(new KeyCreate());
         $console->add(new MakeCommand());

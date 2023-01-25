@@ -52,11 +52,6 @@ php bones filter:list --value=router.parameters
 # Subscriptions can be sorted by "filter", "priority", or "subscriber" (default)
 php bones filter:list --sort=filter
 
-# Install Bones (bare)
-php bones install:bare
-# To install optional services, use the following options:
---db --filesystem --logs --router --scheduler --veil
-
 ## Install an optional service
 php bones install:service --[OPTION]
 ## Service options include:
