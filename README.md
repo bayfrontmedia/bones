@@ -31,7 +31,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ### Bones App
 
-[Bones App](https://github.com/bayfrontmedia/bones-app) is the simplest "bare-bones" way to build an application using Bones.
+[Bones App](https://github.com/bayfrontmedia/bones-app) is a simple boilerplate to begin building an application 
+using the Bones framework.
 
 ## Documentation
 

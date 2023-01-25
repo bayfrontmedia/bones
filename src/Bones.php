@@ -9,7 +9,6 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
-use Bayfront\Bones\Application\Kernel\Console\Commands\InstallBare;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallService;
 use Bayfront\Bones\Application\Kernel\Console\Commands\KeyCreate;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeCommand;
@@ -126,7 +125,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '2.0.2');
+        Constants::define('BONES_VERSION', '2.0.3');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -465,7 +464,6 @@ class Bones
         $console->add(new ContainerList(self::$container));
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
-        $console->add(new InstallBare());
         $console->add(new InstallService());
         $console->add(new KeyCreate());
         $console->add(new MakeCommand());
