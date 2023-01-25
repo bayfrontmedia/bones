@@ -27,17 +27,20 @@
 
 @use:examples/layouts/partials/head
 
-<body style="font-size:18px;background-color:#f0f0f0;color:#374151;padding:1rem;">
+<body>
 
-<div id="content-wrap">
+<img class="logo" src="https://cdn1.onbayfront.com/bfm/brand/bfm-logo.svg"
+     alt="Bayfront Media"/>
 
-    <div id="content" style="background-color:#fff;padding:1rem;">
+<div class="container">
+
+    <main class="content">
 
         @place:content
 
-    </div> <!-- /#content -->
+    </main> <!-- /.content -->
 
-</div> <!-- /#content-wrap -->
+</div> <!-- /.container -->
 
 @use:examples/layouts/partials/footer
 

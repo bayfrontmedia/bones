@@ -487,9 +487,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalling($name, $output);
 
-                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/veil/resources/views/examples/layouts/page.veil.php';
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/veil/resources/views/examples/layouts/container.veil.php';
 
-                $dest_file = App::resourcesPath('/views/examples/layouts/page.veil.php');
+                $dest_file = App::resourcesPath('/views/examples/layouts/container.veil.php');
 
                 ConsoleUtilities::copyFile($src_file, $dest_file);
 
