@@ -126,7 +126,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '2.0.0');
+        Constants::define('BONES_VERSION', '2.0.2');
 
         // ------------------------- Load environment variables -------------------------
 
