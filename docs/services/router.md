@@ -23,7 +23,7 @@ return [
 ```
 
 Although routes do not have to be added until the `app.http` event,
-subscribing them to the `app.bootstrap` event will enable them to be shown when using the `route:list` [console command](#console-commands).
+subscribing them to the `app.bootstrap` event will enable them to be shown when using the `php bones route:list` [console command](#console-commands).
 
 In order to utilize the service container to resolve controllers, Bones utilizes a custom `RouterDispatcher` class,
 which adds the following [filter](filters.md):
@@ -32,7 +32,7 @@ which adds the following [filter](filters.md):
 
 ## Installation
 
-The router service can be installed with the `install:service --router` [console command](../usage/console.md).
+The router service can be installed with the `php bones install:service --router` [console command](../usage/console.md).
 
 Installing the router service will perform the following actions:
 
@@ -71,4 +71,4 @@ The `response.body` filter is used from within this file to filter the value of 
 
 The following [console commands](../usage/console.md) can be used with relation to the router:
 
-- `route:list`
+- `php bones route:list`

@@ -20,7 +20,7 @@ It is recommended to place all your views and template files in the `/resources/
 
 ## Installation
 
-The Veil service can be installed with the `install:service --veil` [console command](../usage/console.md).
+The Veil service can be installed with the `php bones install:service --veil` [console command](../usage/console.md).
 
 Installing Veil will perform the following actions:
 

@@ -95,4 +95,4 @@ class Handler extends ExceptionHandler implements ExceptionHandlerInterface
 
 The following [console commands](console.md) can be used with relation to exceptions:
 
-- `make:exception`
+- `php bones make:exception`

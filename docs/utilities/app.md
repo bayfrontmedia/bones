@@ -326,7 +326,7 @@ $key = App::createKey();
 
 **Console command:**
 
-A key can also be created using the [console command](../usage/console.md) `key:create`.
+A key can also be created using the [console command](../usage/console.md) `php bones key:create`.
 
 <hr />
 

@@ -97,7 +97,7 @@ This event is not accessible by the app.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded. 
 The [service container](../usage/container.md) is passed as a parameter.
 - `app.cli`: Executes when the app interface is `CLI`. The [Symfony Console application](../usage/console.md) is passed as a parameter.
-- `app.schedule.start`: Executes before running scheduled jobs from the command line using `schedule:run`.
+- `app.schedule.start`: Executes before running scheduled jobs from the command line using `php bones schedule:run`.
   The scheduler's [class instance](scheduler.md) is passed as a parameter.
 - `app.schedule.end`: Executes after all scheduled jobs are completed from the command line
 using `schedule:run`. The `$result` is passed as a parameter.
@@ -118,5 +118,5 @@ The underlying PHP Hooks library also has its own default events:
 
 The following [console commands](../usage/console.md) can be used with relation to events:
 
-- `event:list`
-- `make:event`
+- `php bones event:list`
+- `php bones make:event`

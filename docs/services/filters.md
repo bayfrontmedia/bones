@@ -87,7 +87,7 @@ $filtered = $filters->doFilter('example.filter', $filtered);
 
 ## Creating a subscription
 
-To create a filter subscriber, use the `make:filter` [console command](#console-commands).
+To create a filter subscriber, use the `php bones make:filter` [console command](#console-commands).
 
 ## Filters
 
@@ -97,5 +97,5 @@ Bones does not utilize any filters, except for those which may be created when i
 
 The following [console commands](../usage/console.md) can be used with relation to filters:
 
-- `filter:list`
-- `make:filter`
+- `php bones filter:list`
+- `php bones make:filter`

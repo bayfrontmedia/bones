@@ -36,7 +36,7 @@ return [
 
 ## Installation
 
-The database service can be installed with the `install:service --db` [console command](../usage/console.md).
+The database service can be installed with the `php bones install:service --db` [console command](../usage/console.md).
 
 After running the installation:
 

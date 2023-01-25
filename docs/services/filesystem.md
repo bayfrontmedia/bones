@@ -32,7 +32,7 @@ return [
 
 ## Installation
 
-The filesystem service can be installed with the `install:service --filesystem` [console command](../usage/console.md).
+The filesystem service can be installed with the `php bones install:service --filesystem` [console command](../usage/console.md).
 
 Installing the filesystem service will perform the following actions:
 

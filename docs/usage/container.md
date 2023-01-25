@@ -44,5 +44,5 @@ using the following app utilities:
 
 The following [console commands](console.md) can be used with relation to the container:
 
-- `alias:list`
-- `container:list`
+- `php bones alias:list`
+- `php bones container:list`

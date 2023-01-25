@@ -28,11 +28,11 @@ The Cron Scheduler instance is passed as a parameter.
 The `app.schedule.end` event is executed just after the jobs are completed, and includes the `$result` as a parameter.
 
 Although scheduled jobs do not have to be added until the `app.schedule.start` event,
-subscribing them to the `app.cli` event will enable them to be shown when using the `schedule:list` [console command](#console-commands).
+subscribing them to the `app.cli` event will enable them to be shown when using the `php bones schedule:list` [console command](#console-commands).
 
 ## Installation
 
-The scheduler service can be installed with the `install:service --scheduler` [console command](../usage/console.md).
+The scheduler service can be installed with the `php bones install:service --scheduler` [console command](../usage/console.md).
 
 Installing the scheduler service will perform the following actions:
 
@@ -50,5 +50,5 @@ An example job is provided.
 
 The following [console commands](../usage/console.md) can be used with relation to the scheduler:
 
-- `schedule:list`
-- `schedule:run`
+- `php bones schedule:list`
+- `php bones schedule:run`
