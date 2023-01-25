@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Application\Kernel\Console\Commands;
+namespace _namespace_\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Utilities\App;
@@ -10,6 +10,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * DeployPurge Command.
+ *
+ * This console command is designed to purge unwanted deployment backups.
+ *
+ * Created with Bones v_bones_version_
+ */
 class DeployPurge extends Command
 {
 
@@ -37,9 +44,9 @@ class DeployPurge extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        if (!App::getConfig('app.deploy.backup_path')
-            || App::getConfig('app.deploy.backup_path') == ''
-            || App::getConfig('app.deploy.backup_path') == '/') {
+        if (!App::getConfig('app.backup_path')
+            || App::getConfig('app.backup_path') == ''
+            || App::getConfig('app.backup_path') == '/') {
 
             $output->writeln('<error>Unable to purge deployment backups: No backup path specified in app config file</error>');
             $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/usage/config.md#deploy</info>');
@@ -50,7 +57,7 @@ class DeployPurge extends Command
 
         $output->writeln('<info>Beginning purge of deployment backups...</info>');
 
-        $backup_dirs = glob(rtrim(App::getConfig('app.deploy.backup_path'), '/') . '/*', GLOB_ONLYDIR);
+        $backup_dirs = glob(rtrim(App::getConfig('app.backup_path'), '/') . '/*', GLOB_ONLYDIR);
 
         if (empty($backup_dirs)) {
             $output->writeln('No existing backups to purge.');

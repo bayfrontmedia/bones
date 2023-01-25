@@ -16,12 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added deploy backup path to the `bones about:app` command.
+- Added deploy backup path to the `php bones about:app` command.
 
 ### Changed
 
-- Updated the `Bootstrap` event subscriber when running the `bones install:bare` command.
-- Updated the default template styling installed with the `bones install:service --veil` command.
+- Updated the `Bootstrap` event subscriber when running the `php bones install:bare` command.
+- Updated the default template styling installed with the `php bones install:service --veil` command.
+- Moved `DeployApp` and `DeployPurge` console commands to install with `php bones install:bare`.
 - Updated documentation.
 
 ### Removed
@@ -32,11 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Added `composer update` to `bones install:bare` console command.
+- Added `composer update` to `php bones install:bare` console command.
 
 ### Fixed
 
-- Fixed bug in `bones install:bare` when copying `APP_KEY` to `.env`.
+- Fixed bug in `php bones install:bare` when copying `APP_KEY` to `.env`.
 - Fixed bug in install console commands where `.env` file was omitted from Git.
 
 ## [2.0.0]- 2023.01.24

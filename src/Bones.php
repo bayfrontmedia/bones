@@ -7,8 +7,6 @@ use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AboutApp;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
-use Bayfront\Bones\Application\Kernel\Console\Commands\DeployApp;
-use Bayfront\Bones\Application\Kernel\Console\Commands\DeployPurge;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallBare;
@@ -465,8 +463,6 @@ class Bones
         $console->add(new AboutApp());
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
-        $console->add(new DeployApp());
-        $console->add(new DeployPurge());
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
         $console->add(new InstallBare());
