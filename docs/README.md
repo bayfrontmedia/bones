@@ -4,7 +4,7 @@
 
 Please the [README](../README.md#installation) for a list of official Bones projects.
 
-For manual installation instructions, see [bare installation](install/bare.md).
+For manual installation instructions, see [manual installation](install/manual.md).
 
 ## File structure
 
@@ -49,7 +49,7 @@ and any other files you wish to store.
 
 ### Environment variables
 
-Add required environment variables as described in the [manual installation instructions](https://github.com/bayfrontmedia/bones/blob/dev/docs/install/bare.md#add-required-environment-variables).
+Add required environment variables as described in the [manual installation instructions](https://github.com/bayfrontmedia/bones/blob/dev/docs/install/manual.md#add-required-environment-variables).
 
 ### Configuration arrays
 

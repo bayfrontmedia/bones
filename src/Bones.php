@@ -186,7 +186,7 @@ class Bones
                 /** @var EventService $events */
                 $events = self::$container->get('Bayfront\Bones\Application\Services\EventService');
 
-                $events->doEvent('bones.exception', $e, $response);
+                $events->doEvent('bones.exception', $response, $e);
 
             }
 

@@ -8,12 +8,12 @@ as narrowly or broadly as you like.
 With Bones, all PHP errors will be thrown as an `Bayfront\Bones\Exceptions\ErrorException` exception.
 
 Whenever an exception is thrown, the `bones.exception` event will be executed, if able.
-The exception and `response` service are passed as parameters to the event.
+The [response service](../services/response.md) and the exception are passed as parameters to the event.
 
 ## Exception handler
 
 Bones will automatically report and respond to exceptions.
-The [whoops](https://github.com/filp/whoops) library is used to respond to exceptions when the app is in debug mode, 
+Bones uses the [whoops](https://github.com/filp/whoops) library to respond to exceptions when the app is in debug mode, 
 or when running from the command line.
 
 If an `Errors` controller exists, Bones will attempt to resolve the `errorNUM` method, where `NUM` corresponds 
@@ -23,7 +23,7 @@ is passed to the method as a parameter.
 If a matching controller/method is not found, a plaintext response will be shown.
 
 You can customize how exceptions will be handled by creating a `Handler` class in the `/app/Exceptions/Handler` 
-directory which can extend `Bayfront\Bones\Abstracts\ExceptionHandler` (if you want Bones to also handle the exception) 
+directory which can extend `Bayfront\Bones\Abstracts\ExceptionHandler` (if you also want Bones to handle the exception) 
 and must implement `Bayfront\Bones\Interfaces\ExceptionHandlerInterface`.
 
 If this class exists, it will override the default `Bayfront\Bones\Exceptions\Handler` class.

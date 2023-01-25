@@ -1,4 +1,4 @@
-# Install: Bare
+# Install: Manual
 
 It is recommended you install a supported [Bones project](../../README.md#installation) to help get you started.
 

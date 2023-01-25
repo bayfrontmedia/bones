@@ -41,7 +41,7 @@ The database service can be installed with the `php bones install:service --db` 
 After running the installation:
 
 - Update the environment variables with your database credentials
-- Update your `compoer.json` file with `composer require ext-pdo`
+- Update your `composer.json` file with `composer require ext-pdo`
 
 Installing the database service will perform the following actions:
 

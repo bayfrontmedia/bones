@@ -50,7 +50,7 @@ class AboutApp extends Command
 
         ];
 
-        if (App::getConfig('app.deploy.backup_path')) {
+        if (App::getConfig('app.backup_path')) {
             $about['Deploy backup path'] = rtrim(App::getConfig('app.deploy.backup_path'), '/') . '/';
         }
 

@@ -100,13 +100,13 @@ The [service container](../usage/container.md) is passed as a parameter.
 - `app.schedule.start`: Executes before running scheduled jobs from the command line using `php bones schedule:run`.
   The scheduler's [class instance](scheduler.md) is passed as a parameter.
 - `app.schedule.end`: Executes after all scheduled jobs are completed from the command line
-using `schedule:run`. The `$result` is passed as a parameter.
-- `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) dispatches the request.
+using `php bones schedule:run`. The response of the scheduler's [run method](https://github.com/bayfrontmedia/cron-scheduler#run) is passed as a parameter.
+- `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) dispatches the request, if existing.
 - `app.controller`: Executes when a [controller](../usage/controllers.md) is constructed. The controller's class instance is passed as a parameter.
 - `app.model`: Executes when a [model](../usage/models.md) is constructed. The model's class instance is passed as a parameter.
 - `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter.
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. 
-This event accepts two parameters: [the thrown exception](../usage/exceptions.md) object and the [Response](response.md) service.
+This event accepts two parameters: the [Response](response.md) service and the [thrown exception](../usage/exceptions.md).
 - `bones.end`: Executes as the last event.
 
 The underlying PHP Hooks library also has its own default events:

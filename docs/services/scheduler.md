@@ -25,7 +25,8 @@ Scheduled jobs are typically setup as a cron job on the server.
 The `app.schedule.start` event is executed just before the jobs are ran. 
 The Cron Scheduler instance is passed as a parameter.
 
-The `app.schedule.end` event is executed just after the jobs are completed, and includes the `$result` as a parameter.
+The `app.schedule.end` event is executed just after the jobs are completed.
+The response of the scheduler's [run method](https://github.com/bayfrontmedia/cron-scheduler#run) is passed as a parameter
 
 Although scheduled jobs do not have to be added until the `app.schedule.start` event,
 subscribing them to the `app.cli` event will enable them to be shown when using the `php bones schedule:list` [console command](#console-commands).
