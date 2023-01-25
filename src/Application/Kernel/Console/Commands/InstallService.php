@@ -67,7 +67,7 @@ class InstallService extends Command
 
                 // Add PDO extension to Composer
 
-                shell_exec('composer require ext-pdo');
+                //shell_exec('composer require ext-pdo');
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
@@ -125,7 +125,8 @@ class InstallService extends Command
 
             ConsoleUtilities::msgInstallComplete('Database service', $output);
 
-            $output->writeln('<info>*** Be sure to update .env with your database credentials! ***</info>');
+            $output->writeln('<info>*** NOTE: Be sure to update .env with your database credentials! ***</info>');
+            $output->writeln('<info>*** NOTE: It is recommended to update Composer using "composer require ext-pdo" ***</info>');
             $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/services/db.md</info>');
 
         }

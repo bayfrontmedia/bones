@@ -1,6 +1,7 @@
 # Utilities: Constants
 
-The constants utility allows you to easily define and retrieve constants to be used throughout the app.
+The constants utility has the namespace `Bayfront\Bones\Application\Utilities\Constants`, 
+and allows you to easily define and retrieve constants to be used throughout the app.
 All methods are static.
 
 ## Bones constants

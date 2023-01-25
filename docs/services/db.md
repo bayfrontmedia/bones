@@ -38,6 +38,11 @@ return [
 
 The database service can be installed with the `install:service --db` [console command](../usage/console.md).
 
+After running the installation:
+
+- Update the environment variables with your database credentials
+- Update your `compoer.json` file with `composer require ext-pdo`
+
 Installing the database service will perform the following actions:
 
 ### Add environment variables

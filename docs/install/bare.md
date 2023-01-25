@@ -25,7 +25,7 @@ Any namespace other than `App` can be used. Just be sure to update the `namespac
 ### Add required environment variables
 
 The method in which you add environment variables may vary depending on your server setup.
-Typically, this is done by creating a `.env` file at the base path of your project.
+Typically, this is done by creating an `.env` file at the base path of your project.
 
 The [getEnv](../utilities/app.md#getenv) app utility can be used to retrieve environment variables from this file,
 and this should typically only be done from within configuration files.

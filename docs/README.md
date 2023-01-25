@@ -19,6 +19,7 @@ The file structure for a Bones application is as follows:
   /Filters
   /Models
   /Services
+  /Utilities
 /config
   /app.php
 /public

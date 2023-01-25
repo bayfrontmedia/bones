@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated the default template styling installed with the `bones install:service --veil` command.
 - Updated documentation.
 
+### Removed
+
+- Removed all occurrences of `shell_exec` in console commands since this may not be available to use in all environments.
+
 ## [2.0.1]- 2023.01.24
 
 ### Changed

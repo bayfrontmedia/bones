@@ -1,6 +1,7 @@
 # Utilities: App
 
-The app utilities allow you to easily use and reference data related to the application.
+The app utility has the namespace `Bayfront\Bones\Application\Utilities\App` and allows you to easily use 
+and reference data related to the application.
 All methods are static.
 
 ## Constants

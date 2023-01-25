@@ -95,18 +95,18 @@ Bones is set up to use the following events, in a typical order of execution:
 - `bones.start`: Executes just after Bones has initialized, and before the app is bootstrapped. 
 This event is not accessible by the app.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded. 
-The service container is passed as a parameter.
-- `app.cli`: Executes when the app interface is `CLI`. The Symfony Console application is passed as a parameter.
+The [service container](../usage/container.md) is passed as a parameter.
+- `app.cli`: Executes when the app interface is `CLI`. The [Symfony Console application](../usage/console.md) is passed as a parameter.
 - `app.schedule.start`: Executes before running scheduled jobs from the command line using `schedule:run`.
-  The scheduler's class instance is passed as a parameter.
+  The scheduler's [class instance](scheduler.md) is passed as a parameter.
 - `app.schedule.end`: Executes after all scheduled jobs are completed from the command line
 using `schedule:run`. The `$result` is passed as a parameter.
-- `app.http`: Executes when the app interface is `HTTP` just before the router dispatches the request.
-- `app.controller`: Executes when a controller is constructed. The controller's class instance is passed as a parameter.
-- `app.model`: Executes when a model is constructed. The model's class instance is passed as a parameter.
-- `app.service`: Executes when a service is constructed. The service's class instance is passed as a parameter.
+- `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) dispatches the request.
+- `app.controller`: Executes when a [controller](../usage/controllers.md) is constructed. The controller's class instance is passed as a parameter.
+- `app.model`: Executes when a [model](../usage/models.md) is constructed. The model's class instance is passed as a parameter.
+- `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter.
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. 
-This event accepts two parameters: the thrown exception object and the [Response](response.md) service.
+This event accepts two parameters: [the thrown exception](../usage/exceptions.md) object and the [Response](response.md) service.
 - `bones.end`: Executes as the last event.
 
 The underlying PHP Hooks library also has its own default events:
