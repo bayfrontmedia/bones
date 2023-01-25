@@ -12,15 +12,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.0.2]- Upcoming
+
+### Added
+
+- Added deploy backup path to the `bones about:app` command.
+
+### Changed
+
+- Updated the `Bootstrap` event subscriber when running the `bones install:bare` command.
+
 ## [2.0.1]- 2023.01.24
 
 ### Changed
 
-- Added `composer update` to `install:bare` console command.
+- Added `composer update` to `bones install:bare` console command.
 
 ### Fixed
 
-- Fixed bug in `install:bare` when copying `APP_KEY` to `.env`.
+- Fixed bug in `bones install:bare` when copying `APP_KEY` to `.env`.
 - Fixed bug in install console commands where `.env` file was omitted from Git.
 
 ## [2.0.0]- 2023.01.24
