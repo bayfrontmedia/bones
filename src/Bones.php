@@ -126,7 +126,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '2.0.4');
+        Constants::define('BONES_VERSION', '2.0.5');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -525,7 +525,7 @@ class Bones
 
             foreach ($list as $item) {
 
-                if ($item->isFile()) {
+                if ($item->isFile() && $item->getExtension() == 'php') {
 
                     $class = App::getConfig('app.namespace', '') . 'Events\\' . basename($item->getFileName(), '.php');
 
@@ -571,7 +571,7 @@ class Bones
 
             foreach ($list as $item) {
 
-                if ($item->isFile()) {
+                if ($item->isFile() && $item->getExtension() == 'php') {
 
                     $class = App::getConfig('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
 
@@ -616,7 +616,7 @@ class Bones
 
             foreach ($list as $item) {
 
-                if ($item->isFile()) {
+                if ($item->isFile() && $item->getExtension() == 'php') {
 
                     $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . basename($item->getFileName(), '.php');
 
