@@ -8,7 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class KeyCreate extends Command
+class MakeKey extends Command
 {
 
     /**
@@ -18,7 +18,7 @@ class KeyCreate extends Command
     protected function configure()
     {
 
-        $this->setName('key:create')
+        $this->setName('make:key')
             ->setDescription('Create a cryptographically secure key');
 
     }

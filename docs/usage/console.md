@@ -52,13 +52,13 @@ php bones filter:list --value=router.parameters
 # Subscriptions can be sorted by "filter", "priority", or "subscriber" (default)
 php bones filter:list --sort=filter
 
+# Set the APP_KEY environment variable to a cryptographically secure key
+php bones install:key
+
 ## Install an optional service
 php bones install:service --[OPTION]
 ## Service options include:
 --db --filesystem --logs --router --scheduler --veil
-
-# Create a cryptographically secure key
-php bones key:create
 
 # Create a new console command
 php bones make:command NAME
@@ -74,6 +74,9 @@ php bones make:exception NAME
 
 # Create a new filter subscriber
 php bones make:filter NAME
+
+# Create a cryptographically secure key
+php bones make:key
 
 # Create a new model
 php bones make:model NAME

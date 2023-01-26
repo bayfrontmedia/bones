@@ -9,8 +9,9 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\InstallKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallService;
-use Bayfront\Bones\Application\Kernel\Console\Commands\KeyCreate;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MakeKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeCommand;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeController;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeEvent;
@@ -464,13 +465,14 @@ class Bones
         $console->add(new ContainerList(self::$container));
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
+        $console->add(new InstallKey());
         $console->add(new InstallService());
-        $console->add(new KeyCreate());
         $console->add(new MakeCommand());
         $console->add(new MakeController());
         $console->add(new MakeEvent());
         $console->add(new MakeException());
         $console->add(new MakeFilter());
+        $console->add(new MakeKey());
         $console->add(new MakeModel());
         $console->add(new MakeService());
 

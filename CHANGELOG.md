@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [2.0.4]- 2023.01.26
+
+### Added
+
+- Added the `php bones install:key` command.
+
+### Changed
+
+- Changed the `php bones key:create` command to `php bones make:key`.
+
 ## [2.0.3]- 2023.01.25
 
 ### Removed

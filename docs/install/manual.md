@@ -47,7 +47,11 @@ APP_TIMEZONE=UTC
 ```
 
 > **NOTE:** Be sure to define a cryptographically secure app key for the APP_KEY variable.
-One can be created using the `php bones key:create` command once Bones is installed.
+
+Once Bones is installed, you can use the `php bones install:key` command to replace `SECURE_APP_KEY` with a valid key,
+or you can use the `php bones make:key` command to generate a key you can define manually.
+
+**Once an app key is defined, it should never be changed.**
 
 ### Add required config file
 
