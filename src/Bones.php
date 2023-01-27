@@ -37,11 +37,9 @@ use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
-use Bayfront\Filesystem\Filesystem;
 use Bayfront\Hooks\Hooks;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-use Bayfront\MonologFactory\LoggerFactory;
 use Bayfront\PDO\DbFactory;
 use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
@@ -335,28 +333,6 @@ class Bones
 
             self::$container->set(get_class($db), $db);
             self::$container->setAlias('db', get_class($db));
-
-        }
-
-        // ------------------------- Filesystem (optional) -------------------------
-
-        if (is_array(App::getConfig('filesystem'))) {
-
-            self::$container->set('Bayfront\Filesystem\Filesystem', function () {
-                return new Filesystem(App::getConfig('filesystem'));
-            });
-            self::$container->setAlias('filesystem', 'Bayfront\Filesystem\Filesystem');
-
-        }
-
-        // ------------------------- Logs (optional) -------------------------
-
-        if (is_array(App::getConfig('logs'))) {
-
-            self::$container->set('Bayfront\MonologFactory\LoggerFactory', function () {
-                return new LoggerFactory(App::getConfig('logs'));
-            });
-            self::$container->setAlias('logs', 'Bayfront\MonologFactory\LoggerFactory');
 
         }
 
