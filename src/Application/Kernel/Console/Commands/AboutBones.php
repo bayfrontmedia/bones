@@ -50,10 +50,6 @@ class AboutBones extends Command
 
         ];
 
-        if (App::getConfig('app.backup_path')) {
-            $about['Deploy backup path'] = rtrim(App::getConfig('app.deploy.backup_path'), '/') . '/';
-        }
-
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($about));
         } else {
