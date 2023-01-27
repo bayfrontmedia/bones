@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class EventList extends Command
 {
 
-    protected $events;
+    protected EventService $events;
 
     public function __construct(EventService $events)
     {
@@ -27,7 +27,7 @@ class EventList extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('event:list')

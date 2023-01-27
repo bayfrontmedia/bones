@@ -37,12 +37,14 @@ use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
-use Bayfront\Filesystem\Filesystem;
+use Bayfront\CronScheduler\FilesystemException;
 use Bayfront\Hooks\Hooks;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-use Bayfront\MonologFactory\LoggerFactory;
 use Bayfront\PDO\DbFactory;
+use Bayfront\PDO\Exceptions\ConfigurationException;
+use Bayfront\PDO\Exceptions\InvalidDatabaseException;
+use Bayfront\PDO\Exceptions\UnableToConnectException;
 use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
 use Bayfront\TimeHelpers\Time;
@@ -57,7 +59,7 @@ class Bones
 
     /** @var Container */
 
-    public static $container;
+    public static Container $container;
 
     /**
      * @param BonesConstructorInterface $constructor
@@ -86,7 +88,7 @@ class Bones
      * @noinspection PhpUnusedParameterInspection
      */
 
-    protected function safeInclude(string $file, Container $container)
+    protected function safeInclude(string $file, Container $container): void
     {
         include($file);
     }
@@ -98,20 +100,30 @@ class Bones
      * @var array
      */
 
-    protected $interface_services = [];
+    protected array $interface_services = [];
 
     /**
      * Start app.
      *
+     * @param string $interface
      * @return void
      * @throws ConstantAlreadyDefinedException
-     * @throws UndefinedConstantException
-     * @throws InvalidConfigurationException
      * @throws ContainerException
+     * @throws DispatchException
+     * @throws ErrorException
+     * @throws InvalidConfigurationException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws ServiceException
+     * @throws UndefinedConstantException
+     * @throws FilesystemException
+     * @throws ConfigurationException
+     * @throws InvalidDatabaseException
+     * @throws UnableToConnectException
      * @throws Exception
      */
 
-    public function start(string $interface)
+    public function start(string $interface): void
     {
 
         if ($interface !== App::INTERFACE_CLI && $interface !== App::INTERFACE_HTTP) {
@@ -126,7 +138,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '2.0.5');
+        Constants::define('BONES_VERSION', '3.0.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -248,7 +260,7 @@ class Bones
 
             foreach ($constants['Core'] as $key => $value) {
 
-                if (substr($key, 0, 2) == 'E_' && $errno == $value) {
+                if (str_starts_with($key, 'E_') && $errno == $value) {
 
                     $ename = ltrim($key, 'E_');
                     break;
@@ -338,28 +350,6 @@ class Bones
 
         }
 
-        // ------------------------- Filesystem (optional) -------------------------
-
-        if (is_array(App::getConfig('filesystem'))) {
-
-            self::$container->set('Bayfront\Filesystem\Filesystem', function () {
-                return new Filesystem(App::getConfig('filesystem'));
-            });
-            self::$container->setAlias('filesystem', 'Bayfront\Filesystem\Filesystem');
-
-        }
-
-        // ------------------------- Logs (optional) -------------------------
-
-        if (is_array(App::getConfig('logs'))) {
-
-            self::$container->set('Bayfront\MonologFactory\LoggerFactory', function () {
-                return new LoggerFactory(App::getConfig('logs'));
-            });
-            self::$container->setAlias('logs', 'Bayfront\MonologFactory\LoggerFactory');
-
-        }
-
         // ------------------------- Router (optional) -------------------------
 
         if (is_array(App::getConfig('router'))) {
@@ -375,7 +365,7 @@ class Bones
 
         if (is_array(App::getConfig('veil'))) {
 
-            self::$container->set('Bayfront\Veil\Veil', function() {
+            self::$container->set('Bayfront\Veil\Veil', function () {
                 return new Veil(App::getConfig('veil'));
             });
 
@@ -425,7 +415,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function startHttp(Response $response, EventService $events, FilterService $filters)
+    protected function startHttp(Response $response, EventService $events, FilterService $filters): void
     {
 
         $events->doEvent('app.http');
@@ -446,7 +436,7 @@ class Bones
      * @throws Exception
      */
 
-    protected function startCli(EventService $events, FilterService $filters)
+    protected function startCli(EventService $events, FilterService $filters): void
     {
 
         $console = new Application();
@@ -514,7 +504,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadEventSubscribers(EventService $events)
+    protected function loadEventSubscribers(EventService $events): void
     {
 
         $dir = App::basePath('/app/Events');
@@ -560,7 +550,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadFilterSubscribers(FilterService $filters)
+    protected function loadFilterSubscribers(FilterService $filters): void
     {
 
         $dir = App::basePath('/app/Filters');
@@ -605,7 +595,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadAppCommands(Application $console)
+    protected function loadAppCommands(Application $console): void
     {
 
         $dir = App::basePath('/app/Console/Commands');

@@ -17,7 +17,7 @@ class AboutBones extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('about:bones')

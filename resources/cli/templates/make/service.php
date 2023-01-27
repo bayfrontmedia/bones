@@ -13,7 +13,7 @@ use Bayfront\Bones\Application\Services\EventService;
 class _service_name_ extends Service
 {
 
-    protected $events;
+    protected EventService $events;
 
     /**
      * The container will resolve any dependencies.

@@ -11,7 +11,7 @@ class BonesConstructor implements BonesConstructorInterface
 
     /** @var array */
 
-    protected $config;
+    protected array $config;
 
     /**
      * @param array $config

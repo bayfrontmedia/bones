@@ -16,8 +16,8 @@ use Bayfront\RouteIt\Router;
 class Routes extends EventSubscriber implements EventSubscriberInterface
 {
 
-    protected $router;
-    protected $filter;
+    protected Router $router;
+    protected FilterService $filter;
 
     /**
      * The container will resolve any dependencies.
@@ -54,7 +54,7 @@ class Routes extends EventSubscriber implements EventSubscriberInterface
      * @return void
      */
 
-    public function addRoutes()
+    public function addRoutes(): void
     {
 
         $this->router->setHost(App::getConfig('router.host'))

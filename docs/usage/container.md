@@ -14,8 +14,6 @@ referenced by their alias (see table below).
 | [Filters](../services/filters.md)        | `Bayfront\Bones\Application\Services\FilterService`     | `filters`    |
 | [HTTP Response](../services/response.md) | `Bayfront\HttpResponse\Response`                        | `response`   |
 | [Database](../services/db.md)*           | `Bayfront\PDO\Db`                                       | `db`         |
-| [Filesystem](../services/filesystem.md)* | `Bayfront\Filesystem\Filesystem`                        | `filesystem` |
-| [Logs](../services/logs.md)*             | `Bayfront\MonologFactory\LoggerFactory`                 | `logs`       |
 | [Router](../services/router.md)*         | `Bayfront\RouteIt\Router`                               | `router`     |
 | [Scheduler](../services/scheduler.md)*   | `Bayfront\CronScheduler\Cron`                           | `scheduler`  |
 | [Veil](../services/veil.md)*             | `Bayfront\Veil\Veil`                                    | `veil`       |

@@ -8,7 +8,7 @@ use Bayfront\Bones\Exceptions\UndefinedConstantException;
 class Constants
 {
 
-    protected static $constants = [];
+    protected static array $constants = [];
 
     /**
      * Is constant already defined?
@@ -50,7 +50,7 @@ class Constants
      * @throws UndefinedConstantException
      */
 
-    public static function get(string $key)
+    public static function get(string $key): mixed
     {
 
         if (!self::isDefined($key)) {

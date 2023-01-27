@@ -22,7 +22,7 @@ class Handler extends ExceptionHandler implements ExceptionHandlerInterface
      * @var array $excluded_classes
      */
 
-    protected $excluded_classes = [
+    protected array $excluded_classes = [
         'Bayfront\Bones\Exceptions\HttpException'
     ];
 

@@ -17,10 +17,10 @@ use Bayfront\Veil\Veil;
 class VeilExample extends Controller
 {
 
-    protected $events;
-    protected $filters;
-    protected $response;
-    protected $veil;
+    protected EventService $events;
+    protected FilterService $filters;
+    protected Response $response;
+    protected Veil $veil;
 
     /**
      * The container will resolve any dependencies.

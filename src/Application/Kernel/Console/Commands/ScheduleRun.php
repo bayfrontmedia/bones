@@ -13,8 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ScheduleRun extends Command
 {
 
-    protected $scheduler;
-    protected $events;
+    protected Cron $scheduler;
+    protected EventService $events;
 
     public function __construct(Cron $scheduler, EventService $events)
     {
