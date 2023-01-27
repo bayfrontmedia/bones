@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [3.0.0]- 2023.01.27
+
+### Added
+
+- Added support for PHP 8.
+
+### Removed
+
+- Removed the optional `filesystem` and `logs` services.
+
 ## [2.0.5]- 2023.01.26
 
 ### Fixed

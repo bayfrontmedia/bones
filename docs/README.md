@@ -85,8 +85,6 @@ Bones will automatically place the following services into the container:
 Depending on your installation configuration, Bones may use these place additional services into the container:
 
 - [Db](services/db.md)
-- [Filesystem](services/filesystem.md)
-- [Logs](services/logs.md)
 - [Router](services/router.md)
 - [Scheduler](services/scheduler.md)
 - [Veil](services/veil.md)
