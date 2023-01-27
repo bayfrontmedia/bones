@@ -89,6 +89,11 @@ Depending on your installation configuration, Bones may use these place addition
 - [Scheduler](services/scheduler.md)
 - [Veil](services/veil.md)
 
+Other commonly used helpful services you may wish to bootstrap into your app include:
+
+- [Flysystem](https://flysystem.thephpleague.com/docs/)
+- [Monolog](https://seldaek.github.io/monolog/)
+
 ### Utilities
 
 - [App](utilities/app.md)
