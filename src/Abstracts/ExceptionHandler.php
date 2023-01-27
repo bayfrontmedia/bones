@@ -8,7 +8,6 @@ use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\Response;
-use Bayfront\MonologFactory\LoggerFactory;
 use Throwable;
 use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\PrettyPageHandler;
@@ -89,13 +88,11 @@ abstract class ExceptionHandler
 
         $container = App::getContainer();
 
-        if ($container->has('Bayfront\MonologFactory\LoggerFactory')) {
+        if ($container->has('Monolog\Logger')) {
 
             $data = $this->getDataArray($response, $e);
 
-            /** @var LoggerFactory $logs */
-
-            $log = $container->get('Bayfront\MonologFactory\LoggerFactory');
+            $log = $container->get('Monolog\Logger');
 
             $log->critical('Exception (' . get_class($e) . '): ' . $e->getMessage(), [
                 'data' => $data
