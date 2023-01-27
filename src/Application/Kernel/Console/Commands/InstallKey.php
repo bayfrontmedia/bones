@@ -17,7 +17,7 @@ class InstallKey extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('install:key')
@@ -55,7 +55,7 @@ class InstallKey extends Command
 
             return Command::SUCCESS;
 
-        } catch (ConsoleException $e) {
+        } catch (ConsoleException) {
             ConsoleUtilities::msgFailedToWrite($name, $output);
             return Command::FAILURE;
         }

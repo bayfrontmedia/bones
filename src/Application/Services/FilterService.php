@@ -9,7 +9,7 @@ use Bayfront\Hooks\Hooks;
 class FilterService
 {
 
-    protected $hooks;
+    protected Hooks $hooks;
 
     public function __construct(Hooks $hooks)
     {
@@ -34,7 +34,7 @@ class FilterService
      * @throws ServiceException
      */
 
-    public function addSubscriber(FilterSubscriberInterface $subscriber)
+    public function addSubscriber(FilterSubscriberInterface $subscriber): void
     {
 
         $filters = $subscriber->getSubscriptions();
@@ -72,7 +72,7 @@ class FilterService
      * @return mixed
      */
 
-    public function doFilter(string $name, $value)
+    public function doFilter(string $name, $value): mixed
     {
         return $this->hooks->doFilter($name, $value);
     }

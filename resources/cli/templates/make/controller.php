@@ -14,8 +14,8 @@ use Bayfront\HttpResponse\Response;
 class _controller_name_ extends Controller
 {
 
-    protected $events;
-    protected $response;
+    protected EventService $events;
+    protected Response $response;
 
     /**
      * The container will resolve any dependencies.

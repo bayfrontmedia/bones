@@ -27,7 +27,7 @@ class _command_name_ extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('_command_command_')

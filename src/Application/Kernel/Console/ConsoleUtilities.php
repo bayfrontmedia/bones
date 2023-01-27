@@ -48,7 +48,7 @@ class ConsoleUtilities
      * @throws ConsoleException
      */
 
-    public static function replaceFileContents(string $src, array $replacements)
+    public static function replaceFileContents(string $src, array $replacements): void
     {
 
         $contents = file_get_contents($src);
@@ -75,7 +75,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgInstalling(string $name, OutputInterface $output)
+    public static function msgInstalling(string $name, OutputInterface $output): void
     {
         $output->writeln('Installing ' . $name . '...');
     }
@@ -86,7 +86,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgEnvAdding(string $name, OutputInterface $output)
+    public static function msgEnvAdding(string $name, OutputInterface $output): void
     {
         $output->writeln('Adding ' . $name . ' to .env...');
     }
@@ -99,7 +99,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgInstalled(string $name, OutputInterface $output)
+    public static function msgInstalled(string $name, OutputInterface $output): void
     {
         $output->writeln('<info>' . ucfirst($name) . ' successfully installed!</info>');
     }
@@ -110,7 +110,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgEnvInstalled(string $name, OutputInterface $output)
+    public static function msgEnvInstalled(string $name, OutputInterface $output): void
     {
         $output->writeln('<info>' . ucfirst($name) . ' successfully added to .env!</info>');
     }
@@ -121,7 +121,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgInstallComplete(string $name, OutputInterface $output)
+    public static function msgInstallComplete(string $name, OutputInterface $output): void
     {
         $output->writeln('<info>' . ucfirst($name) . ' installation complete!</info>');
     }
@@ -134,7 +134,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgEnvExists(string $name, OutputInterface $output)
+    public static function msgEnvExists(string $name, OutputInterface $output): void
     {
         $output->writeln('<error>Unable to add ' . $name . ' to .env: One or more variables already exist</error>');
     }
@@ -145,7 +145,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgEnvFailedToWrite(string $name, OutputInterface $output)
+    public static function msgEnvFailedToWrite(string $name, OutputInterface $output): void
     {
         $output->writeln('<error>Unable to add ' . $name . ' to .env: Check permissions and try again.</error>');
     }
@@ -156,7 +156,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgFileExists(string $name, OutputInterface $output)
+    public static function msgFileExists(string $name, OutputInterface $output): void
     {
         $output->writeln('<error>Skipping ' . $name . ': File already exists</error>');
     }
@@ -167,7 +167,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgUnableToCopy(string $name, OutputInterface $output)
+    public static function msgUnableToCopy(string $name, OutputInterface $output): void
     {
         $output->writeln('<error>Unable to copy ' . $name . ': Check permissions and try again.</error>');
     }
@@ -178,7 +178,7 @@ class ConsoleUtilities
      * @return void
      */
 
-    public static function msgFailedToWrite(string $name, OutputInterface $output)
+    public static function msgFailedToWrite(string $name, OutputInterface $output): void
     {
         $output->writeln('<error>Unable to write to ' . $name . ' file: Check permissions and try again.</error>');
     }

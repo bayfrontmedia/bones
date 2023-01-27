@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AliasList extends Command
 {
 
-    protected $container;
+    protected Container $container;
 
     public function __construct(Container $container)
     {
@@ -26,7 +26,7 @@ class AliasList extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('alias:list')

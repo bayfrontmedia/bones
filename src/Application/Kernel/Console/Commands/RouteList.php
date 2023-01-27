@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RouteList extends Command
 {
 
-    protected $router;
+    protected Router $router;
 
     public function __construct(Router $router)
     {
@@ -28,7 +28,7 @@ class RouteList extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('route:list')

@@ -21,7 +21,7 @@ class MakeModel extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('make:model')
@@ -66,13 +66,13 @@ class MakeModel extends Command
 
             return Command::SUCCESS;
 
-        } catch (FileAlreadyExistsException $e) {
+        } catch (FileAlreadyExistsException) {
             ConsoleUtilities::msgFileExists($util_name, $output);
             return Command::FAILURE;
-        } catch (UnableToCopyException $e) {
+        } catch (UnableToCopyException) {
             ConsoleUtilities::msgUnableToCopy($util_name, $output);
             return Command::FAILURE;
-        } catch (ConsoleException $e) {
+        } catch (ConsoleException) {
             ConsoleUtilities::msgFailedToWrite($util_name, $output);
             return Command::FAILURE;
         }

@@ -20,10 +20,10 @@ use Bayfront\StringHelpers\Str;
 class RouterDispatcher
 {
 
-    protected $container;
-    protected $filters;
-    protected $response;
-    protected $route;
+    protected Container $container;
+    protected FilterService $filters;
+    protected Response $response;
+    protected array $route;
 
     public function __construct(Container $container, FilterService $filters, Response $response, array $route)
     {
@@ -40,7 +40,7 @@ class RouterDispatcher
      * @return void
      */
 
-    protected function safeInclude(string $file)
+    protected function safeInclude(string $file): void
     {
         include($file);
     }
@@ -56,7 +56,7 @@ class RouterDispatcher
      * @throws NotFoundException
      */
 
-    public function dispatchRoute()
+    public function dispatchRoute(): mixed
     {
 
         // Define everything here for continuity

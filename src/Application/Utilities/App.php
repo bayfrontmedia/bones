@@ -64,7 +64,7 @@ class App
     {
         try {
             return Constants::get('APP_INTERFACE');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -81,32 +81,19 @@ class App
      * @return mixed
      */
 
-    public static function getEnv(string $key, $default = null)
+    public static function getEnv(string $key, $default = null): mixed
     {
 
         if (isset($_ENV[$key])) {
 
             // Convert string to type
 
-            switch ($_ENV[$key]) {
-
-                case 'true':
-
-                    return true;
-
-                case 'false':
-
-                    return false;
-
-                case 'null':
-
-                    return NULL;
-
-                default:
-
-                    return $_ENV[$key];
-
-            }
+            return match ($_ENV[$key]) {
+                'true' => true,
+                'false' => false,
+                'null' => NULL,
+                default => $_ENV[$key],
+            };
 
         }
 
@@ -126,19 +113,19 @@ class App
         return isset($_ENV[$key]);
     }
 
-    protected static $config = [];
+    protected static array $config = [];
 
     /**
      * Returns value from a configuration array key using dot notation,
      * with the first segment being the filename. (e.g.: filename.key)
      *
      * @param $key string (Key to retrieve in dot notation)
-     * @param $default mixed (Default value to return if not existing)
+     * @param $default mixed|null (Default value to return if not existing)
      *
      * @return mixed
      */
 
-    public static function getConfig(string $key, $default = null)
+    public static function getConfig(string $key, mixed $default = null): mixed
     {
 
         if (!Arr::has(self::$config, $key)) { // If value does not exist on config array
@@ -187,7 +174,7 @@ class App
     {
         try {
             return Constants::get('APP_BASE_PATH') . '/' . ltrim($path, '/');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -203,7 +190,7 @@ class App
     {
         try {
             return Constants::get('APP_PUBLIC_PATH') . '/' . ltrim($path, '/');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -219,7 +206,7 @@ class App
     {
         try {
             return Constants::get('APP_CONFIG_PATH') . '/' . ltrim($path, '/');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -235,7 +222,7 @@ class App
     {
         try {
             return Constants::get('APP_RESOURCES_PATH') . '/' . ltrim($path, '/');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -251,7 +238,7 @@ class App
     {
         try {
             return Constants::get('APP_STORAGE_PATH') . '/' . ltrim($path, '/');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -287,7 +274,7 @@ class App
 
         try {
             $start = Constants::get('BONES_START');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             $start = microtime(true);
         }
 
@@ -304,7 +291,7 @@ class App
     {
         try {
             return Constants::get('BONES_VERSION');
-        } catch (UndefinedConstantException $e) {
+        } catch (UndefinedConstantException) {
             return '';
         }
     }
@@ -331,7 +318,7 @@ class App
      * @throws NotFoundException
      */
 
-    public static function make(string $class, array $params = [])
+    public static function make(string $class, array $params = []): mixed
     {
         return self::getContainer()->make($class, $params);
     }
@@ -344,7 +331,7 @@ class App
      * @throws NotFoundException
      */
 
-    public static function get(string $id)
+    public static function get(string $id): mixed
     {
         return self::getContainer()->get($id);
     }

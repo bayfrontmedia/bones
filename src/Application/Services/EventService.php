@@ -9,7 +9,7 @@ use Bayfront\Hooks\Hooks;
 class EventService
 {
 
-    protected $hooks;
+    protected Hooks $hooks;
 
     public function __construct(Hooks $hooks)
     {
@@ -29,10 +29,12 @@ class EventService
     /**
      * Add event subscriber.
      *
+     * @param EventSubscriberInterface $subscriber
+     * @return void
      * @throws ServiceException
      */
 
-    public function addSubscriber(EventSubscriberInterface $subscriber)
+    public function addSubscriber(EventSubscriberInterface $subscriber): void
     {
 
         $events = $subscriber->getSubscriptions();
@@ -70,7 +72,7 @@ class EventService
      * @return void
      */
 
-    public function doEvent(string $event, ...$arg)
+    public function doEvent(string $event, ...$arg): void
     {
         $this->hooks->doEvent($event, ...$arg);
     }

@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ScheduleList extends Command
 {
 
-    protected $scheduler;
+    protected Cron $scheduler;
 
     public function __construct(Cron $scheduler)
     {
@@ -27,7 +27,7 @@ class ScheduleList extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('schedule:list')

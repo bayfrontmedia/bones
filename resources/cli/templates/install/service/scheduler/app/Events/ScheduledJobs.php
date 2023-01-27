@@ -16,7 +16,7 @@ use Bayfront\CronScheduler\SyntaxException;
 class ScheduledJobs extends EventSubscriber implements EventSubscriberInterface
 {
 
-    protected $scheduler;
+    protected Cron $scheduler;
 
     /**
      * The container will resolve any dependencies.
@@ -51,7 +51,7 @@ class ScheduledJobs extends EventSubscriber implements EventSubscriberInterface
      * @throws SyntaxException
      */
 
-    public function schedule()
+    public function schedule(): void
     {
 
         $this->scheduler->call('sample-job', function () {

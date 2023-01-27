@@ -21,7 +21,7 @@ class InstallService extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('install:service')
@@ -69,9 +69,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -151,9 +151,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -219,11 +219,11 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
-            } catch (ConsoleException $e) {
+            } catch (ConsoleException) {
                 ConsoleUtilities::msgFailedToWrite($name, $output);
             }
 
@@ -248,11 +248,11 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
-            } catch (ConsoleException $e) {
+            } catch (ConsoleException) {
                 ConsoleUtilities::msgFailedToWrite($name, $output);
             }
 
@@ -282,9 +282,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -307,11 +307,11 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
-            } catch (ConsoleException $e) {
+            } catch (ConsoleException) {
                 ConsoleUtilities::msgFailedToWrite($name, $output);
             }
 
@@ -341,9 +341,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -361,9 +361,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -381,9 +381,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -401,9 +401,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -421,9 +421,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 
@@ -446,9 +446,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalled($name, $output);
 
-            } catch (FileAlreadyExistsException $e) {
+            } catch (FileAlreadyExistsException) {
                 ConsoleUtilities::msgFileExists($name, $output);
-            } catch (UnableToCopyException $e) {
+            } catch (UnableToCopyException) {
                 ConsoleUtilities::msgUnableToCopy($name, $output);
             }
 

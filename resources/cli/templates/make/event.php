@@ -42,7 +42,7 @@ class _subscriber_name_ extends EventSubscriber implements EventSubscriberInterf
      * @return void
      */
 
-    public function sampleMethod()
+    public function sampleMethod(): void
     {
         // Do something amazing
     }

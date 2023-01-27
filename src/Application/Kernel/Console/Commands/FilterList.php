@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class FilterList extends Command
 {
 
-    protected $filters;
+    protected FilterService $filters;
 
     public function __construct(FilterService $filters)
     {
@@ -27,7 +27,7 @@ class FilterList extends Command
      * @return void
      */
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('filter:list')
