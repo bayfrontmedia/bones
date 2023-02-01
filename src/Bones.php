@@ -138,7 +138,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '3.0.0');
+        Constants::define('BONES_VERSION', '3.0.1');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -169,9 +169,7 @@ class Bones
 
         set_exception_handler(function ($e) {
 
-            if ($e instanceof HttpException && self::$container->has('Bayfront\HttpResponse\Response')) {
-
-                // The status code has already been set by App::abort()
+            if (self::$container->has('Bayfront\HttpResponse\Response')) {
 
                 /** @var Response $response */
 
@@ -181,10 +179,17 @@ class Bones
 
                 $response = new Response();
 
+                self::$container->set('Bayfront\HttpResponse\Response', $response);
+
+            }
+
+            /*
+             * If an HttpException, the status code has already been set by App::abort().
+             * Otherwise, set status code to 500.
+             */
+
+            if (!$e instanceof HttpException) {
                 $response->setStatusCode(500); // Default status code
-
-                self::$container->set('Bayfront\HttpResponse\Response', $response, true);
-
             }
 
             /*

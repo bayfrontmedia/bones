@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [3.0.1]- 2023.02.01
+
+### Changed
+
+- Updated the `App::abort()` method and the exception handler to use the existing `Response` class, 
+if existing in the container.
+
 ## [3.0.0]- 2023.01.27
 
 ### Added

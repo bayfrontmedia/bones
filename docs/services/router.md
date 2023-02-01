@@ -25,7 +25,7 @@ return [
 Although routes do not have to be added until the `app.http` event,
 subscribing them to the `app.bootstrap` event will enable them to be shown when using the `php bones route:list` [console command](#console-commands).
 
-In order to utilize the service container to resolve controllers, Bones utilizes a custom `RouterDispatcher` class,
+In order to utilize the service container to resolve controllers, Bones uses a custom `RouterDispatcher` class,
 which adds the following [filter](filters.md):
 
 - `router.parameters`: Used to filter parameters passed to the route destination when dispatching.

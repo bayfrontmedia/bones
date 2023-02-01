@@ -347,24 +347,22 @@ class App
      * @return void
      * @return never-return
      * @throws HttpException
-     * @throws ContainerException
      * @throws InvalidStatusCodeException
+     * @throws NotFoundException
      */
 
     public static function abort(int $status_code, string $message = '', array $headers = []): void
     {
 
-        // Create new response for container
+        /** @var Response $response */
 
-        $response = new Response();
+        $response = self::getContainer()->get('Bayfront\HttpResponse\Response');
 
         $response->setStatusCode($status_code)->setHeaders($headers);
 
         if ($message == '') {
             $message = $response->getStatusCode()['phrase'];
         }
-
-        self::getContainer()->set('Bayfront\HttpResponse\Response', $response, true);
 
         throw new HttpException($message);
 
