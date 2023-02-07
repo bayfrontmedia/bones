@@ -17,8 +17,11 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\MakeController;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeEvent;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeException;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeFilter;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MakeMigration;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeModel;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeService;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MigrateDown;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MigrateUp;
 use Bayfront\Bones\Application\Kernel\Console\Commands\RouteList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleRun;
@@ -138,7 +141,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '3.0.1');
+        Constants::define('BONES_VERSION', '3.1.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -348,10 +351,10 @@ class Bones
 
         if (is_array(App::getConfig('database'))) {
 
-            $db = DbFactory::create(App::getConfig('database'));
+            $this->interface_services['db'] = DbFactory::create(App::getConfig('database'));
 
-            self::$container->set(get_class($db), $db);
-            self::$container->setAlias('db', get_class($db));
+            self::$container->set(get_class($this->interface_services['db']), $this->interface_services['db']);
+            self::$container->setAlias('db', get_class($this->interface_services['db']));
 
         }
 
@@ -477,6 +480,14 @@ class Bones
 
             $console->add(new ScheduleList($this->interface_services['scheduler']));
             $console->add(new ScheduleRun($this->interface_services['scheduler'], $events));
+        }
+
+        if (isset($this->interface_services['db'])) {
+
+            $console->add(new MakeMigration());
+            $console->add(new MigrateDown(self::$container, $this->interface_services['db']));
+            $console->add(new MigrateUp(self::$container, $this->interface_services['db']));
+
         }
 
         if (isset($this->interface_services['router'])) {
