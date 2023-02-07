@@ -78,11 +78,22 @@ php bones make:filter NAME
 # Create a cryptographically secure key
 php bones make:key
 
+# Create a database migration
+php bones make:migration NAME
+
 # Create a new model
 php bones make:model NAME
 
 # Create a new service
 php bones make:service NAME
+
+# Rollback database migrations
+php bones migrate:down --file=FILENAME --file=FILENAME2
+
+# Run database migrations
+php bones migrate:up 
+# Run specific migrations
+php bones migrate:up --file=FILENAME --file=FILENAME2
 
 # List all routes
 php bones route:list

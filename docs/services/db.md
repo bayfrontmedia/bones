@@ -67,3 +67,27 @@ DB_SECURE_TRANSPORT=false
 ### Add config file
 
 A config file will be added to `/config/database.php`. (See above example)
+
+## Migrations
+
+Database migrations allow you to manage the database schema for your application.
+Migrations must be placed in the `/database/migrations` directory and extend `Bayfront\Bones\Interfaces\MigrationInterface`.
+
+Since the service container is used to instantiate the migration, 
+you can type-hint any dependencies in its constructor, 
+and the container will use dependency injection to resolve them for you.
+
+Migrations can be created with the `php bones make:migration` command.
+A timestamp will be added to the filename to ensure migrations run in the proper order.
+
+Be sure to run `composer install` after creating or removing a migration file.
+
+> **NOTE:** Be sure to back up your database before running any migrations
+
+## Console commands
+
+The following [console commands](../usage/console.md) can be used with relation to the database:
+
+- `php bones make:migration`
+- `php bones migrate:down`
+- `php bones migrate:up`
