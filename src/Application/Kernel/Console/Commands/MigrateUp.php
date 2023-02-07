@@ -35,7 +35,7 @@ class MigrateUp extends Command
     {
 
         $this->setName('migrate:up')
-            ->setDescription('Run migrations')
+            ->setDescription('Run database migrations')
             ->addOption('file', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY);
 
     }

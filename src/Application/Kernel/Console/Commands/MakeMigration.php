@@ -25,7 +25,7 @@ class MakeMigration extends Command
     {
 
         $this->setName('make:migration')
-            ->setDescription('Create a new migration')
+            ->setDescription('Create a new database migration')
             ->addArgument('name', InputArgument::REQUIRED, 'Name of migration');
 
     }

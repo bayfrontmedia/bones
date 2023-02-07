@@ -35,7 +35,7 @@ class MigrateDown extends Command
     {
 
         $this->setName('migrate:down')
-            ->setDescription('Rollback migrations')
+            ->setDescription('Rollback database migrations')
             ->addOption('file', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY);
 
     }

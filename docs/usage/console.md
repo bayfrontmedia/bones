@@ -87,12 +87,12 @@ php bones make:model NAME
 # Create a new service
 php bones make:service NAME
 
-# Rollback database migrations
+# Rollback specific database migrations
 php bones migrate:down --file=FILENAME --file=FILENAME2
 
-# Run database migrations
+# Run all database migrations
 php bones migrate:up 
-# Run specific migrations
+# Run specific database migrations
 php bones migrate:up --file=FILENAME --file=FILENAME2
 
 # List all routes
