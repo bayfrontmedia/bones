@@ -52,7 +52,7 @@ class MigrateUp extends Command
 
         $opt_files = $input->getOption('file');
 
-        $dir = App::basePath('/database/migrations');
+        $dir = App::resourcesPath('/database/migrations');
 
         $migrations = [];
 

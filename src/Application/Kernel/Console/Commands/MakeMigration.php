@@ -57,7 +57,7 @@ class MakeMigration extends Command
 
             $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/make/migration.php';
 
-            $dest_file = App::basePath('/database/migrations/' . $filename);
+            $dest_file = App::resourcesPath('/database/migrations/' . $filename);
 
             ConsoleUtilities::copyFile($src_file, $dest_file);
 

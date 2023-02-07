@@ -57,7 +57,7 @@ class MigrateDown extends Command
             return Command::FAILURE;
         }
 
-        $dir = App::basePath('/database/migrations');
+        $dir = App::resourcesPath('/database/migrations');
 
         $migrations = [];
 
