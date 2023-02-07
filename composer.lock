@@ -109,16 +109,16 @@
         },
         {
             "name": "bayfrontmedia/php-array-helpers",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/php-array-helpers.git",
-                "reference": "29b5c7683d701c808190bfea2ead2466dcb2420d"
+                "reference": "3aac6208e08cbdef3c65fae5c08d1e3cf68f35bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/php-array-helpers/zipball/29b5c7683d701c808190bfea2ead2466dcb2420d",
-                "reference": "29b5c7683d701c808190bfea2ead2466dcb2420d",
+                "url": "https://api.github.com/repos/bayfrontmedia/php-array-helpers/zipball/3aac6208e08cbdef3c65fae5c08d1e3cf68f35bc",
+                "reference": "3aac6208e08cbdef3c65fae5c08d1e3cf68f35bc",
                 "shasum": ""
             },
             "require": {
@@ -152,9 +152,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/php-array-helpers/issues",
-                "source": "https://github.com/bayfrontmedia/php-array-helpers/tree/v2.0.0"
+                "source": "https://github.com/bayfrontmedia/php-array-helpers/tree/v2.0.1"
             },
-            "time": "2023-01-26T16:36:18+00:00"
+            "time": "2023-02-03T19:15:28+00:00"
         },
         {
             "name": "bayfrontmedia/php-hooks",
@@ -270,16 +270,16 @@
         },
         {
             "name": "bayfrontmedia/php-http-response",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/php-http-response.git",
-                "reference": "ea85535ca52f15773a12fbca2f33a598ad4596c2"
+                "reference": "65501a9340833b547559533d43a39c6d6c8f312a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/php-http-response/zipball/ea85535ca52f15773a12fbca2f33a598ad4596c2",
-                "reference": "ea85535ca52f15773a12fbca2f33a598ad4596c2",
+                "url": "https://api.github.com/repos/bayfrontmedia/php-http-response/zipball/65501a9340833b547559533d43a39c6d6c8f312a",
+                "reference": "65501a9340833b547559533d43a39c6d6c8f312a",
                 "shasum": ""
             },
             "require": {
@@ -316,9 +316,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/php-http-response/issues",
-                "source": "https://github.com/bayfrontmedia/php-http-response/tree/v2.0.0"
+                "source": "https://github.com/bayfrontmedia/php-http-response/tree/v2.0.1"
             },
-            "time": "2023-01-23T15:05:38+00:00"
+            "time": "2023-02-03T17:49:25+00:00"
         },
         {
             "name": "bayfrontmedia/php-sanitize",
