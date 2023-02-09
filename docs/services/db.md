@@ -74,6 +74,28 @@ Database migrations act as a version control system for the database schema of y
 Migrations must be placed in the `/resources/database/migrations` directory and 
 extend `Bayfront\Bones\Interfaces\MigrationInterface`.
 
+In order for Composer to autoload the migration classes, you must add a `classmap` array to the `autoload` field
+of your `composer.json` file:
+
+```
+"classmap": [
+  "resources/database/migrations/"
+]
+```
+
+The entire `autoload` field may look something like this:
+
+```
+"autoload": {
+  "psr-4": {
+    "App\\": "app/"
+  },
+  "classmap": [
+    "resources/database/migrations/"
+  ]
+}
+```
+
 Since the service container is used to instantiate the migration, 
 you can type-hint any dependencies in its constructor, 
 and the container will use dependency injection to resolve them for you.
