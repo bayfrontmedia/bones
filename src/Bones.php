@@ -22,6 +22,7 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\MakeModel;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeService;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MigrateDown;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MigrateUp;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MigrationList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\RouteList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleRun;
@@ -487,6 +488,7 @@ class Bones
             $console->add(new MakeMigration());
             $console->add(new MigrateDown(self::$container, $this->interface_services['db']));
             $console->add(new MigrateUp(self::$container, $this->interface_services['db']));
+            $console->add(new MigrationList($this->interface_services['db']));
 
         }
 

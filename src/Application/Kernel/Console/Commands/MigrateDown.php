@@ -2,16 +2,16 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Container\Container;
 use Bayfront\PDO\Db;
-use DirectoryIterator;
 use Exception;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class MigrateDown extends Command
 {
@@ -36,7 +36,8 @@ class MigrateDown extends Command
 
         $this->setName('migrate:down')
             ->setDescription('Rollback database migrations')
-            ->addOption('file', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY);
+            ->addOption('batch', null, InputOption::VALUE_REQUIRED)
+            ->addOption('force', null, InputOption::VALUE_NONE);
 
     }
 
@@ -50,66 +51,100 @@ class MigrateDown extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $opt_files = $input->getOption('file');
+        $batch = (int)$input->getOption('batch');
 
-        if (empty($opt_files)) {
-            $output->writeln('<error>Unable to migrate down: No file(s) specified</error>');
-            return Command::FAILURE;
-        }
+        if ($batch == 0) {
 
-        $dir = App::resourcesPath('/database/migrations');
+            // No batch provided. Get last batch number.
 
-        $migrations = [];
+            $batch = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
 
-        if (is_dir($dir)) {
+            if (!$batch) {
 
-            $list = new DirectoryIterator($dir);
-
-            foreach ($list as $item) {
-
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $file_exp = explode('_', $item->getFileName(), 2);
-
-                    if (isset($file_exp[1])) { // Valid filename format
-
-                        if (in_array($item->getFileName(), $opt_files)) {
-
-                            $migrations[] = [
-                                'class' => basename($file_exp[1], '.php'),
-                                'file' => $item->getFileName()
-                            ];
-
-                        }
-
-                    }
-
-                }
+                $output->writeln('<info>No migrations found.</info>');
+                return Command::SUCCESS;
 
             }
 
-            if (empty($migrations)) {
-                $output->writeln('<info>No migrations found.</info>');
+        }
+
+        $migrations = $this->db->select("SELECT id, migration, batch FROM `migrations` WHERE batch >= :batch", [
+            'batch' => $batch
+        ]);
+
+        if (empty($migrations)) {
+            $output->writeln('<info>No migrations to run.</info>');
+            return Command::SUCCESS;
+        }
+
+        $rows = [];
+
+        foreach ($migrations as $v) {
+
+            $rows[] = [
+                $v['id'],
+                $v['migration'],
+                $v['batch']
+            ];
+
+        }
+
+        $output->writeln('<info>Preparing to roll back the following migrations:</info>');
+
+        $table = new Table($output);
+        $table->setHeaders(['ID', 'Migration', 'Batch'])->setRows($rows);
+        $table->render();
+
+        if (!$input->getOption('force')) {
+
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Continue with this action? [y/n]', false);
+
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+            if (!$helper->ask($input, $output, $question)) {
+
+                $output->writeln('<info>Migration aborted!</info>');
                 return Command::SUCCESS;
             }
 
-            $migrations = Arr::multisort($migrations, 'file'); // Sort by filename
+        }
 
-            foreach ($migrations as $migration) {
+        // Run migrations
 
-                $output->writeln('Running migration: ' . $migration['file']);
+        sort($migrations); // Ensure ordered by filename
 
-                $class = $this->container->make($migration['class']);
+        foreach ($migrations as $migration) {
+
+            $file_exp = explode('_', $migration['migration'], 2);
+
+            if (isset($file_exp[1])) { // Valid filename format
+
+                if (!file_exists(App::resourcesPath('/database/migrations/' . $migration['migration'] . '.php'))) {
+
+                    $output->writeln('<error>Unable to perform migration: File does not exist (' . $migration['migration'] . ')</error>');
+                    continue;
+
+                }
+
+                $output->writeln('Running migration: ' . $migration['migration']);
+
+                // Run migration
+
+                $class = $this->container->make($file_exp[1]);
                 $class->down();
+
+                // Remove from migrations table
+
+                $this->db->delete('migrations', [
+                    'id' => $migration['id']
+                ]);
 
             }
 
-            $output->writeln('<info>Migration complete!</info>');
-            return Command::SUCCESS;
-
         }
 
-        $output->writeln('<info>No migrations found.</info>');
+        $output->writeln('<info>*** NOTE: To completely remove a migration, remove the migration file and run "composer install" ***</info>');
+        $output->writeln('<info>Migration complete!</info>');
         return Command::SUCCESS;
 
     }
