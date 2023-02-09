@@ -70,8 +70,31 @@ A config file will be added to `/config/database.php`. (See above example)
 
 ## Migrations
 
-Database migrations allow you to manage the database schema for your application.
-Migrations must be placed in the `/resources/database/migrations` directory and extend `Bayfront\Bones\Interfaces\MigrationInterface`.
+Database migrations act as a version control system for the database schema of your application.
+Migrations must be placed in the `/resources/database/migrations` directory and 
+extend `Bayfront\Bones\Interfaces\MigrationInterface`.
+
+In order for Composer to autoload the migration classes, you must add a `classmap` array to the `autoload` field
+of your `composer.json` file:
+
+```
+"classmap": [
+  "resources/database/migrations/"
+]
+```
+
+The entire `autoload` field may look something like this:
+
+```
+"autoload": {
+  "psr-4": {
+    "App\\": "app/"
+  },
+  "classmap": [
+    "resources/database/migrations/"
+  ]
+}
+```
 
 Since the service container is used to instantiate the migration, 
 you can type-hint any dependencies in its constructor, 
@@ -91,3 +114,4 @@ The following [console commands](../usage/console.md) can be used with relation 
 - `php bones make:migration`
 - `php bones migrate:down`
 - `php bones migrate:up`
+- `php bones migration:list`

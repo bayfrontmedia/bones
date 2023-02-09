@@ -2,16 +2,16 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Container\Container;
 use Bayfront\PDO\Db;
-use DirectoryIterator;
 use Exception;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class MigrateUp extends Command
 {
@@ -35,8 +35,8 @@ class MigrateUp extends Command
     {
 
         $this->setName('migrate:up')
-            ->setDescription('Run database migrations')
-            ->addOption('file', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY);
+            ->setDescription('Run all pending database migrations')
+            ->addOption('force', null, InputOption::VALUE_NONE);
 
     }
 
@@ -50,52 +50,113 @@ class MigrateUp extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $opt_files = $input->getOption('file');
-
         $dir = App::resourcesPath('/database/migrations');
-
-        $migrations = [];
 
         if (is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
-
-            foreach ($list as $item) {
-
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $file_exp = explode('_', $item->getFileName(), 2);
-
-                    if (isset($file_exp[1])) { // Valid filename format
-
-                        if (empty($opt_files) || in_array($item->getFileName(), $opt_files)) {
-
-                            $migrations[] = [
-                                'class' => basename($file_exp[1], '.php'),
-                                'file' => $item->getFileName()
-                            ];
-
-                        }
-
-                    }
-
-                }
-
-            }
+            $migrations = glob($dir . '/*.php');
 
             if (empty($migrations)) {
                 $output->writeln('<info>No migrations found.</info>');
                 return Command::SUCCESS;
             }
 
-            $migrations = Arr::multisort($migrations, 'file'); // Sort by filename
+            foreach ($migrations as $k => $v) {
+                $migrations[$k] = basename($v, '.php');
+            }
+
+            // Migration files exist. Ensure database table exists.
+
+            $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
+            `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `migration` varchar(255) NOT NULL,
+            `batch` int NOT NULL
+            )");
+
+            // Get all migrations which have not yet run
+
+            foreach ($migrations as $k => $migration) {
+
+                if ($this->db->exists('migrations', [
+                    'migration' => $migration
+                ])) {
+                    unset($migrations[$k]);
+                }
+
+            }
+
+            // $migrations contain only migrations which have not yet run
+
+            if (empty($migrations)) {
+                $output->writeln('<info>No migrations to run.</info>');
+                return Command::SUCCESS;
+            }
+
+            // Get next batch number
+
+            $batch_num = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
+
+            if (!$batch_num) {
+                $batch_num = 1;
+            } else {
+                $batch_num = $batch_num + 1;
+            }
+
+            $rows = [];
 
             foreach ($migrations as $migration) {
 
-                $output->writeln('Running migration: ' . $migration['file']);
+                $rows[] = [
+                    $migration
+                ];
 
-                $class = $this->container->make($migration['class']);
-                $class->up();
+            }
+
+            $output->writeln('<info>Preparing to run the following migrations:</info>');
+
+            $table = new Table($output);
+            $table->setHeaders(['Migration'])->setRows($rows);
+            $table->render();
+
+            if (!$input->getOption('force')) {
+
+                $helper = $this->getHelper('question');
+                $question = new ConfirmationQuestion('Continue with this action? [y/n]', false);
+
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                if (!$helper->ask($input, $output, $question)) {
+
+                    $output->writeln('<info>Migration aborted!</info>');
+                    return Command::SUCCESS;
+                }
+
+            }
+
+            // Run migrations
+
+            sort($migrations); // Ensure ordered by filename
+
+            foreach ($migrations as $migration) {
+
+                $file_exp = explode('_', $migration, 2);
+
+                if (isset($file_exp[1])) { // Valid filename format
+
+                    $output->writeln('Running migration: ' . $migration);
+
+                    // Run migration
+
+                    $class = $this->container->make($file_exp[1]);
+                    $class->up();
+
+                    // Add to migrations table
+
+                    $this->db->insert('migrations', [
+                        'migration' => $migration,
+                        'batch' => $batch_num
+                    ]);
+
+                }
 
             }
 
@@ -104,7 +165,7 @@ class MigrateUp extends Command
 
         }
 
-        $output->writeln('<info>No migrations found.</info>');
+        $output->writeln('<info>Migrations directory does not exist. No migrations found.</info>');
         return Command::SUCCESS;
 
     }

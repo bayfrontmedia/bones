@@ -25,7 +25,7 @@ class MakeMigration extends Command
     {
 
         $this->setName('make:migration')
-            ->setDescription('Create a new database migration')
+            ->setDescription('Create a database migration')
             ->addArgument('name', InputArgument::REQUIRED, 'Name of migration');
 
     }
@@ -40,24 +40,30 @@ class MakeMigration extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $name = $input->getArgument('name');
+        $name = strtolower($input->getArgument('name'));
 
-        $filename = date('Y-m-d-His') . '_' . $name . '.php';
+        $date_name = date('Y-m-d-His') . '_' . $name;
 
-        $util_name = 'Migration (' . $filename . ')';
+        $util_name = 'Migration (' . $date_name . ')';
+
+        if (is_dir(App::resourcesPath('/database/migrations/'))) {
+
+            $matches = glob(App::resourcesPath('/database/migrations/*_' . $name . '.php'));
+
+            if (!empty($matches)) {
+                $output->writeln('<error>Unable to make migration: Migration name already exists</error>');
+                return Command::FAILURE;
+            }
+
+        }
 
         ConsoleUtilities::msgInstalling($util_name, $output);
-
-        if (class_exists($name)) {
-            $output->writeln('<error>Unable to make migration: Class already exists</error>');
-            return Command::FAILURE;
-        }
 
         try {
 
             $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/make/migration.php';
 
-            $dest_file = App::resourcesPath('/database/migrations/' . $filename);
+            $dest_file = App::resourcesPath('/database/migrations/' . $date_name . '.php');
 
             ConsoleUtilities::copyFile($src_file, $dest_file);
 

@@ -27,8 +27,6 @@ The file structure for a Bones application is as follows:
   .htaccess
   index.php
 /resources
-  /database
-    /migrations
   bootstrap.php
 /storage
   /app
@@ -38,7 +36,6 @@ The file structure for a Bones application is as follows:
 
 - `/app` - All of your app's namespaced classes reside here.
 - `/config` - All of your app's configuration files reside here.
-- `/database/migrations` - All [database migrations](services/db.md#migrations) reside here (if applicable).
 - `/public` - Public web root of the application.
 - `/public/storage` - Symlink to `/storage/public`.
 - `/resources` - All of your app's resources reside here. These include the `bootstrap.php` file,
