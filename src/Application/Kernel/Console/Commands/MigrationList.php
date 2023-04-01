@@ -53,7 +53,7 @@ class MigrationList extends Command
 
         if (!$table_exists) {
 
-            $output->writeln('<info>No migrations found (migrations table does not exist)</info>');
+            $output->writeln('<info>No migrations found (migrations table does not exist).</info>');
             return Command::SUCCESS;
 
         }
