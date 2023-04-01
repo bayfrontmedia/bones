@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\PDO\Db;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -45,6 +46,17 @@ class MigrationList extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        $table_exists = $this->db->single("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = 'migrations' AND TABLE_SCHEMA = :db_database", [
+            'db_database' => App::getEnv('DB_DATABASE')
+        ]);
+
+        if (!$table_exists) {
+
+            $output->writeln('<info>No migrations found (migrations table does not exist)</info>');
+            return Command::SUCCESS;
+
+        }
 
         $return = $this->db->select("SELECT id, migration, batch FROM `migrations` ORDER BY batch, migration");
 

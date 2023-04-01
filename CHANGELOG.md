@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [3.1.1]- 2023.04.01
+
+## Changed
+
+- Updated documentation.
+
+### Fixed
+
+- Fixed bug in `php bones migration:list` command if `migrations` table does not yet exist.
+
 ## [3.1.0]- 2023.02.09
 
 ## Added

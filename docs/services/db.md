@@ -107,6 +107,8 @@ Be sure to run `composer install` after creating or removing a migration file.
 
 > **NOTE:** Be sure to back up your database before running any migrations
 
+The required `migrations` database table will be created the first time the `php bones migrate:up` command is used.
+
 ## Console commands
 
 The following [console commands](../usage/console.md) can be used with relation to the database:
