@@ -50,7 +50,7 @@ class MigrationList extends Command
         try {
             $return = $this->db->select("SELECT id, migration, batch FROM `migrations` ORDER BY batch, migration");
         } catch (Exception) {
-            $output->writeln('<info>No migrations found: valid migrations table does not exist.</info>');
+            $output->writeln('<info>No migrations found: Valid migrations table does not exist.</info>');
             return Command::SUCCESS;
         }
 
