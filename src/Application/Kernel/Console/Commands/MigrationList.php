@@ -47,18 +47,12 @@ class MigrationList extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $table_exists = $this->db->single("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = 'migrations' AND TABLE_SCHEMA = :db_database", [
-            'db_database' => App::getEnv('DB_DATABASE')
-        ]);
-
-        if (!$table_exists) {
-
-            $output->writeln('<info>No migrations found (migrations table does not exist)</info>');
+        try {
+            $return = $this->db->select("SELECT id, migration, batch FROM `migrations` ORDER BY batch, migration");
+        } catch (Exception) {
+            $output->writeln('<info>No migrations found: Valid migrations table does not exist.</info>');
             return Command::SUCCESS;
-
         }
-
-        $return = $this->db->select("SELECT id, migration, batch FROM `migrations` ORDER BY batch, migration");
 
         $sort = strtolower((string)$input->getOption('sort'));
 
