@@ -142,7 +142,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '3.1.2');
+        Constants::define('BONES_VERSION', '3.1.3');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -459,7 +459,7 @@ class Bones
 
         // ------------------------- Load Bones commands -------------------------
 
-        $console->add(new AboutBones());
+        $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
         $console->add(new EventList($events));

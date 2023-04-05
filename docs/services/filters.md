@@ -91,7 +91,11 @@ To create a filter subscriber, use the `php bones make:filter` [console command]
 
 ## Filters
 
-Bones does not utilize any filters, except for those which may be created when installing an [optional service](../README.md).
+In addition to those which may be created when installing an [optional service](../README.md), 
+Bones utilizes the following filters:
+
+- `about.bones` - Merge an array of data to that which is returned with the `php bones about:bones` [console command](../usage/console.md). 
+Default array keys used by Bones cannot be overwritten.
 
 ## Console commands
 
