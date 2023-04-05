@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
+use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -12,6 +13,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AboutBones extends Command
 {
+
+    protected FilterService $filters;
+
+    public function __construct(FilterService $filters)
+    {
+        $this->filters = $filters;
+        parent::__construct();
+    }
 
     /**
      * @return void
@@ -36,7 +45,7 @@ class AboutBones extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $about = [
+        $about = array_merge($this->filters->doFilter('about.bones', []), [
             'Bones version' => App::getBonesVersion(),
             'PHP version' => phpversion(),
             'POST max size' => ini_get('post_max_size'),
@@ -47,8 +56,7 @@ class AboutBones extends Command
             'Autoload filters' => App::getConfig('app.filters.autoload') ? 'True' : 'False',
             'Autoload commands' => App::getConfig('app.commands.autoload') ? 'True' : 'False',
             'Base path' => App::basePath()
-
-        ];
+        ]);
 
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($about));

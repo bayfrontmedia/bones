@@ -34,6 +34,10 @@ This project is open source and available under the [MIT License](LICENSE).
 [Bones App](https://github.com/bayfrontmedia/bones-app) is a simple boilerplate to begin building an application 
 using the Bones framework.
 
+### Bones Web
+[Bones Web](https://github.com/bayfrontmedia/bones-web) is a boilerplate to begin building a web application
+using the Bones framework.
+
 ## Documentation
 
 Documentation for Bones can be found [here](docs/README.md).
