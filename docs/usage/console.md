@@ -96,7 +96,7 @@ php bones migrate:down --force
 # Run all pending database migrations
 php bones migrate:up 
 # Use --force to skip confirmation prompt
-php bones migrate:down --force
+php bones migrate:up --force
 
 # List all migrations which have ran
 php bones migration:list
