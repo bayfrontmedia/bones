@@ -12,12 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [3.1.4]- 2023.04.25
+## [3.1.4]- Upcoming
 
 ### Fixed
 
 - Fixed bug in initial database service configuration.
 - Fixed documentation bug for console command `php bones migrate:up`
+- Fixed other documentation errors
 
 ## [3.1.3]- 2023.04.05
 
