@@ -481,6 +481,7 @@ If no message is provided, the phrase for the HTTP status code will be used.
 - `$status_code` (int): HTTP status code for response
 - `$message = ''` (string): Response message
 - `$headers = []` (array): Key/value pairs of headers to be sent with the response
+- `$code = 0` (int): Code to send with the thrown exception
 
 **Returns:**
 

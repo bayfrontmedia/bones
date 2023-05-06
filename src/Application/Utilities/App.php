@@ -344,6 +344,7 @@ class App
      * @param int $status_code (HTTP status code for response)
      * @param string $message (Response message)
      * @param array $headers (Key/value pairs of headers to be sent with the response)
+     * @param int $code (Code to send with the thrown exception)
      * @return void
      * @return never-return
      * @throws HttpException
@@ -351,7 +352,7 @@ class App
      * @throws NotFoundException
      */
 
-    public static function abort(int $status_code, string $message = '', array $headers = []): void
+    public static function abort(int $status_code, string $message = '', array $headers = [], int $code = 0): void
     {
 
         /** @var Response $response */
@@ -364,7 +365,7 @@ class App
             $message = $response->getStatusCode()['phrase'];
         }
 
-        throw new HttpException($message);
+        throw new HttpException($message, $code);
 
     }
 
