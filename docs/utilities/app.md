@@ -35,8 +35,10 @@ The following constants can be used to check against the [interface](#getinterfa
 - [getElapsedTime](#getelapsedtime)
 - [getBonesVersion](#getbonesversion)
 - [getContainer](#getcontainer)
-- [make](#make)
+- [set](#set)
 - [get](#get)
+- [make](#make)
+- [has](#has)
 - [abort](#abort)
 
 <hr />
