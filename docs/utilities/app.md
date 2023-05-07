@@ -398,6 +398,63 @@ $container = App::getContainer();
 
 <hr />
 
+### set
+
+**Description:**
+
+Set an entry into the container.
+
+Anonymous functions (closures) are called on the first `get()`.
+
+**Parameters:**
+
+- `$id` (string)
+- `$value` (mixed)
+- `$overwrite = false` (bool): If `false`, a `ContainerException` is thrown if an entry with the same ID already exists. 
+Otherwise, it is overwritten.
+
+**Returns:**
+
+- (mixed)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```php
+$service = $container->get('Fully\Namespaced\ClassName');
+```
+
+<hr />
+
+### get
+
+**Description:**
+
+Get an entry from the container by its ID or alias.
+
+**Parameters:**
+
+- `$id` (string)
+
+**Returns:**
+
+- (mixed)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```php
+$service = $container->get('Fully\Namespaced\ClassName');
+```
+
+<hr />
+
 ### make
 
 **Description:**
@@ -438,32 +495,6 @@ class ClassName {
 $service = App::make('Fully\Namespaced\ClassName', [
     'config' => []
 ])
-```
-
-<hr />
-
-### get
-
-**Description:**
-
-Get an entry from the container by its ID or alias.
-
-**Parameters:**
-
-- `$id` (string)
-
-**Returns:**
-
-- (mixed)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-
-**Example:**
-
-```php
-$service = $container->get('Fully\Namespaced\ClassName');
 ```
 
 <hr />

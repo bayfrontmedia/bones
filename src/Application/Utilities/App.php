@@ -308,19 +308,20 @@ class App
     }
 
     /**
-     * Use the container to make and return a new class instance,
-     * automatically injecting dependencies which exist in the container.
+     * Set an entry into the container.
      *
-     * @param string $class (Fully namespaced class name)
-     * @param array $params (Additional parameters to pass to the class constructor)
-     * @return mixed
+     * Anonymous functions (closures) are called on the first get().
+     *
+     * @param string $id
+     * @param mixed $value
+     * @param bool $overwrite
+     * @return void
      * @throws ContainerException
-     * @throws NotFoundException
      */
 
-    public static function make(string $class, array $params = []): mixed
+    public static function set(string $id, mixed $value, bool $overwrite = false): void
     {
-        return self::getContainer()->make($class, $params);
+        self::getContainer()->set($id, $value, $overwrite);
     }
 
     /**
@@ -334,6 +335,22 @@ class App
     public static function get(string $id): mixed
     {
         return self::getContainer()->get($id);
+    }
+
+    /**
+     * Use the container to make and return a new class instance,
+     * automatically injecting dependencies which exist in the container.
+     *
+     * @param string $class (Fully namespaced class name)
+     * @param array $params (Additional parameters to pass to the class constructor)
+     * @return mixed
+     * @throws ContainerException
+     * @throws NotFoundException
+     */
+
+    public static function make(string $class, array $params = []): mixed
+    {
+        return self::getContainer()->make($class, $params);
     }
 
     /**

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `$code` parameter to the `App::abort()` method
+- Added `set` method in the `App` utility class
 
 ## [3.1.4]- 2023.05.05
 
