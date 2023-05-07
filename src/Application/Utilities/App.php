@@ -354,6 +354,19 @@ class App
     }
 
     /**
+     * Does entry or alias exist in the container?
+     * (ie: Can an entry be resolved using get() with this ID?)
+     *
+     * @param string $id
+     * @return bool
+     */
+
+    public static function has(string $id): bool
+    {
+        return self::getContainer()->has($id);
+    }
+
+    /**
      * Abort script execution by throwing an HttpException and send response message.
      *
      * If no message is provided, the phrase for the HTTP status code will be used.

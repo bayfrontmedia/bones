@@ -499,6 +499,23 @@ $service = App::make('Fully\Namespaced\ClassName', [
 
 <hr />
 
+### has
+
+**Description:**
+
+Does entry or alias exist in the container? 
+(ie: Can an entry be resolved using `get()` with this ID?)
+
+**Parameters:**
+
+- `$id` (string): ID or alias
+
+**Returns:**
+
+- (bool)
+
+<hr />
+
 ### abort
 
 **Description:**
