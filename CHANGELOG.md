@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated dependencies
 
+### Fixed
+
+- Fixed bug where entire exception stack trace was being reported when debug mode was `false`
+
 ## [3.1.4]- 2023.05.05
 
 ### Fixed
