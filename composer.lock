@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad01c60575f198684c01cc46f7ff739e",
+    "content-hash": "5762fac53af35810d53f8940055a3bc2",
     "packages": [
         {
             "name": "bayfrontmedia/container",
@@ -583,16 +583,16 @@
         },
         {
             "name": "bayfrontmedia/simple-pdo",
-            "version": "v2.3.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/simple-pdo.git",
-                "reference": "b4f2aef6d222fe2a2a54532253802f70acc3127d"
+                "reference": "9dfd7285de98199ecf7fa112b0c8814ffa1d776b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/b4f2aef6d222fe2a2a54532253802f70acc3127d",
-                "reference": "b4f2aef6d222fe2a2a54532253802f70acc3127d",
+                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/9dfd7285de98199ecf7fa112b0c8814ffa1d776b",
+                "reference": "9dfd7285de98199ecf7fa112b0c8814ffa1d776b",
                 "shasum": ""
             },
             "require": {
@@ -629,9 +629,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/simple-pdo/issues",
-                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v2.3.0"
+                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v3.0.0"
             },
-            "time": "2023-05-08T12:15:10+00:00"
+            "time": "2023-05-10T01:03:17+00:00"
         },
         {
             "name": "bayfrontmedia/veil",
