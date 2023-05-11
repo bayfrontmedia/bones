@@ -39,11 +39,11 @@
     "bayfrontmedia/php-http-request": "^v3.0",
     "bayfrontmedia/php-http-response": "^2.0",
     "bayfrontmedia/php-time-helpers": "^2.0",
-    "bayfrontmedia/php-validator": "^2.0",
+    "bayfrontmedia/php-validator": "^2.1",
     "bayfrontmedia/route-it": "^3.0",
-    "bayfrontmedia/simple-pdo": "^2.0",
+    "bayfrontmedia/simple-pdo": "^3.0",
     "bayfrontmedia/veil": "^2.1",
-    "filp/whoops": "^2.14",
+    "filp/whoops": "^2.15",
     "symfony/console": "^6.2",
     "vlucas/phpdotenv": "^5.5"
   }

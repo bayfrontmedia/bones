@@ -41,33 +41,37 @@ abstract class ExceptionHandler
             ]
         ];
 
-        $data['meta']['exception'] = [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace_as_string' => $e->getTraceAsString(),
-            //'trace' => print_r($e->getTrace(), true)
-        ];
+        if (App::getConfig('app.debug')) {
 
-        $previous = $e->getPrevious();
+            $data['meta']['exception'] = [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace_as_string' => $e->getTraceAsString(),
+                //'trace' => print_r($e->getTrace(), true)
+            ];
 
-        if (null !== $previous) {
+            $previous = $e->getPrevious();
 
-            $data['meta']['previous'] = [
-                'type' => get_class($previous),
-                'file' => $previous->getFile(),
-                'line' => $previous->getLine(),
-                'trace_as_string' => $previous->getTraceAsString(),
-                'trace' => print_r($previous->getTrace(), true)
+            if (null !== $previous) {
+
+                $data['meta']['previous'] = [
+                    'type' => get_class($previous),
+                    'file' => $previous->getFile(),
+                    'line' => $previous->getLine(),
+                    'trace_as_string' => $previous->getTraceAsString(),
+                    'trace' => print_r($previous->getTrace(), true)
+                ];
+
+            }
+
+            $data['meta']['bones'] = [
+                'version' => App::getBonesVersion(),
+                'debug' => (App::isDebug()) ? 'true' : 'false',
+                'environment' => App::environment(),
+                'elapsed_secs' => App::getElapsedTime()
             ];
 
         }
-
-        $data['meta']['bones'] = [
-            'version' => App::getBonesVersion(),
-            'debug' => (App::isDebug()) ? 'true' : 'false',
-            'environment' => App::environment(),
-            'elapsed_secs' => App::getElapsedTime()
-        ];
 
         return $data;
 

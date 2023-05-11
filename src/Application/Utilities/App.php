@@ -308,19 +308,20 @@ class App
     }
 
     /**
-     * Use the container to make and return a new class instance,
-     * automatically injecting dependencies which exist in the container.
+     * Set an entry into the container.
      *
-     * @param string $class (Fully namespaced class name)
-     * @param array $params (Additional parameters to pass to the class constructor)
-     * @return mixed
+     * Anonymous functions (closures) are called on the first get().
+     *
+     * @param string $id
+     * @param mixed $value
+     * @param bool $overwrite
+     * @return void
      * @throws ContainerException
-     * @throws NotFoundException
      */
 
-    public static function make(string $class, array $params = []): mixed
+    public static function set(string $id, mixed $value, bool $overwrite = false): void
     {
-        return self::getContainer()->make($class, $params);
+        self::getContainer()->set($id, $value, $overwrite);
     }
 
     /**
@@ -337,6 +338,35 @@ class App
     }
 
     /**
+     * Use the container to make and return a new class instance,
+     * automatically injecting dependencies which exist in the container.
+     *
+     * @param string $class (Fully namespaced class name)
+     * @param array $params (Additional parameters to pass to the class constructor)
+     * @return mixed
+     * @throws ContainerException
+     * @throws NotFoundException
+     */
+
+    public static function make(string $class, array $params = []): mixed
+    {
+        return self::getContainer()->make($class, $params);
+    }
+
+    /**
+     * Does entry or alias exist in the container?
+     * (ie: Can an entry be resolved using get() with this ID?)
+     *
+     * @param string $id
+     * @return bool
+     */
+
+    public static function has(string $id): bool
+    {
+        return self::getContainer()->has($id);
+    }
+
+    /**
      * Abort script execution by throwing an HttpException and send response message.
      *
      * If no message is provided, the phrase for the HTTP status code will be used.
@@ -344,6 +374,7 @@ class App
      * @param int $status_code (HTTP status code for response)
      * @param string $message (Response message)
      * @param array $headers (Key/value pairs of headers to be sent with the response)
+     * @param int $code (Code to send with the thrown exception)
      * @return void
      * @return never-return
      * @throws HttpException
@@ -351,7 +382,7 @@ class App
      * @throws NotFoundException
      */
 
-    public static function abort(int $status_code, string $message = '', array $headers = []): void
+    public static function abort(int $status_code, string $message = '', array $headers = [], int $code = 0): void
     {
 
         /** @var Response $response */
@@ -364,7 +395,7 @@ class App
             $message = $response->getStatusCode()['phrase'];
         }
 
-        throw new HttpException($message);
+        throw new HttpException($message, $code);
 
     }
 

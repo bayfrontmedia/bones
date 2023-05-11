@@ -35,8 +35,10 @@ The following constants can be used to check against the [interface](#getinterfa
 - [getElapsedTime](#getelapsedtime)
 - [getBonesVersion](#getbonesversion)
 - [getContainer](#getcontainer)
-- [make](#make)
+- [set](#set)
 - [get](#get)
+- [make](#make)
+- [has](#has)
 - [abort](#abort)
 
 <hr />
@@ -398,6 +400,63 @@ $container = App::getContainer();
 
 <hr />
 
+### set
+
+**Description:**
+
+Set an entry into the container.
+
+Anonymous functions (closures) are called on the first `get()`.
+
+**Parameters:**
+
+- `$id` (string)
+- `$value` (mixed)
+- `$overwrite = false` (bool): If `false`, a `ContainerException` is thrown if an entry with the same ID already exists. 
+Otherwise, it is overwritten.
+
+**Returns:**
+
+- (mixed)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```php
+$service = $container->get('Fully\Namespaced\ClassName');
+```
+
+<hr />
+
+### get
+
+**Description:**
+
+Get an entry from the container by its ID or alias.
+
+**Parameters:**
+
+- `$id` (string)
+
+**Returns:**
+
+- (mixed)
+
+**Throws:**
+
+- `Bayfront\Container\NotFoundException`
+
+**Example:**
+
+```php
+$service = $container->get('Fully\Namespaced\ClassName');
+```
+
+<hr />
+
 ### make
 
 **Description:**
@@ -442,29 +501,20 @@ $service = App::make('Fully\Namespaced\ClassName', [
 
 <hr />
 
-### get
+### has
 
 **Description:**
 
-Get an entry from the container by its ID or alias.
+Does entry or alias exist in the container? 
+(ie: Can an entry be resolved using `get()` with this ID?)
 
 **Parameters:**
 
-- `$id` (string)
+- `$id` (string): ID or alias
 
 **Returns:**
 
-- (mixed)
-
-**Throws:**
-
-- `Bayfront\Container\NotFoundException`
-
-**Example:**
-
-```php
-$service = $container->get('Fully\Namespaced\ClassName');
-```
+- (bool)
 
 <hr />
 
@@ -481,6 +531,7 @@ If no message is provided, the phrase for the HTTP status code will be used.
 - `$status_code` (int): HTTP status code for response
 - `$message = ''` (string): Response message
 - `$headers = []` (array): Key/value pairs of headers to be sent with the response
+- `$code = 0` (int): Code to send with the thrown exception
 
 **Returns:**
 
