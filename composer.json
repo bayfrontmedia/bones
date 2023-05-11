@@ -32,6 +32,7 @@
   "require": {
     "php": "^8.0",
     "ext-json": "*",
+    "ext-pdo": "*",
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
     "bayfrontmedia/php-array-helpers": "^2.0",
@@ -44,6 +45,7 @@
     "bayfrontmedia/simple-pdo": "^3.0",
     "bayfrontmedia/veil": "^2.1",
     "filp/whoops": "^2.15",
+    "monolog/monolog": "^3.3",
     "symfony/console": "^6.2",
     "vlucas/phpdotenv": "^5.5"
   }

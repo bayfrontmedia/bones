@@ -23,6 +23,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 * PHP `^8.0`
 * JSON PHP extension
+* PDO PHP extension
 
 ## Installation
 

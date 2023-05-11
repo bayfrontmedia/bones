@@ -1,0 +1,209 @@
+<?php
+
+namespace Bayfront\Bones\Services\Api\Migrations;
+
+use Bayfront\Bones\Interfaces\MigrationInterface;
+use Bayfront\PDO\Db;
+
+class CreateApiTables implements MigrationInterface
+{
+
+    protected Db $db;
+
+    public function __construct(Db $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function up(): void
+    {
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_users` (
+            `id` binary(16) NOT NULL,
+            `email` varchar(255) NOT NULL,
+            `password` varchar(255) NOT NULL,
+            `salt` varchar(32) NOT NULL,
+            `meta` JSON NULL DEFAULT NULL,
+            `enabled` tinyint NOT NULL DEFAULT '0',
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`),
+            UNIQUE (`email`)) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_user_keys` (
+            `id` varchar(7) NOT NULL,
+            `userId` binary(16) NOT NULL,
+            `keyValue` varchar(255) NOT NULL,
+            `description` text DEFAULT NULL,
+            `allowedDomains` JSON NULL DEFAULT NULL,
+            `allowedIps` JSON NULL DEFAULT NULL,
+            `expiresAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `lastUsed` datetime NULL DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`,`userId`),
+            CONSTRAINT `fk_ruk_userId__ru_id` FOREIGN KEY (`userId`) REFERENCES `rbac_users` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_user_meta` (
+            `id` varchar(32) NOT NULL,
+            `userId` binary(16) NOT NULL,
+            `metaValue` longtext DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`,`userId`),
+            CONSTRAINT `fk_rum_userId__ru_id` FOREIGN KEY (`userId`) REFERENCES `rbac_users` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenants` (
+            `id` binary(16) NOT NULL,
+            `owner` binary(16) NOT NULL,
+            `name` varchar(255) NOT NULL,
+            `meta` JSON NULL DEFAULT NULL,
+            `enabled` tinyint NOT NULL DEFAULT '0',
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`), 
+            UNIQUE (`name`),
+            CONSTRAINT `fk_rt_owner__ru_id` FOREIGN KEY (`owner`) REFERENCES `rbac_users` (`id`) ON DELETE CASCADE)
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_meta` (
+            `id` varchar(32) NOT NULL,        
+            `tenantId` binary(16) NOT NULL,
+            `metaValue` longtext DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`,`tenantId`),
+            CONSTRAINT `fk_rtm_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_users` (
+            `tenantId` binary(16) NOT NULL,
+            `userId` binary(16) NOT NULL,
+            PRIMARY KEY (`tenantId`,`userId`),
+            CONSTRAINT `fk_rtu_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtu_userId__ru_id` FOREIGN KEY (`userId`) REFERENCES `rbac_users` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_user_meta` (
+            `id` varchar(32) NOT NULL,
+            `tenantId` binary(16) NOT NULL,        
+            `userId` binary(16) NOT NULL,
+            `metaValue` longtext DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`,`tenantId`,`userId`),
+            CONSTRAINT `fk_rtum_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtum_userId__rtu_userId` FOREIGN KEY (`userId`) REFERENCES `rbac_tenant_users` (`userId`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_groups` (
+            `id` binary(16) NOT NULL,
+            `tenantId` binary(16) NOT NULL,
+            `name` varchar(255) NOT NULL,
+            `description` text DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`),
+            UNIQUE `uq_rtg_tenantId__name` (`tenantId`, `name`),
+            CONSTRAINT `fk_rtg_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_group_users` (
+            `tenantId` binary(16) NOT NULL,
+            `groupId` binary(16) NOT NULL,
+            `userId` binary(16) NOT NULL,
+            PRIMARY KEY (`tenantId`,`groupId`,`userId`),
+            CONSTRAINT `fk_rtgu_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtgu_groupId__rtg_id` FOREIGN KEY (`groupId`) REFERENCES `rbac_tenant_groups` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtgu_userId__ru_id` FOREIGN KEY (`userId`) REFERENCES `rbac_users` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtgu_userId__rtu_userId` FOREIGN KEY (`tenantId`, `userId`) REFERENCES `rbac_tenant_users` (`tenantId`, `userId`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_permissions` (
+            `id` binary(16) NOT NULL,
+            `tenantId` binary(16) NOT NULL,
+            `name` varchar(255) NOT NULL,
+            `description` varchar(255) NULL DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`),
+            UNIQUE uq_rtp_tenantId__name(`tenantId`, `name`),
+            CONSTRAINT `fk_rtp_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_roles` (
+            `id` binary(16) NOT NULL,
+            `tenantId` binary(16) NOT NULL,
+            `name` varchar(255) NOT NULL,
+            `description` varchar(255) NULL DEFAULT NULL,
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`id`),
+            UNIQUE uq_rtr_tenantId__name(`tenantId`,`name`),
+            CONSTRAINT `fk_rtr_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_role_permissions` (
+            `tenantId` binary(16) NOT NULL,
+            `roleId` binary(16) NOT NULL,
+            `permissionId` binary(16) NOT NULL,
+            PRIMARY KEY (`tenantId`,`roleId`,`permissionId`),
+            CONSTRAINT `fk_rtrp_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtrp_roleId__rtr_id` FOREIGN KEY (`roleId`) REFERENCES `rbac_tenant_roles` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtrp_permissionId__rtr_id` FOREIGN KEY (`permissionId`) REFERENCES `rbac_tenant_permissions` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_user_roles` (
+            `tenantId` binary(16) NOT NULL,        
+            `userId` binary(16) NOT NULL,
+            `roleId` binary(16) NOT NULL,
+            PRIMARY KEY (`tenantId`,`userId`,`roleId`),
+            CONSTRAINT `fk_rtur_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtur_userId__rtu_userId` FOREIGN KEY (`userId`) REFERENCES `rbac_tenant_users` (`userId`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rtur_roleId__rtr_id` FOREIGN KEY (`roleId`) REFERENCES `rbac_tenant_roles` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS `rbac_tenant_invitations` (
+            `email` varchar(255) NOT NULL,        
+            `tenantId` binary(16) NOT NULL,
+            `roleId` binary(16) NOT NULL,
+            `expiresAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+            `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+            PRIMARY KEY (`email`, `tenantId`),
+            CONSTRAINT `fk_rti_tenantId__rt_id` FOREIGN KEY (`tenantId`) REFERENCES `rbac_tenants` (`id`) ON DELETE CASCADE,
+            CONSTRAINT `fk_rti_roleId__rtr_id` FOREIGN KEY (`roleId`) REFERENCES `rbac_tenant_roles` (`id`) ON DELETE CASCADE) 
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function down(): void
+    {
+
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_invitations`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_user_roles`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_role_permissions`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_roles`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_permissions`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_group_users`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_groups`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_user_meta`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_users`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenant_meta`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_tenants`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_user_meta`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_user_keys`");
+        $this->db->query("DROP TABLE IF EXISTS `rbac_users`");
+
+    }
+
+}
