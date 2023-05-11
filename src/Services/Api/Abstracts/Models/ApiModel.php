@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Abstracts;
+namespace Bayfront\Bones\Services\Api\Abstracts\Models;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Model;
@@ -16,7 +16,7 @@ use Bayfront\PDO\Query;
 use Monolog\Logger;
 use PDOException;
 
-class ApiModel extends Model
+abstract class ApiModel extends Model
 {
 
     protected EventService $events;

@@ -6,7 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
-use Bayfront\Bones\Services\Api\Abstracts\ApiModel;
+use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
@@ -100,7 +100,7 @@ class UsersModel extends ApiModel implements ResourceInterface
      */
     public function getCount(): int
     {
-        return $this->db->single("SELECT COUNT(*) FROM rbac_users");
+        return $this->db->single("SELECT COUNT(*) FROM api_users");
     }
 
     /**
@@ -115,7 +115,7 @@ class UsersModel extends ApiModel implements ResourceInterface
             return false;
         }
 
-        return (bool)$this->db->single("SELECT 1 FROM rbac_users WHERE id = UUID_TO_BIN(:id, 1)", [
+        return (bool)$this->db->single("SELECT 1 FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
         ]);
 
@@ -135,7 +135,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if ($exclude_id == '') {
 
-            return (bool)$this->db->single("SELECT 1 FROM rbac_users WHERE email = :email", [
+            return (bool)$this->db->single("SELECT 1 FROM api_users WHERE email = :email", [
                 'email' => $email
             ]);
 
@@ -145,7 +145,7 @@ class UsersModel extends ApiModel implements ResourceInterface
             return false;
         }
 
-        return (bool)$this->db->single("SELECT 1 FROM rbac_users WHERE email = :email AND id != UUID_TO_BIN(:id, 1)", [
+        return (bool)$this->db->single("SELECT 1 FROM api_users WHERE email = :email AND id != UUID_TO_BIN(:id, 1)", [
             'email' => $email,
             'id' => $exclude_id
         ]);
@@ -165,7 +165,7 @@ class UsersModel extends ApiModel implements ResourceInterface
             return false;
         }
 
-        return (bool)$this->db->single("SELECT enabled FROM rbac_users WHERE id = UUID_TO_BIN(:id, 1)", [
+        return (bool)$this->db->single("SELECT enabled FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
         ]);
 
@@ -307,7 +307,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Create
 
-        $this->db->insert('rbac_users', $attrs);
+        $this->db->insert('api_users', $attrs);
 
         // TODO: Create new user verification
 
@@ -349,7 +349,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         try {
 
-            $results = $this->queryCollection('rbac_users', $args, $this->getSelectableCols(), 'id', $args['limit'], $this->getJsonCols());
+            $results = $this->queryCollection('api_users', $args, $this->getSelectableCols(), 'id', $args['limit'], $this->getJsonCols());
 
         } catch (BadRequestException|InternalServerErrorException $e) {
 
@@ -401,7 +401,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, meta, enabled, createdAt, updatedAt FROM rbac_users WHERE id = UUID_TO_BIN(:id, 1)", [
+        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, meta, enabled, createdAt, updatedAt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
         ]);
 
@@ -500,7 +500,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // ID exists?
 
-        $existing = $this->db->single("SELECT id, salt, meta from rbac_users WHERE id = UUID_TO_BIN(:id, 1)", [
+        $existing = $this->db->single("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
         ]);
 
@@ -581,7 +581,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Update
 
-        $this->db->update('rbac_users', $attrs, [
+        $this->db->update('api_users', $attrs, [
             'id' => 'UUID_TO_BIN(' . $existing['id'] . ', 1)'
         ]);
 
@@ -621,7 +621,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        $deleted = $this->db->delete('rbac_users', [
+        $deleted = $this->db->delete('api_users', [
             'id' => 'UUID_TO_BIN(' . $id . ', 1)'
         ]);
 
