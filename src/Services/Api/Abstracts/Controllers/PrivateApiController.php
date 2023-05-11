@@ -11,7 +11,7 @@ use Bayfront\Container\NotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-abstract class PublicApiController extends ApiController
+abstract class PrivateApiController extends ApiController
 {
 
     /**
@@ -25,15 +25,13 @@ abstract class PublicApiController extends ApiController
      */
     public function __construct(EventService $events, FilterService $filters, Response $response)
     {
-
         parent::__construct($events, $filters, $response);
 
         $this->initApi();
 
-        $this->rateLimitOrAbort(md5('public-' . Request::getIp()), App::getConfig('api.rate_limit.public'));
+        $this->rateLimitOrAbort(md5('private-' . Request::getIp()), App::getConfig('api.rate_limit.private'));
 
         $events->doEvent('api.controller', $this);
-
     }
 
 }
