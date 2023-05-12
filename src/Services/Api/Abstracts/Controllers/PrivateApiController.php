@@ -40,12 +40,22 @@ abstract class PrivateApiController extends ApiController
 
         $this->user = $this->validateCredentialsOrAbort();
 
-        $this->rateLimitOrAbort(md5('private-' . $this->user->getId()), $this->user->getRateLimit());
+        $this->rateLimitOrAbort(md5('private-' . $this->user->getId()), $this->user_rate_limit);
 
         $events->doEvent('api.controller', $this);
     }
 
+    /*
+     * Default rate limit of 0 will invalidate all requests.
+     * The validateCredentialsOrAbort method defines the actual rate limit
+     * once the user is authenticated.
+     */
+    protected int $user_rate_limit = 0;
+
     /**
+     * Validate user credentials or abort with 401 or 403 status.
+     * If not validated, an "auth" rate limit attempt is recorded.
+     *
      * @return UserModel
      * @throws HttpException
      * @throws InvalidStatusCodeException
@@ -54,6 +64,10 @@ abstract class PrivateApiController extends ApiController
      */
     private function validateCredentialsOrAbort(): UserModel
     {
+
+        /*
+         * Check for enabled authentication methods
+         */
 
         if (Request::hasHeader('Authorization') && in_array(Api::AUTH_TOKEN, App::getConfig('api.auth_methods'))) {
 
@@ -103,16 +117,9 @@ abstract class PrivateApiController extends ApiController
             App::abort(401, $e->getMessage());
         }
 
-        try {
+        $this->user_rate_limit = $valid['rate_limit'];
 
-            return App::make('Bayfront\Bones\Services\Api\Models\UserModel', [
-                'user_id' => $valid['user_id'],
-                'rate_limit' => $valid['rate_limit']
-            ]);
-
-        } catch (Exception $e) {
-            throw new UnexpectedApiException($e->getMessage());
-        }
+        return $valid['user_model'];
 
     }
 
@@ -146,16 +153,9 @@ abstract class PrivateApiController extends ApiController
             App::abort(401, $e->getMessage());
         }
 
-        try {
+        $this->user_rate_limit = $valid['rate_limit'];
 
-            return App::make('Bayfront\Bones\Services\Api\Models\UserModel', [
-                'user_id' => $valid['user_id'],
-                'rate_limit' => $valid['rate_limit']
-            ]);
-
-        } catch (Exception $e) {
-            throw new UnexpectedApiException($e->getMessage());
-        }
+        return $valid['user_model'];
 
     }
 

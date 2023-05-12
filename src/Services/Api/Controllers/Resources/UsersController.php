@@ -22,7 +22,9 @@ class UsersController extends PrivateApiController
 
     public function getCollection(): void
     {
-        die('get collection');
+        echo $this->user->getId();
+
+        //die('get collection');
     }
 
     public function get(array $args): void

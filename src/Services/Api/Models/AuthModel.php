@@ -15,6 +15,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\HttpRequest\Request;
 use Bayfront\JWT\Jwt;
 use Bayfront\JWT\TokenException;
@@ -154,7 +155,7 @@ class AuthModel extends ApiModel
      * Validate identity with token (JWT), ensuring user exists and is enabled.
      *
      * @param string $token
-     * @return array (Keys: user_id, rate_limit)
+     * @return array (Keys: user_model, rate_limit)
      * @throws ForbiddenException
      * @throws UnauthorizedException
      */
@@ -165,41 +166,48 @@ class AuthModel extends ApiModel
 
             $decoded = $this->decodeAccessToken($token);
 
-        } catch (UnauthorizedException $e) {
+        } catch (UnauthorizedException) {
 
-            $this->log->notice('Unable to validate token', [
-                'reason' => $e->getMessage()
+            $msg = 'Unable to validate token';
+            $reason = 'Invalid token';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
             ]);
 
-            throw $e;
+            throw new UnauthorizedException($msg . ': ' . $reason);
 
         }
 
-        // Valid token. Check user exists and is enabled...
+        // Check user exists
 
         try {
 
-            $user = $this->usersModel->get($decoded['payload']['sub'], [
-                'enabled'
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $decoded['payload']['sub']);
+
+        } catch (NotFoundException) {
+
+            $msg = 'Unable to validate token';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
             ]);
 
-        } catch (Exception $e) {
-
-            $this->log->notice('Unable to validate token', [
-                'reason' => $e->getMessage()
-            ]);
-
-            throw $e;
+            throw new UnauthorizedException($msg . ': ' . $reason);
 
         }
 
-        if ($user['enabled'] !== 1) {
+        // Check enabled
+
+        if (!$user->isEnabled()) {
 
             $msg = 'Unable to validate token';
             $reason = 'User disabled';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'user_id' => $decoded['payload']['sub']
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -208,10 +216,10 @@ class AuthModel extends ApiModel
 
         // Event
 
-        $this->events->doEvent('auth.validate', $decoded['payload']['sub'], 'token');
+        $this->events->doEvent('auth.validate', $decoded['payload']['sub'], Api::AUTH_TOKEN);
 
         return [
-            'user_id' => $decoded['payload']['sub'],
+            'user_model' => $user,
             'rate_limit' => $decoded['payload']['rate_limit']
         ];
 
@@ -223,7 +231,7 @@ class AuthModel extends ApiModel
      * @param string $key
      * @param string $domain
      * @param string $ip
-     * @return array (Keys: user_id, rate_limit)
+     * @return array (Keys: user_model, rate_limit)
      * @throws ForbiddenException
      * @throws UnauthorizedException
      */
@@ -234,7 +242,8 @@ class AuthModel extends ApiModel
 
         // Check key valid
 
-        $valid_key = $this->db->single("SELECT id, BIN_TO_UUID(userId, 1) as userId, keyValue, allowedDomains, allowedIps FROM api_user_keys WHERE id = :id AND expiresAt > NOW()", [
+        $valid_key = $this->db->single("SELECT id, BIN_TO_UUID(userId, 1) as userId, keyValue, allowedDomains, allowedIps, lastUsed 
+                                                FROM api_user_keys WHERE id = :id AND expiresAt > NOW()", [
             'id' => $id_short
         ]);
 
@@ -256,25 +265,24 @@ class AuthModel extends ApiModel
 
         try {
 
-            $user = $this->usersModel->getEntire($valid_key['userId']);
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $valid_key['userId']);
 
         } catch (NotFoundException) {
-
-           /*
-            * Delete invalid.
-            * This should never happen due to db constraints.
-            */
-
-            $this->db->delete('api_user_keys', [
-                'id' => $id_short
-            ]);
 
             $msg = 'Unable to validate key';
             $reason = 'User does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason,
-                'user_id' => $valid_key['userId']
+                'reason' => $reason
+            ]);
+
+            /*
+             * Delete invalid.
+             * This should never happen due to db constraints.
+             */
+
+            $this->db->delete('api_user_keys', [
+                'id' => $id_short
             ]);
 
             throw new UnauthorizedException($msg . ': ' . $reason);
@@ -283,14 +291,14 @@ class AuthModel extends ApiModel
 
         // Check enabled
 
-        if ($user['enabled'] !== 1) {
+        if (!$user->isEnabled()) {
 
             $msg = 'Unable to validate key';
             $reason = 'User disabled';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $user['id']
+                'user_id' => $user->getId()
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -310,7 +318,7 @@ class AuthModel extends ApiModel
 
                 $this->log->notice($msg, [
                     'reason' => $reason,
-                    'user_id' => $user['id']
+                    'user_id' => $user->getId()
                 ]);
 
                 throw new ForbiddenException($msg . ': ' . $reason);
@@ -332,7 +340,7 @@ class AuthModel extends ApiModel
 
                 $this->log->notice($msg, [
                     'reason' => $reason,
-                    'user_id' => $user['id']
+                    'user_id' => $user->getId()
                 ]);
 
                 throw new ForbiddenException($msg . ': ' . $reason);
@@ -343,16 +351,22 @@ class AuthModel extends ApiModel
 
         // Verify key
 
-        if ($this->verifyPassword($key, $user['salt'], $valid_key['keyValue'])) {
+        if ($this->verifyPassword($key, $user->get('salt', ''), $valid_key['keyValue'])) {
 
-            // Update lastUsed
+            // Update lastUsed if older than today (prevent queries on every request)
 
-            $this->db->query("UPDATE api_user_keys SET lastUsed = NOW() WHERE id = :id", [
-                'id' => $id_short
-            ]);
+            if (date('Y-m-d', strtotime($valid_key['lastUsed'])) != date('Y-m-d')) {
+
+                $this->db->query("UPDATE api_user_keys SET lastUsed = NOW() WHERE id = :id", [
+                    'id' => $id_short
+                ]);
+
+            }
+
+            $this->events->doEvent('auth.validate', $user->getId(), Api::AUTH_KEY);
 
             return [
-                'user_id' => $user['id'],
+                'user_model' => $user,
                 'rate_limit' => $this->getAllowedRateLimit($user['id'])
             ];
 
