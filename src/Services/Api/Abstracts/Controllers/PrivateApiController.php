@@ -40,6 +40,8 @@ abstract class PrivateApiController extends ApiController
 
         $this->user = $this->validateCredentialsOrAbort();
 
+        $events->doEvent('api.auth', $this->user->getId());
+
         $this->rateLimitOrAbort(md5('private-' . $this->user->getId()), $this->user_rate_limit);
 
         $events->doEvent('api.controller', $this);

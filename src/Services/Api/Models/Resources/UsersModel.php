@@ -767,7 +767,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Check exists
 
-        $existing = $this->db->single("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+        $existing = $this->db->row("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
         ]);
 
@@ -872,7 +872,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         // Update
 
         $this->db->update('api_users', $attrs, [
-            'id' => 'UUID_TO_BIN(' . $existing['id'] . ', 1)'
+            'id' => $existing['id']
         ]);
 
         // Log
@@ -923,11 +923,11 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Delete
 
-        $deleted = $this->db->delete('api_users', [
-            'id' => 'UUID_TO_BIN(' . $id . ', 1)'
+        $this->db->query("DELETE FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
         ]);
 
-        if ($deleted) {
+        if ($this->db->rowCount() > 0) {
 
             // Log
 

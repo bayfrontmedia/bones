@@ -711,6 +711,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Update
 
+        // TODO: Test this, probably not working
+
         $this->db->update('api_user_meta', $attrs, [
             'id' => $id,
             'userId' => 'UUID_TO_BIN(' . $scoped_id . ', 1)'
@@ -784,12 +786,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Delete
 
-        $deleted = $this->db->delete('api_user_meta', [
+        $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
             'id' => $id,
-            'userId' => 'UUID_TO_BIN(' . $scoped_id . ', 1)'
+            'userId' => $scoped_id
         ]);
 
-        if ($deleted) {
+        if ($this->db->rowCount() > 0) {
 
             // Log
 

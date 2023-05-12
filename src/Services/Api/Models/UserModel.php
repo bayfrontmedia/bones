@@ -70,10 +70,27 @@ class UserModel extends ApiModel
     
     // -------------------------User meta -------------------------
 
+    /*
+     * TODO:
+     * Can remove UserMetaModel if not needed here,
+     * although it
+     */
+
+    private static array $meta = [];
+
     public function getMetaValue(string $id): mixed
     {
-        return $this->userMetaModel->getValue($this->getId(), $id);
+
+        if (isset(self::$meta[$id])) {
+            return self::$meta[$id];
+        }
+
+        self::$meta[$id] = $this->userMetaModel->getValue($this->getId(), $id);
+
+        return self::$meta[$id];
+
     }
+
 
 
 
