@@ -376,7 +376,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $attrs['password'] = $this->hashPassword($attrs['password'], $attrs['salt']);
 
-        // Email
+        // Check exists
 
         $attrs['email'] = strtolower($attrs['email']);
 
@@ -746,7 +746,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // ID exists?
+        // Check exists
 
         $existing = $this->db->single("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
             'id' => $id
@@ -822,7 +822,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // Email
+        // Check exists
 
         if (isset($attrs['email'])) {
 
@@ -901,6 +901,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             throw new NotFoundException($msg . ': ' . $reason);
 
         }
+
+        // Delete
 
         $deleted = $this->db->delete('api_users', [
             'id' => 'UUID_TO_BIN(' . $id . ', 1)'
