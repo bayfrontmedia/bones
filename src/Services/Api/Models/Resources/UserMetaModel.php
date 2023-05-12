@@ -8,6 +8,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
@@ -89,45 +90,70 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     /**
      * @inheritDoc
      */
-    public function getCount(string $scoped_id): int
+    public function getCount(string $scoped_id, bool $allow_protected = false): int
     {
 
         if (Validate::uuid($scoped_id)) {
             return 0;
         }
 
-        return $this->db->single("SELECT COUNT(*) FROM api_user_meta WHERE userId = UUID_TO_BIN(:user_id, 1)", [
-            'user_id' => $scoped_id
-        ]);
+        if ($allow_protected) {
+
+            return $this->db->single("SELECT COUNT(*) FROM api_user_meta WHERE userId = UUID_TO_BIN(:user_id, 1)", [
+                'user_id' => $scoped_id
+            ]);
+
+        } else {
+
+            return $this->db->single("SELECT COUNT(*) FROM api_user_meta WHERE userId = UUID_TO_BIN(:user_id, 1) AND id NOT LIKE '00-%'", [
+                'user_id' => $scoped_id
+            ]);
+
+        }
+
+
 
     }
 
     /**
      * @inheritDoc
      */
-    public function idExists(string $scoped_id, string $id): bool
+    public function idExists(string $scoped_id, string $id, bool $allow_protected = false): bool
     {
 
         if (Validate::uuid($scoped_id)) {
             return false;
         }
 
-        return (bool)$this->db->single("SELECT 1 FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-            'id' => $id,
-            'user_id' => $scoped_id
-        ]);
+        if ($allow_protected) {
+
+            return (bool)$this->db->single("SELECT 1 FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+                'id' => $id,
+                'user_id' => $scoped_id
+            ]);
+
+        } else {
+
+            return (bool)$this->db->single("SELECT 1 FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND id NOT LIKE '00-%'", [
+                'id' => $id,
+                'user_id' => $scoped_id
+            ]);
+
+        }
 
     }
 
     /**
      * @param string $scoped_id
      * @param array $attrs
+     * @param bool $allow_protected
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function create(string $scoped_id, array $attrs): string
+    public function create(string $scoped_id, array $attrs, bool $allow_protected = false): string
     {
 
         if (Validate::uuid($scoped_id)) {
@@ -155,6 +181,21 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        if (isset($attrs['id']) && $allow_protected === false && str_starts_with($attrs['id'], '00-')) {
+
+            $msg = 'Unable to create user meta';
+            $reason = 'Meta ID is protected';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id,
+                'meta_id' => $attrs['id']
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
 
         }
 
@@ -260,12 +301,13 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      *
      * @param string $scoped_id
      * @param array $args
+     * @param bool $allow_protected
      * @return array
      * @throws BadRequestException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function getCollection(string $scoped_id, array $args = []): array
+    public function getCollection(string $scoped_id, array $args = [], bool $allow_protected = false): array
     {
 
         if (Validate::uuid($scoped_id)) {
@@ -308,6 +350,10 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             $query->table('api_user_meta')
                 ->where('userId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
+
+            if ($allow_protected === false) {
+                $query['where']['id']['!sw'] = '00-';
+            }
 
         } catch (SimplePDOException $e) {
             throw new UnexpectedApiException($e->getMessage());
@@ -354,12 +400,31 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @param array $cols
+     * @param bool $allow_protected
      * @return array
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function get(string $scoped_id, string $id, array $cols = ['*']): array
+    public function get(string $scoped_id, string $id, array $cols = ['*'], bool $allow_protected = false): array
     {
+
+        $id = Str::kebabCase($id, true);
+
+        if ($allow_protected === false && str_starts_with($id, '00-')) {
+
+            $msg = 'Unable to get user meta';
+            $reason = 'Meta ID is protected';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id,
+                'meta_id' => $id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
 
         $cols = array_merge($cols, ['id']); // Force return ID
 
@@ -367,14 +432,13 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             $this->log->notice('Unable to get user meta', [
                 'reason' => 'Invalid user ID',
-                'user_id' => $scoped_id
+                'user_id' => $scoped_id,
+                'meta_id' => $id
             ]);
 
             throw new NotFoundException('Unable to get user meta: Invalid user ID');
 
         }
-
-        $id = Str::kebabCase($id, true);
 
         $result = $this->db->row("SELECT id, metaValue, createdAt, updatedAt FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
             'id' => $id,
@@ -424,11 +488,13 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @param array $attrs
+     * @param bool $allow_protected
      * @return void
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function update(string $scoped_id, string $id, array $attrs): void
+    public function update(string $scoped_id, string $id, array $attrs, bool $allow_protected = false): void
     {
 
         if (empty($attrs)) { // Nothing to update
@@ -436,6 +502,21 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
         }
 
         $id = Str::kebabCase($id, true);
+
+        if ($allow_protected === false && str_starts_with($id, '00-')) {
+
+            $msg = 'Unable to update user meta';
+            $reason = 'Meta ID is protected';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id,
+                'meta_id' => $id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
 
         if (!Validate::uuid($scoped_id)) {
 
@@ -518,13 +599,30 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      *
      * @param string $scoped_id
      * @param string $id
+     * @param bool $allow_protected
      * @return bool
+     * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function delete(string $scoped_id, string $id): bool
+    public function delete(string $scoped_id, string $id, bool $allow_protected = false): bool
     {
 
         $id = Str::kebabCase($id, true);
+
+        if ($allow_protected === false && str_starts_with($id, '00-')) {
+
+            $msg = 'Unable to delete user meta';
+            $reason = 'Meta ID is protected';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id,
+                'meta_id' => $id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
 
         if (!Validate::uuid($scoped_id)) {
 
