@@ -129,6 +129,248 @@ class AuthModel extends ApiModel
     }
 
     /**
+     * Decode access token (JWT).
+     *
+     * @param string $token
+     * @param bool $validate (Validate signature and claims)
+     * @return array (Keys: header, payload, signature)
+     * @throws UnauthorizedException
+     */
+    public function decodeAccessToken(string $token, bool $validate = true): array
+    {
+
+        try {
+
+            $jwt = new Jwt(App::getConfig('app.key'));
+            return $jwt->decode($token, $validate);
+
+        } catch (TokenException) {
+            throw new UnauthorizedException('Invalid Bearer token');
+        }
+
+    }
+
+    /**
+     * Validate identity with token (JWT), ensuring user exists and is enabled.
+     *
+     * @param string $token
+     * @return array (Keys: user_id, rate_limit)
+     * @throws ForbiddenException
+     * @throws UnauthorizedException
+     */
+    public function validateToken(string $token): array
+    {
+
+        try {
+
+            $decoded = $this->decodeAccessToken($token);
+
+        } catch (UnauthorizedException $e) {
+
+            $this->log->notice('Unable to validate token', [
+                'reason' => $e->getMessage()
+            ]);
+
+            throw $e;
+
+        }
+
+        // Valid token. Check user exists and is enabled...
+
+        try {
+
+            $user = $this->usersModel->get($decoded['payload']['sub'], [
+                'enabled'
+            ]);
+
+        } catch (Exception $e) {
+
+            $this->log->notice('Unable to validate token', [
+                'reason' => $e->getMessage()
+            ]);
+
+            throw $e;
+
+        }
+
+        if ($user['enabled'] !== 1) {
+
+            $msg = 'Unable to validate token';
+            $reason = 'User disabled';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('auth.validate', $decoded['payload']['sub'], 'token');
+
+        return [
+            'user_id' => $decoded['payload']['sub'],
+            'rate_limit' => $decoded['payload']['rate_limit']
+        ];
+
+    }
+
+    /**
+     * Validate identity with user (API) key, ensuring user exists and is enabled.
+     *
+     * @param string $key
+     * @param string $domain
+     * @param string $ip
+     * @return array (Keys: user_id, rate_limit)
+     * @throws ForbiddenException
+     * @throws UnauthorizedException
+     */
+    public function validateKey(string $key, string $domain = '', string $ip = ''): array
+    {
+
+        $id_short = substr($key, 0, 7);
+
+        // Check key valid
+
+        $valid_key = $this->db->single("SELECT id, BIN_TO_UUID(userId, 1) as userId, keyValue, allowedDomains, allowedIps FROM api_user_keys WHERE id = :id AND expiresAt > NOW()", [
+            'id' => $id_short
+        ]);
+
+        if (!$valid_key) {
+
+            $msg = 'Unable to validate key';
+            $reason = 'Key does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'key' => $key
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Check user exists
+
+        try {
+
+            $user = $this->usersModel->getEntire($valid_key['userId']);
+
+        } catch (NotFoundException) {
+
+           /*
+            * Delete invalid.
+            * This should never happen due to db constraints.
+            */
+
+            $this->db->delete('api_user_keys', [
+                'id' => $id_short
+            ]);
+
+            $msg = 'Unable to validate key';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $valid_key['userId']
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Check enabled
+
+        if ($user['enabled'] !== 1) {
+
+            $msg = 'Unable to validate key';
+            $reason = 'User disabled';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $user['id']
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        // Check referring domain
+
+        if ($domain != '' && $valid_key['allowedDomains']) {
+
+            $domains = json_decode($valid_key['allowedDomains'], true);
+
+            if (!in_array($domain, $domains)) {
+
+                $msg = 'Unable to validate key';
+                $reason = 'Invalid domain';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason,
+                    'user_id' => $user['id']
+                ]);
+
+                throw new ForbiddenException($msg . ': ' . $reason);
+
+            }
+
+        }
+
+        // Check IP
+
+        if ($ip != '' && $valid_key['allowedIps']) {
+
+            $ips = json_decode($valid_key['allowedIps'], true);
+
+            if (!in_array($ip, $ips)) {
+
+                $msg = 'Unable to validate key';
+                $reason = 'Invalid IP';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason,
+                    'user_id' => $user['id']
+                ]);
+
+                throw new ForbiddenException($msg . ': ' . $reason);
+
+            }
+
+        }
+
+        // Verify key
+
+        if ($this->verifyPassword($key, $user['salt'], $valid_key['keyValue'])) {
+
+            // Update lastUsed
+
+            $this->db->query("UPDATE api_user_keys SET lastUsed = NOW() WHERE id = :id", [
+                'id' => $id_short
+            ]);
+
+            return [
+                'user_id' => $user['id'],
+                'rate_limit' => $this->getAllowedRateLimit($user['id'])
+            ];
+
+        }
+
+        $msg = 'Unable to validate key';
+        $reason = 'Invalid key';
+
+        $this->log->notice($msg, [
+            'reason' => $reason,
+            'user_id' => $user['id']
+        ]);
+
+        throw new UnauthorizedException($msg . ': ' . $reason);
+
+    }
+
+    /**
      * Authenticate with email + password.
      * Returns user.
      *

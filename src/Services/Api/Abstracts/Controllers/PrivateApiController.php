@@ -6,13 +6,22 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
+use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\AuthModel;
+use Bayfront\Bones\Services\Api\Models\UserModel;
+use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
+use Exception;
+
 abstract class PrivateApiController extends ApiController
 {
+
+    protected UserModel $user;
 
     /**
      * @param EventService $events
@@ -29,9 +38,125 @@ abstract class PrivateApiController extends ApiController
 
         $this->initApi();
 
-        $this->rateLimitOrAbort(md5('private-' . Request::getIp()), App::getConfig('api.rate_limit.private'));
+        $this->user = $this->validateCredentialsOrAbort();
+
+        $this->rateLimitOrAbort(md5('private-' . $this->user->getId()), $this->user->getRateLimit());
 
         $events->doEvent('api.controller', $this);
+    }
+
+    /**
+     * @return UserModel
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    private function validateCredentialsOrAbort(): UserModel
+    {
+
+        if (Request::hasHeader('Authorization') && in_array(Api::AUTH_TOKEN, App::getConfig('api.auth_methods'))) {
+
+            return $this->validateAccessTokenOrAbort(Request::getHeader('Authorization'));
+
+        } else if (Request::hasHeader('X-Api-Key') && in_array(Api::AUTH_KEY, App::getConfig('api.auth_methods'))) {
+
+            return $this->validateUserKeyOrAbort(Request::getHeader('X-Api-Key'));
+
+        } else {
+
+            $this->rateLimitOrAbort(md5('auth-' . Request::getIp()), App::getConfig('api.rate_limit.auth'));
+
+            App::abort(401, 'Invalid credentials');
+
+        }
+
+    }
+
+    /**
+     * Validate access token (JWT) or abort with 401 or 403.
+     *
+     * @param string $token
+     * @return UserModel
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    private function validateAccessTokenOrAbort(string $token): UserModel
+    {
+
+        try {
+
+            /** @var AuthModel $authModel */
+            $authModel = App::make('Bayfront\Bones\Services\Api\Models\AuthModel');
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        try {
+            $valid = $authModel->validateToken($token);
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
+        } catch (UnauthorizedException $e) {
+            App::abort(401, $e->getMessage());
+        }
+
+        try {
+
+            return App::make('Bayfront\Bones\Services\Api\Models\UserModel', [
+                'user_id' => $valid['user_id'],
+                'rate_limit' => $valid['rate_limit']
+            ]);
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+    }
+
+    /**
+     * Validate user (API) key or abort with 401 or 403.
+     *
+     * @param string $key
+     * @return UserModel
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    private function validateUserKeyOrAbort(string $key): UserModel
+    {
+
+        try {
+
+            /** @var AuthModel $authModel */
+            $authModel = App::make('Bayfront\Bones\Services\Api\Models\AuthModel');
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        try {
+            $valid = $authModel->validateKey($key, Request::getReferer(), Request::getIp());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
+        } catch (UnauthorizedException $e) {
+            App::abort(401, $e->getMessage());
+        }
+
+        try {
+
+            return App::make('Bayfront\Bones\Services\Api\Models\UserModel', [
+                'user_id' => $valid['user_id'],
+                'rate_limit' => $valid['rate_limit']
+            ]);
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
     }
 
 }
