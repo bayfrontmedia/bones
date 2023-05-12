@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9ee32f8818b1409051907add7912e39",
+    "content-hash": "c6646b1e8e78954ef8a3206921f92312",
     "packages": [
         {
             "name": "bayfrontmedia/array-schema",
@@ -629,16 +629,16 @@
         },
         {
             "name": "bayfrontmedia/php-validator",
-            "version": "v2.1.0",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/php-validator.git",
-                "reference": "2ba31a0a01575eca634a54133bd3425ecded1dd2"
+                "reference": "fbf494228fd31261288318a6b1bb2710ba1e359a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/php-validator/zipball/2ba31a0a01575eca634a54133bd3425ecded1dd2",
-                "reference": "2ba31a0a01575eca634a54133bd3425ecded1dd2",
+                "url": "https://api.github.com/repos/bayfrontmedia/php-validator/zipball/fbf494228fd31261288318a6b1bb2710ba1e359a",
+                "reference": "fbf494228fd31261288318a6b1bb2710ba1e359a",
                 "shasum": ""
             },
             "require": {
@@ -677,9 +677,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/php-validator/issues",
-                "source": "https://github.com/bayfrontmedia/php-validator/tree/v2.1.0"
+                "source": "https://github.com/bayfrontmedia/php-validator/tree/v2.2.0"
             },
-            "time": "2023-05-03T12:58:13+00:00"
+            "time": "2023-05-12T01:52:25+00:00"
         },
         {
             "name": "bayfrontmedia/route-it",

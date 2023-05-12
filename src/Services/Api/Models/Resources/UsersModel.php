@@ -269,9 +269,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Required attributes
 
-        if (Arr::isMissing($attrs, $this->getRequiredAttrs())
-            || (!empty(App::getConfig('api.required_meta.users')) &&
-                (!isset($attrs['meta']) || Arr::isMissing((array)$attrs['meta'], App::getConfig('api.required_meta.users'))))) {
+        if (Arr::isMissing($attrs, $this->getRequiredAttrs())) {
 
             $msg = 'Unable to create user';
             $reason = 'Missing required attribute(s)';
@@ -281,6 +279,29 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
+
+        }
+
+        // Validate meta
+
+        if (isset($attrs['meta'])) {
+
+            try {
+
+                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
+
+            } catch (ValidationException) {
+
+                $msg = 'Unable to create user';
+                $reason = 'Missing or invalid meta attribute(s)';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason
+                ]);
+
+                throw new BadRequestException($msg . ': ' . $reason);
+
+            }
 
         }
 
@@ -656,6 +677,25 @@ class UsersModel extends ApiModel implements ResourceInterface
                 $attrs['meta'] = array_merge(json_decode($existing['meta'], true), $attrs['meta']);
             } else {
                 $attrs['meta'] = json_decode($existing['meta'], true);
+            }
+
+            // Validate meta
+
+            try {
+
+                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
+
+            } catch (ValidationException) {
+
+                $msg = 'Unable to update user';
+                $reason = 'Missing or invalid meta attribute(s)';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason
+                ]);
+
+                throw new BadRequestException($msg . ': ' . $reason);
+
             }
 
             $attrs['meta'] = $this->encodeMeta($attrs['meta']);
