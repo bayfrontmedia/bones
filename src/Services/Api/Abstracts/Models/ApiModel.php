@@ -7,10 +7,8 @@ use Bayfront\Bones\Abstracts\Model;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
-use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\PDO\Db;
-use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\PDO\Query;
 use Monolog\Logger;
@@ -99,7 +97,7 @@ abstract class ApiModel extends Model
      *
      * See: https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md
      *
-     * @param string $table
+     * @param Query $query
      * @param array $args (Allowed keys: select, where, orderBy, limit, offset)
      * @param array $selectable_cols
      * @param string $default_order_by
@@ -107,9 +105,8 @@ abstract class ApiModel extends Model
      * @param array $json_cols
      * @return array (Returned keys: data, meta)
      * @throws BadRequestException
-     * @throws InternalServerErrorException
      */
-    protected function queryCollection(string $table, array $args, array $selectable_cols, string $default_order_by, int $max_size, array $json_cols = []): array
+    protected function queryCollection(Query $query, array $args, array $selectable_cols, string $default_order_by, int $max_size, array $json_cols = []): array
     {
 
         // select
@@ -152,14 +149,7 @@ abstract class ApiModel extends Model
         $limit = ceil(min(Arr::get($args, 'limit', $max_size), $max_size));
         $offset = ceil(min(Arr::get($args, 'offset', 0), $max_size));
 
-        try {
-            $query = new Query($this->db->get());
-        } catch (InvalidDatabaseException) {
-            throw new InternalServerErrorException('Invalid database');
-        }
-
-        $query->table($table)
-            ->select($fields)
+        $query->select($fields)
             ->limit($limit)
             ->offset($offset)
             ->orderBy($order_by);

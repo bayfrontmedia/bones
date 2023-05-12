@@ -15,6 +15,8 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
+use Bayfront\PDO\Exceptions\InvalidDatabaseException;
+use Bayfront\PDO\Query;
 use Bayfront\Validator\Validate;
 use Bayfront\Validator\ValidationException;
 use Exception;
@@ -418,6 +420,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $this->createNewUserVerification($uuid['str']);
         }
 
+        // Log
+
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User created', [
@@ -425,6 +429,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
         }
+
+        // Event
 
         $attrs['password'] = '****'; // Hide password from event
 
@@ -443,7 +449,7 @@ class UsersModel extends ApiModel implements ResourceInterface
      * @param array $args
      * @return array
      * @throws BadRequestException
-     * @throws InternalServerErrorException
+     * @throws UnexpectedApiException
      */
     public function getCollection(array $args = []): array
     {
@@ -456,9 +462,19 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         try {
 
-            $results = $this->queryCollection('api_users', $args, $this->getSelectableCols(), 'id', $args['limit'], $this->getJsonCols());
+            $query = new Query($this->db->get());
 
-        } catch (BadRequestException|InternalServerErrorException $e) {
+        } catch (InvalidDatabaseException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        $query->table('api_users');
+
+        try {
+
+            $results = $this->queryCollection($query, $args, $this->getSelectableCols(), 'id', $args['limit'], $this->getJsonCols());
+
+        } catch (BadRequestException $e) {
 
             $msg = 'Unable to get user collection';
 
@@ -470,6 +486,8 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Log
+
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User read', [
@@ -477,6 +495,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
         }
+
+        // Event
 
         $this->events->doEvent('api.user.read', Arr::pluck($results['data'], 'id'));
 
@@ -533,6 +553,105 @@ class UsersModel extends ApiModel implements ResourceInterface
             $result['verificationId'] = $this->getNewUserVerification($id);
         }
 
+        // Log
+
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('User read', [
+                'user_id' => [$result['id']]
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.user.read', [$result['id']]);
+
+        return $result;
+
+    }
+
+    /**
+     * Get entire user, including protected fields (password and salt).
+     *
+     * @param string $id
+     * @return array
+     * @throws NotFoundException
+     */
+    public function getEntire(string $id): array
+    {
+
+        if (!Validate::uuid($id)) {
+
+            $msg = 'Unable to get user';
+            $reason = 'Invalid user ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
+        ]);
+
+        if (!$result) {
+
+            $msg = 'Unable to get user';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('User read', [
+                'user_id' => [$result['id']]
+            ]);
+
+        }
+
+        $this->events->doEvent('api.user.read', [$result['id']]);
+
+        return $result;
+
+    }
+
+    /**
+     * Get entire user from email, including protected fields (password and salt).
+     *
+     * @param string $email
+     * @return array
+     * @throws NotFoundException
+     */
+    public function getEntireFromEmail(string $email): array
+    {
+
+        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE email = :email", [
+            'email' => strtolower($email)
+        ]);
+
+        if (!$result) {
+
+            $msg = 'Unable to get user';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User read', [
@@ -566,11 +685,15 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (!Validate::uuid($id)) {
 
-            $this->log->notice('Unable to update user', [
-                'reason' => 'Invalid user ID'
+            $msg = 'Unable to update user';
+            $reason = 'Invalid user ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
-            throw new NotFoundException('Unable to update user: Invalid user ID');
+            throw new NotFoundException($msg . ': ' . $reason);
 
         }
 
@@ -582,7 +705,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $reason = 'Invalid attribute(s)';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -601,7 +725,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $reason = 'Invalid attribute type(s)';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -620,7 +745,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $reason = 'Does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -637,7 +763,8 @@ class UsersModel extends ApiModel implements ResourceInterface
                 $reason = 'Password does not meet the minimum requirements';
 
                 $this->log->notice($msg, [
-                    'reason' => $reason
+                    'reason' => $reason,
+                    'user_id' => $id
                 ]);
 
                 throw new BadRequestException($msg . ': ' . $reason);
@@ -660,7 +787,8 @@ class UsersModel extends ApiModel implements ResourceInterface
                 $reason = 'Email ' . $attrs['email'] . ' already exists';
 
                 $this->log->notice($msg, [
-                    'reason' => $reason
+                    'reason' => $reason,
+                    'user_id' => $id
                 ]);
 
                 throw new ConflictException($msg . ': ' . $reason);
@@ -691,7 +819,8 @@ class UsersModel extends ApiModel implements ResourceInterface
                 $reason = 'Missing or invalid meta attribute(s)';
 
                 $this->log->notice($msg, [
-                    'reason' => $reason
+                    'reason' => $reason,
+                    'user_id' => $id
                 ]);
 
                 throw new BadRequestException($msg . ': ' . $reason);
@@ -742,11 +871,15 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (!Validate::uuid($id)) {
 
-            $this->log->notice('Unable to delete user', [
-                'reason' => 'Invalid user ID'
+            $msg = 'Unable to delete user';
+            $reason = 'Invalid user ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
-            throw new NotFoundException('Unable to delete user: Invalid user ID');
+            throw new NotFoundException($msg . ': ' . $reason);
 
         }
 
