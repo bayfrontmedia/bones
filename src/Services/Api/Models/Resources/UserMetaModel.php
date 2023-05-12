@@ -111,8 +111,6 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-
-
     }
 
     /**
