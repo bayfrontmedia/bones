@@ -67,6 +67,34 @@ abstract class ApiModel extends Model
     }
 
     /**
+     * Convert UUID to binary.
+     * TODO: Not using.
+     *
+     * @param string $uuid
+     * @return mixed
+     */
+    protected function UUIDtoBIN(string $uuid): mixed
+    {
+        return $this->db->single("SELECT UUID_TO_BIN(:uuid, 1)", [
+            'uuid' => $uuid
+        ]);
+    }
+
+    /**
+     * Convert binary to UUID.
+     * TODO: Not using.
+     *
+     * @param mixed $bin
+     * @return string
+     */
+    protected function BINtoUUID(mixed $bin): string
+    {
+        return $this->db->single("SELECT BIN_TO_UUID(:bin, 1)", [
+            'bin' => $bin
+        ]);
+    }
+
+    /**
      * Query a collection using a query builder.
      *
      * See: https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md

@@ -11,6 +11,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
@@ -172,15 +173,98 @@ class UsersModel extends ApiModel implements ResourceInterface
     }
 
     /**
+     * Create new user verification meta.
+     *
+     * @param string $user_id
+     * @return string
+     * @throws UnexpectedApiException
+     */
+    protected function createNewUserVerification(string $user_id): string
+    {
+
+        try {
+            $id = App::createKey(8);
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        $this->db->query("INSERT INTO api_user_meta (id, userId, metaValue) VALUES ('00-new-user-verification', UUID_TO_BIN(:user_id, 1), :id) 
+                                ON DUPLICATE KEY UPDATE id=VALUES(id), userId=VALUES(userId), metaValue=VALUES(metaValue)", [
+            'id' => $id,
+            'user_id' => $user_id
+        ]);
+
+        return $id;
+
+    }
+
+    /**
+     * Get value of new user verification meta.
+     *
+     * @param string $user_id
+     * @return string
+     */
+    protected function getNewUserVerification(string $user_id): string
+    {
+
+        return $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+            'id' => '00-new-user-verification',
+            'user_id' => $user_id
+        ]);
+
+    }
+
+    /**
+     * Verify new user verification meta and enable user if valid.
+     *
+     * @param string $user_id
+     * @param string $id
+     * @return bool
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws NotFoundException
+     */
+    public function verifyNewUserVerification(string $user_id, string $id): bool
+    {
+
+        $exists = $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND metaValue = :value", [
+            'id' => '00-new-user-verification',
+            'user_id' => $user_id,
+            'value' => $id
+        ]);
+
+        if ($exists) {
+
+            $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND metaValue = :value", [
+                'id' => '00-new-user-verification',
+                'user_id' => $user_id,
+                'value' => $id
+            ]);
+
+            $this->update($user_id, [
+                'enabled' => true
+            ]);
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    /**
      * Create user.
      *
      * @param array $attrs
+     * @param bool $include_verification
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
      * @throws InternalServerErrorException
+     * @throws UnexpectedApiException
      */
-    public function create(array $attrs): string
+    public function create(array $attrs, bool $include_verification = false): string
     {
 
         // Required attributes
@@ -309,7 +393,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $this->db->insert('api_users', $attrs);
 
-        // TODO: Create new user verification
+        if ($include_verification) {
+            $this->createNewUserVerification($uuid['str']);
+        }
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
 
@@ -382,11 +468,12 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @param array $cols
+     * @param bool $include_verification
      * @return array
      * @throws BadRequestException
      * @throws NotFoundException
      */
-    public function get(string $id, array $cols = ['*']): array
+    public function get(string $id, array $cols = ['*'], bool $include_verification = false): array
     {
 
         $cols = array_merge($cols, ['id']); // Force return ID
@@ -421,7 +508,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // TODO: Include verification?
+        if ($include_verification) {
+            $result['verificationId'] = $this->getNewUserVerification($id);
+        }
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
