@@ -11,7 +11,7 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\ApiController;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Schemas\StatusResource;
-use Bayfront\Container\NotFoundException;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -23,9 +23,9 @@ class StatusController extends ApiController
      * @param EventService $events
      * @param FilterService $filters
      * @param Response $response
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     public function __construct(EventService $events, FilterService $filters, Response $response)
@@ -38,10 +38,10 @@ class StatusController extends ApiController
     }
 
     /**
-     * @throws NotFoundException
-     * @throws InvalidStatusCodeException
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
      */
     public function index(): void
     {

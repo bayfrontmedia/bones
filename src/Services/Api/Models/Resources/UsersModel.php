@@ -545,7 +545,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $msg = 'Unable to get user';
 
             $this->log->notice($msg, [
-                'reason' => $e->getMessage()
+                'reason' => $e->getMessage(),
+                'user_id' => $id
             ]);
 
             throw $e;

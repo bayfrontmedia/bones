@@ -16,6 +16,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaResource;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -37,11 +38,11 @@ class UserMetaController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function create(array $args): void
     {
@@ -76,11 +77,11 @@ class UserMetaController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function getCollection(array $args): void
     {
@@ -112,11 +113,11 @@ class UserMetaController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function get(array $args): void
     {
@@ -148,11 +149,11 @@ class UserMetaController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function update(array $args): void
     {
@@ -188,9 +189,9 @@ class UserMetaController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function delete(array $args): void
     {

@@ -16,6 +16,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -24,6 +25,7 @@ use Bayfront\HttpResponse\Response;
  * TODO:
  * Check permissions on all endpoints
  */
+
 class UsersController extends PrivateApiController
 {
 
@@ -40,12 +42,12 @@ class UsersController extends PrivateApiController
      * Create user.
      *
      * @return void
-     * @throws InvalidSchemaException
+     * @throws ContainerNotFoundException
      * @throws HttpException
+     * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
-     * @throws InvalidStatusCodeException
      */
     public function create(): void
     {
@@ -60,11 +62,11 @@ class UsersController extends PrivateApiController
      * Get user collection.
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function getCollection(): void
     {
@@ -93,11 +95,11 @@ class UsersController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function get(array $args): void
     {
@@ -127,11 +129,11 @@ class UsersController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function update(array $args): void
     {
@@ -170,9 +172,9 @@ class UsersController extends PrivateApiController
      *
      * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws \Bayfront\Container\NotFoundException
      */
     public function delete(array $args): void
     {

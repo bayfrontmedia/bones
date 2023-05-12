@@ -10,10 +10,11 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PublicApiController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
+use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
-use Bayfront\Container\NotFoundException;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -28,9 +29,9 @@ class PublicController extends PublicApiController
      * @param FilterService $filters
      * @param Response $response
      * @param UsersModel $usersModel
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel)
@@ -42,13 +43,15 @@ class PublicController extends PublicApiController
     }
 
     /**
+     * Create user.
+     *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Bones\Services\Api\Exceptions\NotFoundException
      */
     public function createUser(): void
     {

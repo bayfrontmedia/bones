@@ -16,6 +16,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
 use Bayfront\Bones\Services\Api\Schemas\AuthResource;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -38,7 +39,7 @@ class AuthController extends AuthApiController
      * @throws InvalidSchemaException
      * @throws HttpException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
+     * @throws ContainerNotFoundException
      * @throws InvalidStatusCodeException
      */
     protected function returnAuthResource(string $user_id): void
@@ -83,7 +84,7 @@ class AuthController extends AuthApiController
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
+     * @throws ContainerNotFoundException
      */
     public function login(): void
     {
@@ -118,7 +119,7 @@ class AuthController extends AuthApiController
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws \Bayfront\Container\NotFoundException
+     * @throws ContainerNotFoundException
      */
     public function refresh(): void
     {

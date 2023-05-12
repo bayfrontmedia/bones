@@ -255,8 +255,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
-                'meta_id' => $attrs['id']
+                'user_id' => $scoped_id
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -399,7 +398,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
             $msg = 'Unable to get user meta collection';
 
             $this->log->notice($msg, [
-                'reason' => $e->getMessage()
+                'reason' => $e->getMessage(),
+                'user_id' => $scoped_id
             ]);
 
             throw $e;
@@ -419,7 +419,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.read', Arr::pluck($results['data'], 'id'));
+        $this->events->doEvent('api.user.meta.read', $scoped_id, Arr::pluck($results['data'], 'id'));
 
         return $results;
 
@@ -544,7 +544,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.read', [$result['id']]);
+        $this->events->doEvent('api.user.meta.read', $scoped_id, [$result['id']]);
 
         return $result;
 
@@ -574,6 +574,21 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
         if ($allow_protected === false && str_starts_with($id, '00-')) {
             return false;
         }
+
+        // Log
+
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('User meta read', [
+                'user_id' => $scoped_id,
+                'meta_id' => [$id]
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.user.meta.read', $scoped_id, [$id]);
 
         return $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
             'id' => $id,
@@ -740,7 +755,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.update', $id, $attrs);
+        $this->events->doEvent('api.user.meta.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
 
     }
 
