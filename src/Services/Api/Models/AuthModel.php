@@ -207,7 +207,7 @@ class AuthModel extends ApiModel
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $decoded['payload']['sub']
+                'user_id' => $user->getId()
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -216,7 +216,7 @@ class AuthModel extends ApiModel
 
         // Event
 
-        $this->events->doEvent('auth.validate', $decoded['payload']['sub'], Api::AUTH_TOKEN);
+        $this->events->doEvent('auth.validate', $user->getId(), Api::AUTH_TOKEN);
 
         return [
             'user_model' => $user,
