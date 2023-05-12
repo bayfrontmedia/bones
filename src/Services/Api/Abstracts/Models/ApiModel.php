@@ -8,7 +8,9 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\PDO\Db;
+use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\PDO\Query;
 use Monolog\Logger;
@@ -90,6 +92,24 @@ abstract class ApiModel extends Model
         return $this->db->single("SELECT BIN_TO_UUID(:bin, 1)", [
             'bin' => $bin
         ]);
+    }
+
+    /**
+     * Return new Query instance.
+     *
+     * @param string $db_name
+     * @return Query
+     * @throws UnexpectedApiException
+     */
+    public function startNewQuery(string $db_name = ''): Query
+    {
+
+        try {
+            return new Query($this->db->get($db_name));
+        } catch (InvalidDatabaseException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
     }
 
     /**
@@ -224,7 +244,66 @@ abstract class ApiModel extends Model
     }
 
     /**
+     * Query a single row using a query builder.
+     *
+     * See: https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md
+     *
+     * @param Query $query
+     * @param array $cols
+     * @param array $selectable_cols
+     * @param array $json_cols
+     * @return array
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
+    public function querySingle(Query $query, array $cols, array $selectable_cols, array $json_cols = []): array {
+
+        if (empty($cols) || in_array('*', $cols)) {
+
+            $cols = array_keys($selectable_cols);
+
+        } else { // Validate fields
+
+            if (!empty(array_diff($cols, array_keys($selectable_cols)))) {
+                throw new BadRequestException('Invalid field(s)');
+            }
+
+        }
+
+        foreach ($cols as $k => $col) {
+            $cols[$k] = $selectable_cols[$col];
+        }
+
+        $results = $query->select($cols)->row();
+
+        if (!$results) {
+            throw new NotFoundException('Does not exist');
+        }
+
+        // json_decode
+
+        $json_cols = Arr::getAnyValues($cols, $json_cols);
+
+        if (!empty($json_cols)) {
+
+            foreach ($json_cols as $col) {
+
+                if ($results[$col]) { // May be NULL
+                    $results[$col] = json_decode($results[$col], true);
+                }
+
+            }
+
+        }
+
+        return $results;
+
+    }
+
+    /**
      * Filter the result of a query by desired columns, and json_decode if needed.
+     *
+     * TODO: Remove
      *
      * @param bool|array $result
      * @param array $cols
@@ -234,7 +313,7 @@ abstract class ApiModel extends Model
      * @throws BadRequestException
      * @throws NotFoundException
      */
-    protected function filterResult(bool|array $result, array $cols, array $selectable_cols, array $json_cols = []): array
+    protected function filterResultNOTUSED(bool|array $result, array $cols, array $selectable_cols, array $json_cols = []): array
     {
 
         if (!$result) {

@@ -52,7 +52,7 @@ class StatusController extends ApiController
             'clientIp' => Request::getIp()
         ];
 
-        $fields = $this->getRequestedFieldsOrAbort(Request::getQuery(), 'status', [
+        $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'status', [
             'status',
             'clientIp'
         ], ['*']);

@@ -362,7 +362,7 @@ abstract class ApiController extends Controller
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      */
-    public function getRequestedFieldsOrAbort(array $query, string $fields_key, array $allowed_fields = [], array $default = []): array
+    public function parseFieldsQuery(array $query, string $fields_key, array $allowed_fields = [], array $default = []): array
     {
 
         $fields = explode(',', Arr::get($query, 'fields.' . $fields_key, ''));
@@ -424,7 +424,7 @@ abstract class ApiController extends Controller
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      */
-    public function parseQueryOrAbort(array $query, string $fields_key = ''): array
+    public function parseCollectionQueryOrAbort(array $query, string $fields_key = ''): array
     {
 
         // Fields

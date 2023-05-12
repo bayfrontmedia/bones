@@ -103,8 +103,8 @@ interface ScopedResourceInterface
      *
      * @param string $scoped_id
      * @param string $id
-     * @return bool
+     * @return void
      */
-    public function delete(string $scoped_id, string $id): bool;
+    public function delete(string $scoped_id, string $id): void;
 
 }

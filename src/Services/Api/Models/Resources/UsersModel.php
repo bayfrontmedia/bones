@@ -9,14 +9,12 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
-use Bayfront\PDO\Exceptions\InvalidDatabaseException;
-use Bayfront\PDO\Query;
+use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
 use Bayfront\Validator\ValidationException;
 use Exception;
@@ -263,7 +261,6 @@ class UsersModel extends ApiModel implements ResourceInterface
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
-     * @throws InternalServerErrorException
      * @throws UnexpectedApiException
      */
     public function create(array $attrs, bool $include_verification = false): string
@@ -281,29 +278,6 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Validate meta
-
-        if (isset($attrs['meta'])) {
-
-            try {
-
-                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
-
-            } catch (ValidationException) {
-
-                $msg = 'Unable to create user';
-                $reason = 'Missing or invalid meta attribute(s)';
-
-                $this->log->notice($msg, [
-                    'reason' => $reason
-                ]);
-
-                throw new BadRequestException($msg . ': ' . $reason);
-
-            }
 
         }
 
@@ -341,6 +315,50 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Validate meta
+
+        if (isset($attrs['meta'])) {
+
+            try {
+
+                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
+
+            } catch (ValidationException) {
+
+                $msg = 'Unable to create user';
+                $reason = 'Missing or invalid meta attribute(s)';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason
+                ]);
+
+                throw new BadRequestException($msg . ': ' . $reason);
+
+            }
+
+            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
+
+        }
+
+        // Salt
+
+        try {
+
+            $attrs['salt'] = App::createKey(16);
+
+        } catch (Exception) {
+
+            $msg = 'Unable to create user';
+            $reason = 'Error creating salt';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new UnexpectedApiException($msg . ': ' . $reason);
+
+        }
+
         // Password
 
         if ($this->filters->doFilter('api.user.password', $attrs['password']) == '') {
@@ -355,6 +373,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             throw new BadRequestException($msg . ': ' . $reason);
 
         }
+
+        $attrs['password'] = $this->hashPassword($attrs['password'], $attrs['salt']);
 
         // Email
 
@@ -373,38 +393,11 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // Meta
-
-        if (isset($attrs['meta'])) { // Remove null and json_encode
-            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
-        }
-
         // Enabled
 
         if (isset($attrs['enabled'])) { // Cast to integer
             $attrs['enabled'] = (int)$attrs['enabled'];
         }
-
-        // Salt
-
-        try {
-
-            $attrs['salt'] = App::createKey(16);
-
-        } catch (Exception) {
-
-            $msg = 'Unable to create user';
-            $reason = 'Error creating salt';
-
-            $this->log->notice($msg, [
-                'reason' => $reason
-            ]);
-
-            throw new InternalServerErrorException($msg . ': ' . $reason);
-
-        }
-
-        $attrs['password'] = $this->hashPassword($attrs['password'], $attrs['salt']);
 
         // ID
 
@@ -434,10 +427,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $attrs['password'] = '****'; // Hide password from event
 
-        $this->events->doEvent('api.user.create', $uuid['str'], Arr::except($attrs, [
-            'id',
-            'salt'
-        ]));
+        $this->events->doEvent('api.user.create', $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
 
         return $uuid['str'];
 
@@ -460,15 +450,9 @@ class UsersModel extends ApiModel implements ResourceInterface
             $args['select'] = array_merge($args['select'], ['id']); // Force return ID
         }
 
-        try {
+        // Query
 
-            $query = new Query($this->db->get());
-
-        } catch (InvalidDatabaseException $e) {
-            throw new UnexpectedApiException($e->getMessage());
-        }
-
-        $query->table('api_users');
+        $query = $this->startNewQuery()->table('api_users');
 
         try {
 
@@ -513,29 +497,48 @@ class UsersModel extends ApiModel implements ResourceInterface
      * @return array
      * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
-    public function get(string $id, array $cols = ['*'], bool $include_verification = false): array
+    public function get(string $id, array $cols = [], bool $include_verification = false): array
     {
 
-        $cols = array_merge($cols, ['id']); // Force return ID
+        if (empty($cols)) {
+            $cols[] = '*';
+        } else {
+            $cols = array_merge($cols, ['id']); // Force return ID
+        }
+
+        // UUID
 
         if (!Validate::uuid($id)) {
 
-            $this->log->notice('Unable to get user', [
-                'reason' => 'Invalid user ID'
+            $msg = 'Unable to get user';
+            $reason = 'Invalid user ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
-            throw new NotFoundException('Unable to get user: Invalid user ID');
+            throw new NotFoundException($msg . ': ' . $reason);
 
         }
 
-        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, meta, enabled, createdAt, updatedAt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $id
-        ]);
+        // Query
+
+        $query = $this->startNewQuery()->table('api_users');
 
         try {
 
-            $result = $this->filterResult($result, $cols, $this->getSelectableCols(), $this->getJsonCols());
+            $query->where('id', 'eq', "UUID_TO_BIN('" . $id . "', 1)");
+
+        } catch (QueryException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        try {
+
+            $result = $this->querySingle($query, $cols, $this->getSelectableCols(), $this->getJsonCols());
 
         } catch (BadRequestException|NotFoundException $e) {
 
@@ -611,6 +614,8 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Log
+
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User read', [
@@ -618,6 +623,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
         }
+
+        // Event
 
         $this->events->doEvent('api.user.read', [$result['id']]);
 
@@ -652,6 +659,8 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Log
+
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User read', [
@@ -659,6 +668,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
         }
+
+        // Event
 
         $this->events->doEvent('api.user.read', [$result['id']]);
 
@@ -682,6 +693,8 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (empty($attrs)) { // Nothing to update
             return;
         }
+
+        // UUID
 
         if (!Validate::uuid($id)) {
 
@@ -753,6 +766,40 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Validate meta
+
+        if (isset($attrs['meta'])) {
+
+            if ($existing['meta']) {
+                $attrs['meta'] = array_merge(json_decode($existing['meta'], true), $attrs['meta']);
+            } else {
+                $attrs['meta'] = json_decode($existing['meta'], true);
+            }
+
+            // Validate meta
+
+            try {
+
+                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
+
+            } catch (ValidationException) {
+
+                $msg = 'Unable to update user';
+                $reason = 'Missing or invalid meta attribute(s)';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason,
+                    'user_id' => $id
+                ]);
+
+                throw new BadRequestException($msg . ': ' . $reason);
+
+            }
+
+            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
+
+        }
+
         // Password
 
         if (isset($attrs['password'])) {
@@ -797,40 +844,6 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // Meta
-
-        if (isset($attrs['meta'])) {
-
-            if ($existing['meta']) {
-                $attrs['meta'] = array_merge(json_decode($existing['meta'], true), $attrs['meta']);
-            } else {
-                $attrs['meta'] = json_decode($existing['meta'], true);
-            }
-
-            // Validate meta
-
-            try {
-
-                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
-
-            } catch (ValidationException) {
-
-                $msg = 'Unable to update user';
-                $reason = 'Missing or invalid meta attribute(s)';
-
-                $this->log->notice($msg, [
-                    'reason' => $reason,
-                    'user_id' => $id
-                ]);
-
-                throw new BadRequestException($msg . ': ' . $reason);
-
-            }
-
-            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
-
-        }
-
         // Enabled
 
         if (isset($attrs['enabled'])) { // Cast to integer
@@ -843,6 +856,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             'id' => 'UUID_TO_BIN(' . $existing['id'] . ', 1)'
         ]);
 
+        // Log
+
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
 
             $this->log->info('User updated', [
@@ -850,6 +865,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
         }
+
+        // Event
 
         if (isset($attrs['password'])) { // Hide password from event
             $attrs['password'] = '****';
@@ -863,11 +880,13 @@ class UsersModel extends ApiModel implements ResourceInterface
      * Delete user.
      *
      * @param string $id
-     * @return bool
+     * @return void
      * @throws NotFoundException
      */
-    public function delete(string $id): bool
+    public function delete(string $id): void
     {
+
+        // UUID
 
         if (!Validate::uuid($id)) {
 
@@ -889,6 +908,8 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if ($deleted) {
 
+            // Log
+
             if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
 
                 $this->log->info('User deleted', [
@@ -897,11 +918,21 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
+            // Event
+
             $this->events->doEvent('api.user.delete', $id);
 
         }
 
-        return $deleted;
+        $msg = 'Unable to delete user';
+        $reason = 'User does not exist';
+
+        $this->log->notice($msg, [
+            'reason' => $reason,
+            'user_id' => $id
+        ]);
+
+        throw new NotFoundException($msg . ': ' . $reason);
 
     }
 

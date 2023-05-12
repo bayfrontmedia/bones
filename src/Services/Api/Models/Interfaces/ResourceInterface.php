@@ -96,8 +96,8 @@ interface ResourceInterface
      * Delete resource.
      *
      * @param string $id
-     * @return bool
+     * @return void
      */
-    public function delete(string $id): bool;
+    public function delete(string $id): void;
 
 }
