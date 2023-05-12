@@ -112,7 +112,7 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function idExists(string $id): bool
     {
 
-        if (Validate::uuid($id)) {
+        if (!Validate::uuid($id)) {
             return false;
         }
 
@@ -678,6 +678,25 @@ class UsersModel extends ApiModel implements ResourceInterface
     }
 
     /**
+     * Get user salt.
+     *
+     * @param string $id
+     * @return string
+     */
+    public function getSalt(string $id): string
+    {
+
+        if (!Validate::uuid($id)) {
+            return '';
+        }
+
+        return $this->db->single("SELECT salt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
+        ]);
+
+    }
+
+    /**
      * Update user.
      *
      * @param string $id
@@ -923,6 +942,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             // Event
 
             $this->events->doEvent('api.user.delete', $id);
+
+            return;
 
         }
 

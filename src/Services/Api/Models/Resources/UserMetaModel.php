@@ -94,7 +94,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     public function getCount(string $scoped_id, bool $allow_protected = false): int
     {
 
-        if (Validate::uuid($scoped_id)) {
+        if (!Validate::uuid($scoped_id)) {
             return 0;
         }
 
@@ -122,7 +122,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     public function idExists(string $scoped_id, string $id, bool $allow_protected = false): bool
     {
 
-        if (Validate::uuid($scoped_id)) {
+        if (!Validate::uuid($scoped_id)) {
             return false;
         }
 
@@ -150,18 +150,19 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param array $attrs
      * @param bool $allow_protected
+     * @param bool $overwrite (Overwrite if existing?)
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
      * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function create(string $scoped_id, array $attrs, bool $allow_protected = false): string
+    public function create(string $scoped_id, array $attrs, bool $allow_protected = false, bool $overwrite = false): string
     {
 
         // UUID
 
-        if (Validate::uuid($scoped_id)) {
+        if (!Validate::uuid($scoped_id)) {
 
             $msg = 'Unable to create user meta';
             $reason = 'Invalid user ID';
@@ -262,29 +263,44 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-        // Check exists
+        if ($overwrite === false) {
 
-        if ($this->idExists($scoped_id, $attrs['id'])) {
+            // Check exists
 
-            $msg = 'Unable to create user meta';
-            $reason = 'ID (' . $attrs['id'] . ') already exists';
+            if ($this->idExists($scoped_id, $attrs['id'])) {
 
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'user_id' => $scoped_id
+                $msg = 'Unable to create user meta';
+                $reason = 'ID (' . $attrs['id'] . ') already exists';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason,
+                    'user_id' => $scoped_id
+                ]);
+
+                throw new ConflictException($msg . ': ' . $reason);
+
+            }
+
+            // Create
+
+            $this->db->query("INSERT INTO api_user_meta SET id = :id, userId = UUID_TO_BIN(:user_id, 1), metaValue = :value", [
+                'id' => $attrs['id'],
+                'user_id' => $scoped_id,
+                'value' => $attrs['metaValue']
             ]);
 
-            throw new ConflictException($msg . ': ' . $reason);
+        } else {
+
+            // Create
+
+            $this->db->query("INSERT INTO api_user_meta SET id = :id, userId = UUID_TO_BIN(:user_id, 1), metaValue = :value
+                                        ON DUPLICATE KEY UPDATE id=VALUES(id), userId=VALUES(userId), metaValue=VALUES(metaValue)", [
+                'id' => $attrs['id'],
+                'user_id' => $scoped_id,
+                'value' => $attrs['metaValue']
+            ]);
 
         }
-
-        // Create
-
-        $this->db->query("INSERT INTO api_user_meta SET id = :id, userId = UUID_TO_BIN(:user_id, 1), metaValue = :value", [
-            'id' => $attrs['id'],
-            'user_id' => $scoped_id,
-            'value' => $attrs['metaValue']
-        ]);
 
         // Log
 
@@ -321,7 +337,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // UUID
 
-        if (Validate::uuid($scoped_id)) {
+        if (!Validate::uuid($scoped_id)) {
 
             $msg = 'Unable to get user meta collection';
             $reason = 'Invalid user ID';
@@ -531,6 +547,38 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
         $this->events->doEvent('api.user.meta.read', [$result['id']]);
 
         return $result;
+
+    }
+
+    /**
+     * Return value of single user meta, or false if not existing.
+     *
+     * @param string $scoped_id
+     * @param string $id
+     * @param bool $allow_protected
+     * @return mixed
+     */
+    public function getValue(string $scoped_id, string $id, bool $allow_protected = false): mixed
+    {
+
+        $id = Str::kebabCase($id, true);
+
+        // UUID
+
+        if (!Validate::uuid($scoped_id)) {
+            return false;
+        }
+
+        // Protected
+
+        if ($allow_protected === false && str_starts_with($id, '00-')) {
+            return false;
+        }
+
+        return $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+            'id' => $id,
+            'user_id' => $scoped_id
+        ]);
 
     }
 
@@ -757,6 +805,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
             // Event
 
             $this->events->doEvent('api.user.meta.delete', $scoped_id, $id);
+
+            return;
 
         }
 

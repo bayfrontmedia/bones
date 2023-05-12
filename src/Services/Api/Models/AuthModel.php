@@ -4,28 +4,128 @@ namespace Bayfront\Bones\Services\Api\Models;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
+use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
+use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
-use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\HttpRequest\Request;
 use Bayfront\JWT\Jwt;
 use Bayfront\JWT\TokenException;
 use Bayfront\PDO\Db;
+use Exception;
 use Monolog\Logger;
 
 class AuthModel extends ApiModel
 {
 
+    protected FilterService $filters;
     protected UsersModel $usersModel;
+    protected UserMetaModel $userMetaModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, FilterService $filters, UsersModel $usersModel, UserMetaModel $userMetaModel)
     {
         parent::__construct($events, $db, $log);
 
+        $this->filters = $filters;
         $this->usersModel = $usersModel;
+        $this->userMetaModel = $userMetaModel;
+    }
+
+    /**
+     * Return rate limit for user based on meta key or API config value.
+     *
+     * @param string $user_id
+     * @return int
+     */
+    public function getAllowedRateLimit(string $user_id): int
+    {
+
+        $rate_limit = $this->userMetaModel->getValue($user_id, '00-rate-limit', true);
+
+        if (!$rate_limit) {
+            return App::getConfig('api.rate_limit.private');
+        }
+
+        return (int)$rate_limit;
+
+    }
+
+    /**
+     * Create and return access token (JWT) for user.
+     *
+     * @param string $user_id
+     * @param int $rate_limit
+     * @return array (Keys: token, expires_in, expires_at)
+     */
+    public function createAccessToken(string $user_id, int $rate_limit): array
+    {
+
+        $payload = $this->filters->doFilter('api.jwt.payload', [
+            'rate_limit' => $rate_limit
+        ]);
+
+        $time = time();
+
+        $expiration = $time + App::getConfig('api.token_duration.access');
+
+        $jwt = new Jwt(App::getConfig('app.key'));
+
+        $token = $jwt
+            ->iss(Request::getRequest('host'))
+            ->sub($user_id)
+            ->iat($time)
+            ->nbf($time)
+            ->exp($expiration)
+            ->encode($payload);
+
+        return [
+            'token' => $token,
+            'expires_in' => (string)App::getConfig('api.token_duration.access'),
+            'expires_at' => (string)$expiration
+        ];
+
+    }
+
+    /**
+     * Create and save refresh token for user.
+     * Returns refresh token.
+     *
+     * @param string $user_id
+     * @return string
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function createRefreshToken(string $user_id): string
+    {
+
+        try {
+
+            $refresh_token = App::createKey();
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        $this->userMetaModel->create($user_id, [
+            'id' => '00-refresh-token',
+            'metaValue' => json_encode([
+                'token' => $this->hashPassword($refresh_token, $this->usersModel->getSalt($user_id)),
+                'expiresAt' => time() + App::getConfig('api.token_duration.refresh')
+            ])
+        ], true, true);
+
+        return $refresh_token;
+
     }
 
     /**
@@ -116,8 +216,9 @@ class AuthModel extends ApiModel
      * @param string $refresh_token
      * @return array
      * @throws ForbiddenException
-     * @throws InternalServerErrorException
+     * @throws NotFoundException
      * @throws UnauthorizedException
+     * @throws UnexpectedApiException
      */
     public function authenticateWithRefreshToken(string $access_token, string $refresh_token): array
     {
@@ -149,10 +250,7 @@ class AuthModel extends ApiModel
 
         // Attempt to fetch refresh token
 
-        $existing_refresh_token = $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-            'id' => '00-refresh-token',
-            'user_id' => $token['payload']['sub']
-        ]);
+        $existing_refresh_token = $this->userMetaModel->getValue($token['payload']['sub'], '00-refresh-token', true);
 
         if (!$existing_refresh_token) {
 
@@ -179,10 +277,7 @@ class AuthModel extends ApiModel
 
             // Delete invalid token
 
-            $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-                'id' => '00-refresh-token',
-                'user_id' => $token['payload']['sub']
-            ]);
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
 
             $msg = 'Unsuccessful authentication with token';
             $reason = 'Invalid refresh token format';
@@ -192,7 +287,7 @@ class AuthModel extends ApiModel
                 'access_token' => $access_token
             ]);
 
-            throw new InternalServerErrorException($msg . ': ' . $reason);
+            throw new UnexpectedApiException($msg . ': ' . $reason);
 
         }
 
@@ -202,10 +297,7 @@ class AuthModel extends ApiModel
 
             // Delete invalid token
 
-            $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-                'id' => '00-refresh-token',
-                'user_id' => $token['payload']['sub']
-            ]);
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
 
             $msg = 'Unsuccessful authentication with token';
             $reason = 'Refresh token is expired';
@@ -229,10 +321,7 @@ class AuthModel extends ApiModel
 
             // Delete invalid token
 
-            $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-                'id' => '00-refresh-token',
-                'user_id' => $token['payload']['sub']
-            ]);
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
 
             $msg = 'Unsuccessful authentication with token';
             $reason = 'User does not exist';
@@ -279,12 +368,6 @@ class AuthModel extends ApiModel
             throw new ForbiddenException($msg . ': ' . $reason);
 
         }
-
-        /*
-         * TODO:
-         * Should this be deleting the refresh token
-         * and generating new/issuing new credentials?
-         */
 
         $user = Arr::except($user, [
             'password',

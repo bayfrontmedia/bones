@@ -10,7 +10,6 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PublicApiController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\InternalServerErrorException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
@@ -45,10 +44,11 @@ class PublicController extends PublicApiController
     /**
      * @return void
      * @throws HttpException
+     * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
-     * @throws InvalidSchemaException
+     * @throws \Bayfront\Bones\Services\Api\Exceptions\NotFoundException
      */
     public function createUser(): void
     {
@@ -83,8 +83,6 @@ class PublicController extends PublicApiController
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (InternalServerErrorException $e) {
-            App::abort(500, $e->getMessage());
         }
 
         $schema = UsersResource::create($created, [
