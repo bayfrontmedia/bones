@@ -1,8 +1,8 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Models\Interfaces;
+namespace Bayfront\Bones\Services\Api\Models\Interfaces\Models;
 
-interface RelationshipInterface
+interface ModelRelationshipInterface
 {
 
     /**

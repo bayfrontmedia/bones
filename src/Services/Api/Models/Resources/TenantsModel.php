@@ -10,7 +10,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
+use Bayfront\Bones\Services\Api\Models\Interfaces\Models\ModelResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -19,7 +19,7 @@ use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
-class TenantsModel extends ApiModel implements ResourceInterface
+class TenantsModel extends ApiModel implements ModelResourceInterface
 {
 
     public function __construct(EventService $events, Db $db, Logger $log)
@@ -265,9 +265,22 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Enabled
+
+        if (isset($attrs['enabled'])) { // Cast to integer
+            $attrs['enabled'] = (int)$attrs['enabled'];
+        }
+
+        // Tenant ID
+
         $uuid = $this->createUUID();
 
         $attrs['id'] = $uuid['bin'];
+
+        // Owner ID
+
+        $owner_id = $attrs['owner'];
+        $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
 
         // Create
 
@@ -275,21 +288,30 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             $this->db->beginTransaction();
 
-            $this->db->insert('api_tenants', $attrs);
+            //$this->db->insert('api_tenants', $attrs);
+
+            /** @noinspection SqlInsertValues */
+            $sql = sprintf("INSERT INTO api_tenants (%s) VALUES (%s)",
+                implode(', ', array_keys($attrs)),
+                implode(', ', array_fill(0, count($attrs), '?')));
+
+            $this->db->query($sql, array_values($attrs));
 
             // Add owner as tenant user
 
-            $this->db->query("INSERT INTO api_tenant_users SET tenantId = :tenant_id, userId = UUID_TO_BIN(:user_id, 1)", [
+            $this->db->query("INSERT INTO api_tenant_users SET tenantId = :tenant_id, userId = :user_id", [
                 'tenant_id' => $attrs['id'], // Already as BIN
-                'user_id' => $attrs['owner']
+                'user_id' => $attrs['owner'] // Already as BIN
             ]);
 
-        } catch (Exception) {
+        } catch (Exception $e) {
+            die($e->getMessage());
+
 
             $this->db->rollbackTransaction();
 
             $msg = 'Unable to create tenant';
-            $reason = 'Owner ID (' . $attrs['owner'] . ') does not exist';
+            $reason = 'Owner ID (' . $owner_id . ') does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -298,6 +320,20 @@ class TenantsModel extends ApiModel implements ResourceInterface
             throw new BadRequestException($msg . ': ' . $reason);
 
         }
+
+        // Log
+
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('Tenant created', [
+                'tenant_id' => $uuid['str']
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.tenant.create', $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
 
         return $uuid['str'];
 
@@ -359,6 +395,8 @@ class TenantsModel extends ApiModel implements ResourceInterface
     }
 
     /**
+     * Get tenant.
+     *
      * @param string $id
      * @param array $cols
      * @return array
@@ -366,7 +404,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function get(string $id, array $cols = ['*']): array
+    public function get(string $id, array $cols = []): array
     {
 
         if (empty($cols)) {

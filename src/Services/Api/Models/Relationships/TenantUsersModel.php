@@ -10,7 +10,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
+use Bayfront\Bones\Services\Api\Models\Interfaces\Models\ModelRelationshipInterface;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
@@ -21,7 +21,7 @@ use Bayfront\Validator\Validate;
 use Monolog\Logger;
 use PDOException;
 
-class TenantUsersModel extends ApiModel implements RelationshipInterface
+class TenantUsersModel extends ApiModel implements ModelRelationshipInterface
 {
 
     protected TenantsModel $tenantsModel;

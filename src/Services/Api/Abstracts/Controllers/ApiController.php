@@ -305,6 +305,49 @@ abstract class ApiController extends Controller
     }
 
     /**
+     * Get array of resource identifier object ID's for a To-Many relationship.
+     *
+     * @param string $type
+     * @return array
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     */
+    public function getToManyRelationshipIdsOrAbort(string $type): array
+    {
+
+        $body = $this->getBodyOrAbort([
+            'data'
+        ]);
+
+        if (!is_array($body['data'])) {
+            App::abort(400, 'Content body is invalid');
+        }
+
+        $return = [];
+
+        foreach ($body['data'] as $relationship) {
+
+            if (Arr::isMissing($relationship, [
+                'type',
+                'id'
+            ])) {
+                App::abort(400, 'Invalid resource identifier');
+            }
+
+            if ($relationship['type'] !== $type) {
+                App::abort(409, 'Invalid resource identifier type');
+            }
+
+            $return[] = $relationship['id'];
+
+        }
+
+        return $return;
+
+    }
+
+    /**
      * Checks request body is valid JSON:API resource object with optional required and allowed
      * attributes, or aborts with a "400 Bad Request" or "409 Conflict" HTTP status.
      *
