@@ -288,14 +288,17 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             $this->db->beginTransaction();
 
-            //$this->db->insert('api_tenants', $attrs);
+            $this->db->insert('api_tenants', $attrs);
 
             /** @noinspection SqlInsertValues */
+            /*
             $sql = sprintf("INSERT INTO api_tenants (%s) VALUES (%s)",
                 implode(', ', array_keys($attrs)),
                 implode(', ', array_fill(0, count($attrs), '?')));
 
+
             $this->db->query($sql, array_values($attrs));
+            */
 
             // Add owner as tenant user
 
@@ -304,9 +307,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
                 'user_id' => $attrs['owner'] // Already as BIN
             ]);
 
-        } catch (Exception $e) {
-            die($e->getMessage());
+            $this->db->commitTransaction();
 
+        } catch (Exception) {
 
             $this->db->rollbackTransaction();
 
