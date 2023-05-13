@@ -851,7 +851,7 @@ class UsersModel extends ApiModel implements ResourceInterface
             if ($this->emailExists($attrs['email'], $id)) {
 
                 $msg = 'Unable to update user';
-                $reason = 'Email ' . $attrs['email'] . ' already exists';
+                $reason = 'Email (' . $attrs['email'] . ') already exists';
 
                 $this->log->notice($msg, [
                     'reason' => $reason,
