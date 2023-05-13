@@ -19,7 +19,7 @@ use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
-class Tenants extends ApiModel implements ResourceInterface
+class TenantsModel extends ApiModel implements ResourceInterface
 {
 
     public function __construct(EventService $events, Db $db, Logger $log)

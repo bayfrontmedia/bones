@@ -20,7 +20,7 @@ use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
-class Users extends ApiModel implements ResourceInterface
+class UsersModel extends ApiModel implements ResourceInterface
 {
 
     protected FilterService $filters;

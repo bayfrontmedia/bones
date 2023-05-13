@@ -6,8 +6,8 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMeta;
-use Bayfront\Bones\Services\Api\Models\Resources\Users;
+use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\PDO\Db;
 use Monolog\Logger;
 
@@ -17,8 +17,8 @@ use Monolog\Logger;
 class UserModel extends ApiModel
 {
 
-    protected Users $usersModel;
-    protected UserMeta $userMetaModel;
+    protected UsersModel $usersModel;
+    protected UserMetaModel $userMetaModel;
 
     private string $user_id;
     private array $user;
@@ -27,12 +27,12 @@ class UserModel extends ApiModel
      * @param EventService $events
      * @param Db $db
      * @param Logger $log
-     * @param Users $usersModel
-     * @param UserMeta $userMetaModel
+     * @param UsersModel $usersModel
+     * @param UserMetaModel $userMetaModel
      * @param string $user_id
      * @throws NotFoundException
      */
-    public function __construct(EventService $events, Db $db, Logger $log, Users $usersModel, UserMeta $userMetaModel, string $user_id)
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, string $user_id)
     {
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
@@ -72,7 +72,7 @@ class UserModel extends ApiModel
 
     /*
      * TODO:
-     * Can remove UserMeta if not needed here,
+     * Can remove UserMetaModel if not needed here,
      * although it will most likely be used often by the app.
      */
 

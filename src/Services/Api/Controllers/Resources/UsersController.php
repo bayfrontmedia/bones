@@ -8,12 +8,13 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
+use Bayfront\Bones\Services\Api\Controllers\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Controllers\PublicController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\Users;
+use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -21,12 +22,12 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class UsersController extends PrivateApiController
+class UsersController extends PrivateApiController implements ResourceInterface
 {
 
-    protected Users $usersModel;
+    protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, Users $usersModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel)
     {
         $this->usersModel = $usersModel;
 

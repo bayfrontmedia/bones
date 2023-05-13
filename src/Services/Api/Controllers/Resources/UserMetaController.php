@@ -8,12 +8,13 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
+use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMeta;
+use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -21,12 +22,12 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class UserMetaController extends PrivateApiController
+class UserMetaController extends PrivateApiController implements ScopedResourceInterface
 {
 
-    protected UserMeta $userMetaModel;
+    protected UserMetaModel $userMetaModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UserMeta $userMetaModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UserMetaModel $userMetaModel)
     {
         $this->userMetaModel = $userMetaModel;
 

@@ -6,35 +6,27 @@ interface RelationshipInterface
 {
 
     /**
-     * Create resource.
+     * Add resource relationship.
      *
      * @param array $args
      * @return void
      */
-    public function create(array $args): void;
+   public function add(array $args): void;
 
     /**
-     * Get resource collection.
+     * Get resource relationship collection.
      *
      * @param array $args
      * @return void
      */
-    public function getCollection(array $args): void;
+   public function getCollection(array $args): void;
 
     /**
-     * Get resource.
+     * Remove resource relationship.
      *
      * @param array $args
      * @return void
      */
-    public function get(array $args): void;
-
-    /**
-     * Update resource.
-     *
-     * @param array $args
-     * @return void
-     */
-    public function update(array $args): void;
+   public function remove(array $args): void;
 
 }

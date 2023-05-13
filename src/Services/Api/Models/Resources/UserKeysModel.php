@@ -18,12 +18,12 @@ use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
-class UserKeys extends ApiModel implements ScopedResourceInterface
+class UserKeysModel extends ApiModel implements ScopedResourceInterface
 {
 
-    protected Users $usersModel;
+    protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, Users $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
     {
         $this->usersModel = $usersModel;
 

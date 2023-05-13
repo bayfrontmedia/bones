@@ -13,19 +13,19 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsers;
+use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class TenantUsers extends PrivateApiController implements RelationshipInterface
+class TenantUsersController extends PrivateApiController implements RelationshipInterface
 {
 
-    protected TenantUsers $tenantUsersModel;
+    protected TenantUsersModel $tenantUsersModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantUsers $tenantUsersModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantUsersModel $tenantUsersModel)
     {
         $this->tenantUsersModel = $tenantUsersModel;
 
@@ -62,7 +62,7 @@ class TenantUsers extends PrivateApiController implements RelationshipInterface
     }
 
     /**
-     * Get tenant users collection. (Users who own or belong to tenant)
+     * Get tenant users collection. (UsersModel who own or belong to tenant)
      *
      * @param array $args
      * @return void

@@ -20,12 +20,12 @@ use Bayfront\Validator\Validate;
 use Bayfront\Validator\ValidationException;
 use Monolog\Logger;
 
-class UserMeta extends ApiModel implements ScopedResourceInterface
+class UserMetaModel extends ApiModel implements ScopedResourceInterface
 {
 
-    protected Users $usersModel;
+    protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, Users $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
     {
         parent::__construct($events, $db, $log);
 

@@ -8,10 +8,11 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
+use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserKeys;
+use Bayfront\Bones\Services\Api\Models\Resources\UserKeysModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserKeysCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserKeysResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -19,12 +20,12 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class UserKeysController extends PrivateApiController
+class UserKeysController extends PrivateApiController implements ScopedResourceInterface
 {
 
-    protected UserKeys $userKeysModel;
+    protected UserKeysModel $userKeysModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UserKeys $userKeysModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UserKeysModel $userKeysModel)
     {
         $this->userKeysModel = $userKeysModel;
 

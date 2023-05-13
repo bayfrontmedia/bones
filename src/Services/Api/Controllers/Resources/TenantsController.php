@@ -8,11 +8,12 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
+use Bayfront\Bones\Services\Api\Controllers\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\Tenants;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -20,12 +21,12 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class TenantsController extends PrivateApiController
+class TenantsController extends PrivateApiController implements ResourceInterface
 {
 
-    protected Tenants $tenantsModel;
+    protected TenantsModel $tenantsModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, Tenants $tenantsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantsModel $tenantsModel)
     {
         $this->tenantsModel = $tenantsModel;
 
