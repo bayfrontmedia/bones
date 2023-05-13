@@ -13,7 +13,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UserMeta;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -24,9 +24,9 @@ use Bayfront\HttpResponse\Response;
 class UserMetaController extends PrivateApiController
 {
 
-    protected UserMetaModel $userMetaModel;
+    protected UserMeta $userMetaModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UserMetaModel $userMetaModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UserMeta $userMetaModel)
     {
         $this->userMetaModel = $userMetaModel;
 

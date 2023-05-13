@@ -13,7 +13,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\Bones\Services\Api\Models\Resources\Users;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -24,9 +24,9 @@ use Bayfront\HttpResponse\Response;
 class UsersController extends PrivateApiController
 {
 
-    protected UsersModel $usersModel;
+    protected Users $usersModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, Users $usersModel)
     {
         $this->usersModel = $usersModel;
 

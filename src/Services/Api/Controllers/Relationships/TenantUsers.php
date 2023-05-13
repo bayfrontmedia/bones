@@ -8,24 +8,24 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
+use Bayfront\Bones\Services\Api\Controllers\Interfaces\RelationshipInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\Controllers\ControllerRelationshipInterface;
-use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
+use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsers;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class TenantUsersController extends PrivateApiController implements ControllerRelationshipInterface
+class TenantUsers extends PrivateApiController implements RelationshipInterface
 {
 
-    protected TenantUsersModel $tenantUsersModel;
+    protected TenantUsers $tenantUsersModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantUsersModel $tenantUsersModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantUsers $tenantUsersModel)
     {
         $this->tenantUsersModel = $tenantUsersModel;
 

@@ -11,7 +11,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\Models\ModelScopedResourceInterface;
+use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -20,12 +20,12 @@ use Bayfront\Validator\Validate;
 use Bayfront\Validator\ValidationException;
 use Monolog\Logger;
 
-class UserMetaModel extends ApiModel implements ModelScopedResourceInterface
+class UserMeta extends ApiModel implements ScopedResourceInterface
 {
 
-    protected UsersModel $usersModel;
+    protected Users $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, Users $usersModel)
     {
         parent::__construct($events, $db, $log);
 

@@ -10,9 +10,9 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\Models\ModelRelationshipInterface;
-use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
-use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
+use Bayfront\Bones\Services\Api\Models\Resources\Tenants;
+use Bayfront\Bones\Services\Api\Models\Resources\Users;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
@@ -21,13 +21,13 @@ use Bayfront\Validator\Validate;
 use Monolog\Logger;
 use PDOException;
 
-class TenantUsersModel extends ApiModel implements ModelRelationshipInterface
+class TenantUsers extends ApiModel implements RelationshipInterface
 {
 
-    protected TenantsModel $tenantsModel;
-    protected UsersModel $usersModel;
+    protected Tenants $tenantsModel;
+    protected Users $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, Tenants $tenantsModel, Users $usersModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;

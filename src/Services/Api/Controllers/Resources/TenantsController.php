@@ -12,7 +12,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
+use Bayfront\Bones\Services\Api\Models\Resources\Tenants;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -23,9 +23,9 @@ use Bayfront\HttpResponse\Response;
 class TenantsController extends PrivateApiController
 {
 
-    protected TenantsModel $tenantsModel;
+    protected Tenants $tenantsModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantsModel $tenantsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, Tenants $tenantsModel)
     {
         $this->tenantsModel = $tenantsModel;
 

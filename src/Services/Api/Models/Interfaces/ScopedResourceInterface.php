@@ -1,8 +1,8 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Models\Interfaces\Models;
+namespace Bayfront\Bones\Services\Api\Models\Interfaces;
 
-interface ModelScopedResourceInterface
+interface ScopedResourceInterface
 {
 
     /**

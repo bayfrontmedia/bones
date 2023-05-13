@@ -12,7 +12,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\Bones\Services\Api\Models\Resources\Users;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
@@ -22,19 +22,19 @@ use Bayfront\HttpResponse\Response;
 class PublicController extends PublicApiController
 {
 
-    protected UsersModel $usersModel;
+    protected Users $usersModel;
 
     /**
      * @param EventService $events
      * @param FilterService $filters
      * @param Response $response
-     * @param UsersModel $usersModel
+     * @param Users $usersModel
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, Users $usersModel)
     {
         parent::__construct($events, $filters, $response);
 

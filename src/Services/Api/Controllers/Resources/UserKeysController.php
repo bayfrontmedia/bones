@@ -11,7 +11,7 @@ use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserKeysModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UserKeys;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserKeysCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UserKeysResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
@@ -22,9 +22,9 @@ use Bayfront\HttpResponse\Response;
 class UserKeysController extends PrivateApiController
 {
 
-    protected UserKeysModel $userKeysModel;
+    protected UserKeys $userKeysModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UserKeysModel $userKeysModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UserKeys $userKeysModel)
     {
         $this->userKeysModel = $userKeysModel;
 

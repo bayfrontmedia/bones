@@ -9,7 +9,7 @@ use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Interfaces\Models\ModelScopedResourceInterface;
+use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -18,12 +18,12 @@ use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
-class UserKeysModel extends ApiModel implements ModelScopedResourceInterface
+class UserKeys extends ApiModel implements ScopedResourceInterface
 {
 
-    protected UsersModel $usersModel;
+    protected Users $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, Users $usersModel)
     {
         $this->usersModel = $usersModel;
 

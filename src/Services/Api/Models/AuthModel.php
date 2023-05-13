@@ -13,8 +13,8 @@ use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
-use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UserMeta;
+use Bayfront\Bones\Services\Api\Models\Resources\Users;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\HttpRequest\Request;
 use Bayfront\JWT\Jwt;
@@ -27,10 +27,10 @@ class AuthModel extends ApiModel
 {
 
     protected FilterService $filters;
-    protected UsersModel $usersModel;
-    protected UserMetaModel $userMetaModel;
+    protected Users $usersModel;
+    protected UserMeta $userMetaModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, FilterService $filters, UsersModel $usersModel, UserMetaModel $userMetaModel)
+    public function __construct(EventService $events, Db $db, Logger $log, FilterService $filters, Users $usersModel, UserMeta $userMetaModel)
     {
         parent::__construct($events, $db, $log);
 
