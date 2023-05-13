@@ -6,7 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\ExceptionHandler;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Container\ContainerException;
-use Bayfront\Container\NotFoundException;
+use Bayfront\Container\NotFoundException as ContainerNotFound;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\Response;
 use Throwable;
@@ -21,7 +21,7 @@ class ApiExceptionHandler extends ExceptionHandler
      * @param Throwable $e
      * @return void
      * @throws ContainerException
-     * @throws NotFoundException
+     * @throws ContainerNotFound
      */
     public function respond(Response $response, Throwable $e): void
     {

@@ -12,7 +12,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
 use Bayfront\Bones\Services\Api\Models\UserModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
-use Bayfront\Container\NotFoundException;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -27,9 +27,9 @@ abstract class PrivateApiController extends ApiController
      * @param EventService $events
      * @param FilterService $filters
      * @param Response $response
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     public function __construct(EventService $events, FilterService $filters, Response $response)
@@ -59,9 +59,9 @@ abstract class PrivateApiController extends ApiController
      * If not validated, an "auth" rate limit attempt is recorded.
      *
      * @return UserModel
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     private function validateCredentialsOrAbort(): UserModel
@@ -94,9 +94,9 @@ abstract class PrivateApiController extends ApiController
      *
      * @param string $token
      * @return UserModel
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     private function validateAccessTokenOrAbort(string $token): UserModel
@@ -130,9 +130,9 @@ abstract class PrivateApiController extends ApiController
      *
      * @param string $key
      * @return UserModel
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     private function validateUserKeyOrAbort(string $key): UserModel

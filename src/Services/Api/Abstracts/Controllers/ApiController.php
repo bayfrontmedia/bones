@@ -10,7 +10,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Container\ContainerException;
-use Bayfront\Container\NotFoundException;
+use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -47,8 +47,8 @@ abstract class ApiController extends Controller
      * with optional "Retry-After" header.
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
-     * @throws NotFoundException
      * @throws InvalidStatusCodeException
      */
     private function checkMaintenanceMode(): void
@@ -78,9 +78,9 @@ abstract class ApiController extends Controller
      * Check request is made via HTTPS or abort with "406 Not Acceptable".
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     private function checkHttps(): void
     {
@@ -95,9 +95,9 @@ abstract class ApiController extends Controller
      * Check Accepts header exists and is valid or abort with "406 Not Acceptable".
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     private function checkAcceptsHeader(): void
     {
@@ -112,9 +112,9 @@ abstract class ApiController extends Controller
      * Check valid Content-Type header if request has body or abort with "406 Not Acceptable".
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     private function checkContentType(): void
     {
@@ -129,19 +129,16 @@ abstract class ApiController extends Controller
      * Initialize the API environment.
      *
      * @return void
-     * @throws UnexpectedApiException
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
      */
     protected function initApi(): void
     {
-        try {
-            $this->checkMaintenanceMode();
-            $this->checkHttps();
-            $this->checkAcceptsHeader();
-            $this->checkContentType();
-        } catch (Exception $e) {
-            throw new UnexpectedApiException($e->getMessage());
-        }
-
+        $this->checkMaintenanceMode();
+        $this->checkHttps();
+        $this->checkAcceptsHeader();
+        $this->checkContentType();
     }
 
     /**
@@ -151,9 +148,9 @@ abstract class ApiController extends Controller
      * @param string $id
      * @param int $limit
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     protected function rateLimitOrAbort(string $id, int $limit): void
@@ -173,7 +170,7 @@ abstract class ApiController extends Controller
                 ]
             ]);
 
-        } catch (ContainerException|NotFoundException $e) {
+        } catch (ContainerException $e) {
             throw new UnexpectedApiException($e->getMessage());
         }
 
@@ -246,9 +243,9 @@ abstract class ApiController extends Controller
      * @param array $methods
      * @param bool $enable_discovery (Always add allowed methods to Allow header)
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     public function acceptMethodsOrAbort(array $methods, bool $enable_discovery = true): void
     {
@@ -280,9 +277,9 @@ abstract class ApiController extends Controller
      * @param array $required
      * @param array $allowed
      * @return array
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     public function getBodyOrAbort(array $required = [], array $allowed = []): array
     {
@@ -317,9 +314,9 @@ abstract class ApiController extends Controller
      * @param array $required (In dot notation)
      * @param array $allowed (In standard notation)
      * @return array
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     public function getResourceAttributesOrAbort(string $type, array $required = [], array $allowed = []): array
     {
@@ -358,9 +355,9 @@ abstract class ApiController extends Controller
      * @param array $allowed_fields (Aborts with 400 if any other fields exist)
      * @param array $default (Default array to return if no valid fields exist in the request)
      * @return array
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     public function parseFieldsQueryOrAbort(array $query, string $fields_key, array $allowed_fields = [], array $default = []): array
     {
@@ -420,9 +417,9 @@ abstract class ApiController extends Controller
      * @param array $query (Array of query string parameters)
      * @param string $fields_key (Return only specific key from fields parameter)
      * @return array
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws NotFoundException
      */
     public function parseCollectionQueryOrAbort(array $query, string $fields_key = ''): array
     {
