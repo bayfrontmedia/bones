@@ -68,7 +68,6 @@ abstract class ApiModel extends Model
 
     /**
      * Convert UUID to binary.
-     * TODO: Not using.
      *
      * @param string $uuid
      * @return mixed

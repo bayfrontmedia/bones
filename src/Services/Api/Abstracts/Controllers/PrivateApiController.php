@@ -71,11 +71,11 @@ abstract class PrivateApiController extends ApiController
          * Check for enabled authentication methods
          */
 
-        if (Request::hasHeader('Authorization') && in_array(Api::AUTH_TOKEN, App::getConfig('api.auth_methods'))) {
+        if (Request::hasHeader('Authorization') && in_array(Api::AUTH_TOKEN, App::getConfig('api.auth.methods'))) {
 
             return $this->validateAccessTokenOrAbort(Request::getHeader('Authorization'));
 
-        } else if (Request::hasHeader('X-Api-Key') && in_array(Api::AUTH_KEY, App::getConfig('api.auth_methods'))) {
+        } else if (Request::hasHeader('X-Api-Key') && in_array(Api::AUTH_KEY, App::getConfig('api.auth.methods'))) {
 
             return $this->validateUserKeyOrAbort(Request::getHeader('X-Api-Key'));
 
@@ -147,8 +147,16 @@ abstract class PrivateApiController extends ApiController
             throw new UnexpectedApiException($e->getMessage());
         }
 
+        // Require string for referer
+
+        $referer = Request::getReferer();
+
+        if (!$referer) {
+            $referer = 'UNKNOWN';
+        }
+
         try {
-            $valid = $authModel->validateKey($key, Request::getReferer(), Request::getIp());
+            $valid = $authModel->validateKey($key, $referer, Request::getIp('UNKNOWN'));
         } catch (ForbiddenException $e) {
             App::abort(403, $e->getMessage());
         } catch (UnauthorizedException $e) {

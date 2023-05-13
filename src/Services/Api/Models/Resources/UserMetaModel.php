@@ -466,23 +466,6 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-        // Scoped exists
-
-        if (!$this->usersModel->idExists($scoped_id)) {
-
-            $msg = 'Unable to get user meta';
-            $reason = 'User does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'user_id' => $scoped_id,
-                'meta_id' => $id
-            ]);
-
-            throw new NotFoundException($msg . ': ' . $reason);
-
-        }
-
         // Protected
 
         if ($allow_protected === false && str_starts_with($id, '00-')) {

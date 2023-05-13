@@ -242,7 +242,7 @@ class AuthModel extends ApiModel
 
         // Check key valid
 
-        $valid_key = $this->db->single("SELECT id, BIN_TO_UUID(userId, 1) as userId, keyValue, allowedDomains, allowedIps, lastUsed 
+        $valid_key = $this->db->row("SELECT id, BIN_TO_UUID(userId, 1) as userId, keyValue, allowedDomains, allowedIps, lastUsed 
                                                 FROM api_user_keys WHERE id = :id AND expiresAt > NOW()", [
             'id' => $id_short
         ]);
@@ -355,7 +355,13 @@ class AuthModel extends ApiModel
 
             // Update lastUsed if older than today (prevent queries on every request)
 
-            if (date('Y-m-d', strtotime($valid_key['lastUsed'])) != date('Y-m-d')) {
+            if ($valid_key['lastUsed']) {
+                $valid_key['lastUsed'] = strtotime($valid_key['lastUsed']);
+            } else { // NULL if not yet used
+                $valid_key['lastUsed'] = time() - 100000;
+            }
+
+            if (date('Y-m-d', $valid_key['lastUsed']) != date('Y-m-d')) {
 
                 $this->db->query("UPDATE api_user_keys SET lastUsed = NOW() WHERE id = :id", [
                     'id' => $id_short
@@ -367,7 +373,7 @@ class AuthModel extends ApiModel
 
             return [
                 'user_model' => $user,
-                'rate_limit' => $this->getAllowedRateLimit($user['id'])
+                'rate_limit' => $this->getAllowedRateLimit($user->getId())
             ];
 
         }
