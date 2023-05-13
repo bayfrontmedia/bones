@@ -21,11 +21,6 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-/*
- * TODO:
- * Check permissions on all endpoints
- */
-
 class UsersController extends PrivateApiController
 {
 
@@ -142,7 +137,7 @@ class UsersController extends PrivateApiController
             'email',
             'password',
             'meta',
-            //'enabled' // TODO: Restrict to global permissions
+            //'enabled'
         ]);
 
         try {

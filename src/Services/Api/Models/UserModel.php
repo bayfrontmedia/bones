@@ -73,7 +73,7 @@ class UserModel extends ApiModel
     /*
      * TODO:
      * Can remove UserMetaModel if not needed here,
-     * although it
+     * although it will most likely be used often by the app.
      */
 
     private static array $meta = [];

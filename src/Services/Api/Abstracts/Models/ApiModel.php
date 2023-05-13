@@ -301,56 +301,6 @@ abstract class ApiModel extends Model
     }
 
     /**
-     * Filter the result of a query by desired columns, and json_decode if needed.
-     *
-     * TODO: Remove
-     *
-     * @param bool|array $result
-     * @param array $cols
-     * @param array $selectable_cols
-     * @param array $json_cols
-     * @return array
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    protected function filterResultNOTUSED(bool|array $result, array $cols, array $selectable_cols, array $json_cols = []): array
-    {
-
-        if (!$result) {
-            throw new NotFoundException('Does not exist');
-        }
-
-        if (!empty($cols) && !in_array('*', $cols)) { // Filter fields
-
-            if (!empty(array_diff($cols, array_keys($selectable_cols)))) {
-                throw new BadRequestException('Invalid field(s)');
-            }
-
-            $result = Arr::only($result, $cols);
-
-        }
-
-        // json_decode
-
-        $json_cols = Arr::only($result, $json_cols);
-
-        if (!empty($json_cols)) {
-
-            foreach ($result as $k => $v) {
-
-                if (isset($json_cols[$k])) {
-                    $result[$k] = json_decode($json_cols[$k], true);
-                }
-
-            }
-
-        }
-
-        return $result;
-
-    }
-
-    /**
      * Return a secure password hash using a plaintext password and user-specific salt.
      *
      * @param string $password (Plaintext password)
