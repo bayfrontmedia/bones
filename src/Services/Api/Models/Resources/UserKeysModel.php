@@ -118,7 +118,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
     public function idExists(string $scoped_id, string $id): bool
     {
 
-        if (!Validate::uuid($scoped_id)) {
+        if (!Validate::uuid($scoped_id) || !Validate::uuid($id)) {
             return false;
         }
 

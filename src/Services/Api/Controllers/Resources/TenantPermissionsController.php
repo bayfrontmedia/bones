@@ -11,31 +11,30 @@ use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
-use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaCollection;
-use Bayfront\Bones\Services\Api\Schemas\Resources\UserMetaResource;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
+use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
+use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class UserMetaController extends PrivateApiController implements ScopedResourceInterface
+class TenantPermissionsController extends PrivateApiController implements ScopedResourceInterface
 {
 
-    protected UserMetaModel $userMetaModel;
+    protected TenantPermissionsModel $tenantPermissionsModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, UserMetaModel $userMetaModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantPermissionsModel $tenantPermissionsModel)
     {
-        $this->userMetaModel = $userMetaModel;
+        $this->tenantPermissionsModel = $tenantPermissionsModel;
 
         parent::__construct($events, $filters, $response);
     }
 
     /**
-     * Create user meta.
+     * Create tenant permission.
      *
      * @param array $args
      * @return void
@@ -48,25 +47,24 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function create(array $args): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('userMeta', $this->userMetaModel->getRequiredAttrs(), $this->userMetaModel->getAllowedAttrs());
+        $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', $this->tenantPermissionsModel->getRequiredAttrs(), $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
 
-            $id = $this->userMetaModel->create($args['user_id'], $attrs);
-            $created = $this->userMetaModel->get($args['user_id'], $id);
+            $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs);
+
+            $created = $this->tenantPermissionsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
 
-        $schema = UserMetaResource::create($created, [
-            'user_id' => $args['user_id']
+        $schema = TenantPermissionsResource::create($created, [
+            'tenant_id' => $args['tenant_id']
         ]);
 
         $this->response->setStatusCode(201)->setHeaders([
@@ -76,7 +74,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     }
 
     /**
-     * Get user meta collection.
+     * Get tenant permission collection.
      *
      * @param array $args
      * @return void
@@ -89,11 +87,11 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function getCollection(array $args): void
     {
 
-        $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'userMeta');
+        $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
 
         try {
 
-            $results = $this->userMetaModel->getCollection($args['user_id'], $query);
+            $results = $this->tenantPermissionsModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -101,9 +99,9 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             App::abort(404, $e->getMessage());
         }
 
-        $schema = UserMetaCollection::create($results, [
-            'user_id' => $args['user_id'],
-            'collection_prefix' => '/users/' . $args['user_id'] . '/meta',
+        $schema = TenantPermissionsCollection::create($results, [
+            'tenant_id' => $args['tenant_id'],
+            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/permissions',
             'query_string' => Request::getQuery()
         ]);
 
@@ -112,7 +110,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     }
 
     /**
-     * Get user meta.
+     * Get tenant permission.
      *
      * @param array $args
      * @return void
@@ -125,22 +123,20 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function get(array $args): void
     {
 
-        $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'userMeta', array_keys($this->userMetaModel->getSelectableCols()));
+        $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantPermissions', array_keys($this->tenantPermissionsModel->getSelectableCols()));
 
         try {
 
-            $results = $this->userMetaModel->get($args['user_id'], $args['meta_id'], $fields);
+            $results = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id'], $fields);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
 
-        $schema = UserMetaResource::create($results, [
-            'user_id' => $args['user_id']
+        $schema = TenantPermissionsResource::create($results, [
+            'tenant_id' => $args['tenant_id']
         ]);
 
         $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
@@ -148,7 +144,10 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     }
 
     /**
-     * Update user meta.
+     * Update tenant permission.
+     *
+     * TODO:
+     * Check if a default permission.
      *
      * @param array $args
      * @return void
@@ -161,26 +160,24 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function update(array $args): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('userMeta', [], [
-            'metaValue'
-        ]);
+        $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', [], $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
 
-            $this->userMetaModel->update($args['user_id'], $args['meta_id'], $attrs);
+            $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
 
-            $updated = $this->userMetaModel->get($args['user_id'], $args['meta_id']);
+            $updated = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id']);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+        } catch (ConflictException $e) {
+            App::abort(409, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
 
-        $schema = UserMetaResource::create($updated, [
-            'user_id' => $args['user_id']
+        $schema = TenantPermissionsResource::create($updated, [
+            'tenant_id' => $args['tenant_id']
         ]);
 
         $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
@@ -188,7 +185,10 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     }
 
     /**
-     * Delete user meta.
+     * Delete tenant permission.
+     *
+     * TODO:
+     * Check for default permission.
      *
      * @param array $args
      * @return void
@@ -201,12 +201,10 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
 
         try {
 
-            $this->userMetaModel->delete($args['user_id'], $args['meta_id']);
+            $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
 
             $this->response->setStatusCode(204)->send();
 
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }

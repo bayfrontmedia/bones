@@ -35,4 +35,12 @@ interface ResourceInterface
      */
     public function update(array $args): void;
 
+    /**
+     * Delete resource.
+     *
+     * @param array $args
+     * @return void
+     */
+    public function delete(array $args): void;
+
 }

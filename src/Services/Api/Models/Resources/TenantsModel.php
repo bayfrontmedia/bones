@@ -296,10 +296,10 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Create
+
         $owner_id = $attrs['owner'];
         $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
-
-        // Create
 
         try {
 

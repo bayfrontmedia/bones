@@ -69,7 +69,9 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
             'user_id' => $args['user_id']
         ]);
 
-        $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
+        $this->response->setStatusCode(201)->setHeaders([
+            'Location' => Request::getUrl() . '/' . $id
+        ])->sendJson($this->filters->doFilter('api.response', $schema));
 
     }
 
