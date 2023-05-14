@@ -203,7 +203,7 @@ abstract class ApiModel extends Model
 
         try {
             $results = $query->get();
-        } catch (PDOException $e) {
+        } catch (PDOException) {
             throw new BadRequestException('Invalid request');
         }
 
