@@ -227,11 +227,13 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Validate meta
 
-        if (isset($attrs['meta'])) {
+        if (!empty(App::getConfig('api.required_meta.tenants'))) {
 
             try {
 
-                Validate::as($attrs['meta'], App::getConfig('api.required_meta.tenants'), true);
+                // TODO: Not failing when it should
+
+                Validate::as(Arr::get($attrs, 'meta', []), App::getConfig('api.required_meta.tenants'), true);
 
             } catch (ValidationException) {
 
@@ -246,7 +248,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             }
 
-            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
+            //$attrs['meta'] = $this->encodeMeta($attrs['meta']);
 
         }
 
@@ -278,6 +280,21 @@ class TenantsModel extends ApiModel implements ResourceInterface
         $attrs['id'] = $uuid['bin'];
 
         // Owner ID
+
+        // UUID
+
+        if (!Validate::uuid($attrs['owner'])) {
+
+            $msg = 'Unable to create tenant';
+            $reason = 'Invalid owner ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new BadRequestException($msg . ': ' . $reason);
+
+        }
 
         $owner_id = $attrs['owner'];
         $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
@@ -606,6 +623,22 @@ class TenantsModel extends ApiModel implements ResourceInterface
         // Tenant owner
 
         if (isset($attrs['owner'])) {
+
+            // UUID
+
+            if (!Validate::uuid($attrs['owner'])) {
+
+                $msg = 'Unable to update tenant';
+                $reason = 'Invalid owner ID';
+
+                $this->log->notice($msg, [
+                    'reason' => $reason,
+                    'tenant_id' => $id
+                ]);
+
+                throw new BadRequestException($msg . ': ' . $reason);
+
+            }
 
             $owner_exists = $this->db->query("SELECT 1 from api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)", [
                 'tenant_id' => $id,

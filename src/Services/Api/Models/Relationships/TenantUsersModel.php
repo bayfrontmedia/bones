@@ -41,7 +41,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     public function getSelectableCols(): array
     {
         return [
-            'id' => 'BIN_TO_UUID(rbac_users.id, 1) as id',
+            'id' => 'BIN_TO_UUID(api_users.id, 1) as id',
             'email' => 'email',
             'meta' => 'meta',
             'enabled' => 'enabled',
@@ -247,6 +247,12 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
      */
     public function getCollection(string $resource_id, array $args = []): array
     {
+
+        if (empty($args['select'])) {
+            $args['select'][] = '*';
+        } else {
+            $args['select'] = array_merge($args['select'], ['id']); // Force return ID
+        }
 
         if (!Validate::uuid($resource_id)) {
 

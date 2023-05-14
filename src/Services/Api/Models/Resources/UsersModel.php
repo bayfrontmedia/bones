@@ -317,11 +317,13 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Validate meta
 
-        if (isset($attrs['meta'])) {
+        if (!empty(App::getConfig('api.required_meta.users'))) {
 
             try {
 
-                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
+                // TODO: Not failing when it should
+
+                Validate::as(Arr::get($attrs, 'meta', []), App::getConfig('api.required_meta.users'), true);
 
             } catch (ValidationException) {
 
@@ -336,7 +338,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
-            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
+            //$attrs['meta'] = $this->encodeMeta($attrs['meta']);
 
         }
 

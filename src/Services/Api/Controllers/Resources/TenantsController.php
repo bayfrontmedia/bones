@@ -150,7 +150,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     public function update(array $args): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('users', [], $this->tenantsModel->getAllowedAttrs());
+        $attrs = $this->getResourceAttributesOrAbort('tenants', [], $this->tenantsModel->getAllowedAttrs());
 
         try {
 
