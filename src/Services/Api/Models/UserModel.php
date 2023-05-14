@@ -39,6 +39,13 @@ class UserModel extends ApiModel
 
         $this->user_id = $user_id;
 
+        /*
+         * TODO:
+         * Can add another argument of: bool $skip_log = false
+         * To skip logging "read" action, perhaps when authenticating from the
+         * PrivateApiController
+         */
+
         $this->user = Arr::except($this->usersModel->getEntire($this->getId()), [
             'password'
         ]);

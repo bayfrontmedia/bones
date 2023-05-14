@@ -18,7 +18,7 @@ use Bayfront\Validator\Validate;
 use Bayfront\Validator\ValidationException;
 use Monolog\Logger;
 
-class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
+class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 {
 
     protected TenantsModel $tenantsModel;
@@ -92,7 +92,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Get tenant permission count.
+     * Get tenant role count.
      *
      * @param string $scoped_id
      * @return int
@@ -104,14 +104,14 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
             return 0;
         }
 
-        return $this->db->single("SELECT COUNT(*) FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+        return $this->db->single("SELECT COUNT(*) FROM api_tenant_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'tenant_id' => $scoped_id
         ]);
 
     }
 
     /**
-     * Does tenant permission ID exist?
+     * Does tenant role ID exist?
      *
      * @param string $scoped_id
      * @param string $id
@@ -124,7 +124,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
             return false;
         }
 
-        return (bool)$this->db->single("SELECT 1 FROM api_tenant_permissions WHERE id = UUID_TO_BIN(:id, 1) AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+        return (bool)$this->db->single("SELECT 1 FROM api_tenant_roles WHERE id = UUID_TO_BIN(:id, 1) AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'id' => $id,
             'tenant_id' => $scoped_id
         ]);
@@ -132,7 +132,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Does tenant permission name exist?
+     * Does tenant role name exist?
      *
      * @param string $scoped_id
      * @param string $name
@@ -148,7 +148,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if ($exclude_id == '') {
 
-            return (bool)$this->db->single("SELECT 1 FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND name = :name", [
+            return (bool)$this->db->single("SELECT 1 FROM api_tenant_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND name = :name", [
                 'tenant_id' => $scoped_id,
                 'name' => $name
             ]);
@@ -159,7 +159,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
             return false;
         }
 
-        return (bool)$this->db->single("SELECT 1 FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND name = :name AND id != UUID_TO_BIN(:id, 1)", [
+        return (bool)$this->db->single("SELECT 1 FROM api_tenant_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND name = :name AND id != UUID_TO_BIN(:id, 1)", [
             'tenant_id' => $scoped_id,
             'name' => $name,
             'id' => $exclude_id
@@ -168,7 +168,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Create tenant permission.
+     * Create tenant role.
      *
      * @param string $scoped_id
      * @param array $attrs
@@ -184,7 +184,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->tenantsModel->idExists($scoped_id)) {
 
-            $msg = 'Unable to create tenant permission';
+            $msg = 'Unable to create tenant role';
             $reason = 'Tenant ID does not exist';
 
             $this->log->notice($msg, [
@@ -200,7 +200,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (Arr::isMissing($attrs, $this->getRequiredAttrs())) {
 
-            $msg = 'Unable to create tenant permission';
+            $msg = 'Unable to create tenant role';
             $reason = 'Missing required attribute(s)';
 
             $this->log->notice($msg, [
@@ -216,7 +216,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!empty(Arr::except($attrs, $this->getAllowedAttrs()))) {
 
-            $msg = 'Unable to create tenant permission';
+            $msg = 'Unable to create tenant role';
             $reason = 'Invalid attribute(s)';
 
             $this->log->notice($msg, [
@@ -236,7 +236,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         } catch (ValidationException) {
 
-            $msg = 'Unable to create tenant permission';
+            $msg = 'Unable to create tenant role';
             $reason = 'Invalid attribute type(s)';
 
             $this->log->notice($msg, [
@@ -252,7 +252,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if ($this->nameExists($scoped_id, $attrs['name'])) {
 
-            $msg = 'Unable to create tenant permission';
+            $msg = 'Unable to create tenant role';
             $reason = 'Name (' . $attrs['name'] . ') already exists';
 
             $this->log->notice($msg, [
@@ -271,29 +271,29 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         $attrs['id'] = $uuid['bin'];
         $attrs['tenantId'] = $this->UUIDtoBIN($scoped_id);
 
-        $this->db->insert('api_tenant_permissions', $attrs);
+        $this->db->insert('api_tenant_roles', $attrs);
 
         // Log
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant permission created', [
+            $this->log->info('Tenant role created', [
                 'tenant_id' => $scoped_id,
-                'permission_id' => $uuid['str']
+                'role_id' => $uuid['str']
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.create', $scoped_id, $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.role.create', $scoped_id, $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
 
         return $uuid['str'];
 
     }
 
     /**
-     * Get tenant permission collection.
+     * Get tenant role collection.
      *
      * @param string $scoped_id
      * @param array $args
@@ -315,7 +315,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->tenantsModel->idExists($scoped_id)) {
 
-            $msg = 'Unable to get tenant permission collection';
+            $msg = 'Unable to get tenant role collection';
             $reason = 'Tenant ID does not exist';
 
             $this->log->notice($msg, [
@@ -331,7 +331,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         try {
 
-            $query = $this->startNewQuery()->table('api_tenant_permissions')
+            $query = $this->startNewQuery()->table('api_tenant_roles')
                 ->where('tenantId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
 
         } catch (QueryException $e) {
@@ -344,7 +344,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         } catch (BadRequestException $e) {
 
-            $msg = 'Unable to get tenant permission collection';
+            $msg = 'Unable to get tenant role collection';
 
             $this->log->notice($msg, [
                 'reason' => $e->getMessage(),
@@ -359,23 +359,23 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant permission read', [
+            $this->log->info('Tenant role read', [
                 'tenant_id' => $scoped_id,
-                'permission_id' => Arr::pluck($results['data'], 'id')
+                'role_id' => Arr::pluck($results['data'], 'id')
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.read', $scoped_id, Arr::pluck($results['data'], 'id'));
+        $this->events->doEvent('api.tenant.role.read', $scoped_id, Arr::pluck($results['data'], 'id'));
 
         return $results;
 
     }
 
     /**
-     * Get tenant permission.
+     * Get toenant role.
      *
      * @param string $scoped_id
      * @param string $id
@@ -398,13 +398,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->idExists($scoped_id, $id)) {
 
-            $msg = 'Unable to get tenant permission';
-            $reason = 'Tenant and / or permission ID does not exist';
+            $msg = 'Unable to get tenant role';
+            $reason = 'Tenant and / or role ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -413,7 +413,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Query
 
-        $query = $this->startNewQuery()->table('api_tenant_permissions');
+        $query = $this->startNewQuery()->table('api_tenant_roles');
 
         try {
 
@@ -430,12 +430,12 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         } catch (BadRequestException|NotFoundException $e) {
 
-            $msg = 'Unable to get tenant permission';
+            $msg = 'Unable to get tenant role';
 
             $this->log->notice($msg, [
                 'reason' => $e->getMessage(),
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw $e;
@@ -446,23 +446,23 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant permission read', [
+            $this->log->info('Tenant role read', [
                 'tenant_id' => $scoped_id,
-                'permission_id' => [$result['id']]
+                'role_id' => [$result['id']]
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.read', $scoped_id, [$result['id']]);
+        $this->events->doEvent('api.tenant.role.read', $scoped_id, [$result['id']]);
 
         return $result;
 
     }
 
     /**
-     * Update tenant permission.
+     * Update tenant role.
      *
      * @param string $scoped_id
      * @param string $id
@@ -483,13 +483,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->idExists($scoped_id, $id)) {
 
-            $msg = 'Unable to update tenant permission';
-            $reason = 'Tenant and / or permission ID does not exist';
+            $msg = 'Unable to update tenant role';
+            $reason = 'Tenant and / or role ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -500,13 +500,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!empty(Arr::except($attrs, $this->getAllowedAttrs()))) {
 
-            $msg = 'Unable to update tenant permission';
+            $msg = 'Unable to update tenant rp;e';
             $reason = 'Invalid attribute(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -521,13 +521,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         } catch (ValidationException) {
 
-            $msg = 'Unable to update tenant permission';
+            $msg = 'Unable to update tenant role';
             $reason = 'Invalid attribute type(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -538,13 +538,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (isset($attrs['name']) && $this->nameExists($scoped_id, $attrs['name'], $id)) {
 
-            $msg = 'Unable to update tenant permission';
+            $msg = 'Unable to update tenant role';
             $reason = 'Name (' . $attrs['name'] . ') already exists';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new ConflictException($msg . ': ' . $reason);
@@ -556,7 +556,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         $placeholders = [];
 
         /** @noinspection SqlWithoutWhere */
-        $query = "UPDATE api_tenant_permissions SET" . " ";
+        $query = "UPDATE api_tenant_roles SET" . " ";
 
         foreach ($attrs as $k => $v) {
             $placeholders[] = $v;
@@ -572,21 +572,21 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant permission updated', [
+            $this->log->info('Tenant role updated', [
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.role.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
 
     }
 
     /**
-     * Delete tenant permission.
+     * Delete tenant role.
      *
      * @param string $scoped_id
      * @param string $id
@@ -598,13 +598,13 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->idExists($scoped_id, $id)) {
 
-            $msg = 'Unable to delete tenant permission';
-            $reason = 'Tenant and / or permission ID does not exist';
+            $msg = 'Unable to delete tenant role';
+            $reason = 'Tenant and / or role ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -613,7 +613,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Delete
 
-        $this->db->query("DELETE FROM api_tenant_permissions WHERE id = UUID_TO_BIN(:id, 1) AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+        $this->db->query("DELETE FROM api_tenant_roles WHERE id = UUID_TO_BIN(:id, 1) AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'id' => $id,
             'tenant_id' => $scoped_id
         ]);
@@ -622,16 +622,16 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant permission deleted', [
+            $this->log->info('Tenant role deleted', [
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'role_id' => $id
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.delete', $scoped_id, $id);
+        $this->events->doEvent('api.tenant.role.delete', $scoped_id, $id);
 
     }
 
