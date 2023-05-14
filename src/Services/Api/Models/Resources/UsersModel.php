@@ -16,7 +16,6 @@ use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
@@ -298,11 +297,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to create user';
             $reason = 'Invalid attribute type(s)';
@@ -319,13 +314,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (!empty(App::getConfig('api.required_meta.users'))) {
 
-            try {
-
-                // TODO: Not failing when it should
-
-                Validate::as(Arr::get($attrs, 'meta', []), App::getConfig('api.required_meta.users'), true);
-
-            } catch (ValidationException) {
+            if (!Validate::as(Arr::get($attrs, 'meta', []), App::getConfig('api.required_meta.users'), true)) {
 
                 $msg = 'Unable to create user';
                 $reason = 'Missing or invalid meta attribute(s)';
@@ -338,7 +327,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
-            //$attrs['meta'] = $this->encodeMeta($attrs['meta']);
+            $attrs['meta'] = $this->encodeMeta($attrs['meta']);
 
         }
 
@@ -750,11 +739,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to update user';
             $reason = 'Invalid attribute type(s)';
@@ -800,11 +785,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             // Validate meta
 
-            try {
-
-                Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true);
-
-            } catch (ValidationException) {
+            if (!Validate::as($attrs['meta'], App::getConfig('api.required_meta.users'), true)) {
 
                 $msg = 'Unable to update user';
                 $reason = 'Missing or invalid meta attribute(s)';

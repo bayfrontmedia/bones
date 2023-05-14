@@ -14,7 +14,6 @@ use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Bayfront\Validator\ValidationException;
 use Exception;
 use Monolog\Logger;
 
@@ -248,11 +247,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to create user key';
             $reason = 'Invalid attribute type(s)';
@@ -541,11 +536,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to update user key';
             $reason = 'Invalid attribute type(s)';

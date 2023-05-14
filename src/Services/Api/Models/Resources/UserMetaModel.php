@@ -17,7 +17,6 @@ use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\StringHelpers\Str;
 use Bayfront\Validator\Validate;
-use Bayfront\Validator\ValidationException;
 use Monolog\Logger;
 
 class UserMetaModel extends ApiModel implements ScopedResourceInterface
@@ -226,11 +225,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to create user meta';
             $reason = 'Invalid attribute type(s)';
@@ -654,11 +649,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to update user meta';
             $reason = 'Invalid attribute type(s)';

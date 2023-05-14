@@ -15,7 +15,6 @@ use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Bayfront\Validator\ValidationException;
 use Monolog\Logger;
 
 class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
@@ -230,11 +229,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to create tenant permission';
             $reason = 'Invalid attribute type(s)';
@@ -515,11 +510,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Attribute rules
 
-        try {
-
-            Validate::as($attrs, $this->getAttrsRules());
-
-        } catch (ValidationException) {
+        if (!Validate::as($attrs, $this->getAttrsRules())) {
 
             $msg = 'Unable to update tenant permission';
             $reason = 'Invalid attribute type(s)';
