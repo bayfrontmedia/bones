@@ -9,6 +9,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ResourceInterface;
+use Bayfront\Bones\Services\Api\Controllers\PublicController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
@@ -16,6 +17,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
+use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -37,6 +39,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
      * Create tenant.
      *
      * @return void
+     * @throws ContainerException
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
@@ -47,26 +50,9 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     public function create(): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), $this->tenantsModel->getAllowedAttrs());
-
-        try {
-
-            $id = $this->tenantsModel->create($attrs);
-            $created= $this->tenantsModel->get($id);
-
-        } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
-        } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
-        }
-
-        $schema = TenantsResource::create($created, [
-            'tenant_id' => $id
-        ]);
-
-        $this->response->setStatusCode(201)->setHeaders([
-            'Location' => Request::getUrl() . '/' . $id
-        ])->sendJson($this->filters->doFilter('api.response', $schema));
+        /** @var PublicController $publicController */
+        $publicController = App::make('Bayfront\Bones\Services\Api\Controllers\PublicController');
+        $publicController->createTenant();
 
     }
 

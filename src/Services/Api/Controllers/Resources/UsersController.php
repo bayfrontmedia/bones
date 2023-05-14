@@ -17,6 +17,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
+use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -44,12 +45,13 @@ class UsersController extends PrivateApiController implements ResourceInterface
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
+     * @throws ContainerException
      */
     public function create(): void
     {
 
-        $publicController = new PublicController($this->events, $this->filters, $this->response, $this->usersModel);
-
+        /** @var PublicController $publicController */
+        $publicController = App::make('Bayfront\Bones\Services\Api\Controllers\PublicController');
         $publicController->createUser();
 
     }
