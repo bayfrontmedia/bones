@@ -136,6 +136,11 @@ class UsersController extends PrivateApiController implements ResourceInterface
     public function update(array $args): void
     {
 
+        /*
+         * TODO:
+         * Can control "enabled" with permissions
+         */
+
         $attrs = $this->getResourceAttributesOrAbort('users', [], [
             'email',
             'password',

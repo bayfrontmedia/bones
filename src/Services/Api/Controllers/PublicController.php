@@ -61,10 +61,12 @@ class PublicController extends PublicApiController
     public function createUser(): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('users', [
-            'email',
-            'password'
-        ], [
+        /*
+         * TODO:
+         * Can control "enabled" with permissions
+         */
+
+        $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), [
             'email',
             'password',
             'meta',
