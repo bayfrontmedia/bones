@@ -21,7 +21,7 @@ use Bayfront\Validator\Validate;
 use Monolog\Logger;
 use PDOException;
 
-class TenantUsersModel extends ApiModel implements RelationshipInterface
+class UserTenantsModel extends ApiModel implements RelationshipInterface
 {
 
     protected TenantsModel $tenantsModel;
@@ -41,8 +41,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     public function getSelectableCols(): array
     {
         return [
-            'id' => 'BIN_TO_UUID(api_users.id, 1) as id',
-            'email' => 'email',
+            'id' => 'BIN_TO_UUID(api_tenants.id, 1) as id',
+            'owner' => 'BIN_TO_UUID(api_tenants.owner, 1) as owner',
+            'name' => 'name',
             'meta' => 'meta',
             'enabled' => 'enabled',
             'createdAt' => 'createdAt',
@@ -61,38 +62,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     }
 
     /**
-     * Does user own tenant?
-     *
-     * @param string $tenant_id
-     * @param string $user_id
-     * @return bool
-     */
-    public function isOwner(string $tenant_id, string $user_id): bool
-    {
-        return $this->getOwnerId($tenant_id) == $user_id;
-    }
-
-    /**
-     * Get owner ID.
-     *
-     * @param string $tenant_id
-     * @return string
-     */
-    public function getOwnerId(string $tenant_id): string
-    {
-
-        if (!Validate::uuid($tenant_id)) {
-            return '';
-        }
-
-        return $this->db->single("SELECT BIN_TO_UUID(owner, 1) FROM api_tenants WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $tenant_id
-        ]);
-
-    }
-
-    /**
-     * Get tenant users count.
+     * Get user tenants count.
      *
      * @param string $resource_id
      * @return int
@@ -104,13 +74,14 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
             return 0;
         }
 
-        return $this->db->single("SELECT COUNT(*) FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
-            'tenant_id' => $resource_id
+        return $this->db->single("SELECT COUNT(*) FROM api_tenant_users WHERE userId = UUID_TO_BIN(:user_id, 1)", [
+            'user_id' => $resource_id
         ]);
+
     }
 
     /**
-     * Does tenant have user?
+     * Is user in tenant?
      *
      * @param string $resource_id
      * @param string $relationship_id
@@ -124,36 +95,14 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         }
 
         return (bool)$this->db->single("SELECT 1 FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)", [
-            'tenant_id' => $resource_id,
-            'user_id' => $relationship_id
+            'tenant_id' => $relationship_id,
+            'user_id' => $resource_id
         ]);
 
     }
 
     /**
-     * Does tenant have user with email?
-     *
-     * @param string $resource_id
-     * @param string $relationship_id (Email)
-     * @return bool
-     */
-    public function hasEmail(string $resource_id, string $relationship_id): bool
-    {
-
-        if (!Validate::uuid($resource_id)) {
-            return false;
-        }
-
-        return (bool)$this->db->single("SELECT 1 FROM api_users AS au LEFT JOIN api_tenant_users as atu ON au.id = atu.userId
-         WHERE atu.tenantId = UUID_TO_BIN(:tenant_id, 1) AND au.email = :email", [
-            'tenant_id' => $resource_id,
-            'email' => $relationship_id
-        ]);
-
-    }
-
-    /**
-     * Add users to tenant.
+     * Add user to tenants.
      *
      * @param string $resource_id
      * @param array $relationship_ids
@@ -167,10 +116,10 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Exists
 
-        if (!$this->tenantsModel->idExists($resource_id)) {
+        if (!$this->usersModel->idExists($resource_id)) {
 
-            $msg = 'Unable to add users to tenant';
-            $reason = 'Tenant ID (' . $resource_id . ') does not exist';
+            $msg = 'Unable to add user to tenants';
+            $reason = 'User ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -194,19 +143,19 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
             $stmt = $pdo->prepare("INSERT INTO api_tenant_users SET tenantId = UUID_TO_BIN(:tenant_id, 1), userId = UUID_TO_BIN(:user_id, 1) ON DUPLICATE KEY UPDATE tenantId = VALUES(tenantId), userId = VALUES(userId)");
 
-            foreach ($relationship_ids as $user) {
+            foreach ($relationship_ids as $tenant) {
 
-                if (!$this->usersModel->idExists($user)) {
+                if (!$this->tenantsModel->idExists($tenant)) {
 
                     $pdo->rollBack();
 
-                    $msg = 'Unable to add users to tenant';
-                    $reason = 'User ID (' . $user . ') is invalid or does not exist';
+                    $msg = 'Unable to add user to tenants';
+                    $reason = 'Tenant ID (' . $tenant . ') is invalid or does not exist';
 
                     $this->log->notice($msg, [
                         'reason' => $reason,
-                        'tenant_id' => $resource_id,
-                        'user_id' => $user
+                        'user_id' => $resource_id,
+                        'tenant_id' => $tenant
                     ]);
 
                     throw new BadRequestException($msg . ': ' . $reason);
@@ -214,8 +163,8 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
                 }
 
                 $stmt->execute([
-                    'tenant_id' => $resource_id,
-                    'user_id' => $user
+                    'tenant_id' => $tenant,
+                    'user_id' => $resource_id
                 ]);
 
             }
@@ -234,22 +183,22 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Users added to tenant', [
-                'tenant_id' => $resource_id,
-                'user_ids' => $relationship_ids
+            $this->log->info('User added to tenants', [
+                'user_id' => $resource_id,
+                'tenant_ids' => $relationship_ids
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.users.add', $resource_id, $relationship_ids);
+        $this->events->doEvent('api.user.tenants.add', $resource_id, $relationship_ids);
 
     }
 
     /**
-     * Get tenant users collection.
-     * Users who own or belong to tenant.
+     * Get user tenants collection.
+     * Tenants who user owns or belongs to.
      *
      * @param string $resource_id
      * @param array $args
@@ -269,10 +218,10 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Exists
 
-        if (!$this->tenantsModel->idExists($resource_id)) {
+        if (!$this->usersModel->idExists($resource_id)) {
 
-            $msg = 'Unable to get tenant users';
-            $reason = 'Tenant ID (' . $resource_id . ') does not exist';
+            $msg = 'Unable to get user tenants';
+            $reason = 'User ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -288,9 +237,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         try {
 
-            $query->table('api_users')
-                ->leftJoin('api_tenant_users', 'api_users.id', 'api_tenant_users.userId')
-                ->where('api_tenant_users.tenantId', 'eq', "UUID_TO_BIN('" . $resource_id . "', 1)");
+            $query->table('api_tenants')
+                ->leftJoin('api_tenant_users', 'api_tenants.id', 'api_tenant_users.tenantId')
+                ->where('api_tenant_users.userId', 'eq', "UUID_TO_BIN('" . $resource_id . "', 1)");
 
         } catch (QueryException $e) {
             throw new UnexpectedApiException($e->getMessage());
@@ -302,11 +251,11 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         } catch (BadRequestException $e) {
 
-            $msg = 'Unable to get tenant users collection';
+            $msg = 'Unable to get user tenants collection';
 
             $this->log->notice($msg, [
                 'reason' => $e->getMessage(),
-                'tenant_id' => $resource_id
+                'user_id' => $resource_id
             ]);
 
             throw $e;
@@ -317,23 +266,23 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Tenant users read', [
-                'tenant_id' => $resource_id,
-                'user_ids' => Arr::pluck($results['data'], 'id')
+            $this->log->info('User tenants read', [
+                'user_id' => $resource_id,
+                'tenant_ids' => Arr::pluck($results['data'], 'id')
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.users.read', $resource_id, Arr::pluck($results['data'], 'id'));
+        $this->events->doEvent('api.user.tenants.read', $resource_id, Arr::pluck($results['data'], 'id'));
 
         return $results;
 
     }
 
     /**
-     * Remove users from tenant.
+     * Remove user from tenants.
      * Owner cannot be removed.
      *
      * @param string $resource_id
@@ -348,10 +297,10 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Exists
 
-        if (!$this->tenantsModel->idExists($resource_id)) {
+        if (!$this->usersModel->idExists($resource_id)) {
 
-            $msg = 'Unable to remove users from tenant';
-            $reason = 'Tenant ID (' . $resource_id . ') does not exist';
+            $msg = 'Unable to remove user from tenants';
+            $reason = 'User ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -361,7 +310,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         }
 
-        $owner = $this->getOwnerId($resource_id);
+        $owned = $this->usersModel->getOwnedTenantIds($resource_id);
 
         // Remove
 
@@ -377,23 +326,23 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
             $stmt = $pdo->prepare("DELETE FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)");
 
-            foreach ($relationship_ids as $user) {
+            foreach ($relationship_ids as $tenant) {
 
-                if (!Validate::uuid($user)) {
+                if (!Validate::uuid($tenant)) {
                     continue;
                 }
 
-                if ($owner == $user) {
+                if (in_array($tenant, $owned)) {
 
                     $pdo->rollBack();
 
-                    $msg = 'Unable to remove users from tenant';
-                    $reason = 'User ID (' . $user . ') is owner of tenant';
+                    $msg = 'Unable to remove user from tenants';
+                    $reason = 'Tenant ID (' . $tenant . ') is owned by user';
 
                     $this->log->notice($msg, [
                         'reason' => $reason,
-                        'tenant_id' => $resource_id,
-                        'user_id' => $user
+                        'user_id' => $resource_id,
+                        'tenant_id' => $tenant
                     ]);
 
                     throw new ForbiddenException($msg . ': ' . $reason);
@@ -401,8 +350,8 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
                 }
 
                 $stmt->execute([
-                    'tenant_id' => $resource_id,
-                    'user_id' => $user
+                    'user_id' => $resource_id,
+                    'tenant_id' => $tenant
                 ]);
 
             }
@@ -421,16 +370,16 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('Users removed from tenant', [
-                'tenant_id' => $resource_id,
-                'user_ids' => $relationship_ids
+            $this->log->info('User removed from tenants', [
+                'user_id' => $resource_id,
+                'tenant_ids' => $relationship_ids
             ]);
 
         }
 
         // Event
 
-        $this->events->doEvent('api.tenant.users.remove', $resource_id, $relationship_ids);
+        $this->events->doEvent('api.user.tenants.remove', $resource_id, $relationship_ids);
 
     }
 

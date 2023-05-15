@@ -172,6 +172,25 @@ class UsersModel extends ApiModel implements ResourceInterface
     }
 
     /**
+     * Get all owned tenant ID's.
+     *
+     * @param string $id
+     * @return array
+     */
+    public function getOwnedTenantIds(string $id): array
+    {
+
+        if (!Validate::uuid($id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(id, 1) as id FROM api_tenants WHERE owner = UUID_TO_BIN(:user_id, 1)", [
+            'user_id' => $id
+        ]), 'id');
+
+    }
+
+    /**
      * Create new user verification meta.
      *
      * @param string $user_id
