@@ -19,16 +19,16 @@ use Bayfront\StringHelpers\Str;
 use Bayfront\Validator\Validate;
 use Monolog\Logger;
 
-class UserMetaModel extends ApiModel implements ScopedResourceInterface
+class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 {
 
-    protected UsersModel $usersModel;
+    protected TenantsModel $tenantsModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel)
     {
-        parent::__construct($events, $db, $log);
+        $this->tenantsModel = $tenantsModel;
 
-        $this->usersModel = $usersModel;
+        parent::__construct($events, $db, $log);
     }
 
     /**
@@ -70,7 +70,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     {
         return [
             'id' => 'id',
-            //'userId' => 'BIN_TO_UUID(userId, 1) as userId',
+            //'tenantId' => 'BIN_TO_UUID(tenantId, 1) as tenantId',
             'metaValue' => 'metaValue',
             'createdAt' => 'createdAt',
             'updatedAt' => 'updatedAt'
@@ -86,7 +86,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Get user meta count.
+     * Get tenant meta count.
      *
      * @inheritDoc
      */
@@ -99,14 +99,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected) {
 
-            return $this->db->single("SELECT COUNT(*) FROM api_user_meta WHERE userId = UUID_TO_BIN(:user_id, 1)", [
-                'user_id' => $scoped_id
+            return $this->db->single("SELECT COUNT(*) FROM api_tenant_meta WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+                'tenant_id' => $scoped_id
             ]);
 
         } else {
 
-            return $this->db->single("SELECT COUNT(*) FROM api_user_meta WHERE userId = UUID_TO_BIN(:user_id, 1) AND id NOT LIKE '00-%'", [
-                'user_id' => $scoped_id
+            return $this->db->single("SELECT COUNT(*) FROM api_tenant_meta WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND id NOT LIKE '00-%'", [
+                'tenant_id' => $scoped_id
             ]);
 
         }
@@ -114,7 +114,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Does user meta exist?
+     * Does tenant meta exist?
      *
      * @inheritDoc
      */
@@ -127,16 +127,16 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected) {
 
-            return (bool)$this->db->single("SELECT 1 FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+            return (bool)$this->db->single("SELECT 1 FROM api_tenant_meta WHERE id = :id AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
                 'id' => $id,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
         } else {
 
-            return (bool)$this->db->single("SELECT 1 FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND id NOT LIKE '00-%'", [
+            return (bool)$this->db->single("SELECT 1 FROM api_tenant_meta WHERE id = :id AND tenantId = UUID_TO_BIN(:tenant_id, 1) AND id NOT LIKE '00-%'", [
                 'id' => $id,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
         }
@@ -144,7 +144,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Create user meta.
+     * Create tenant meta.
      *
      * @param string $scoped_id
      * @param array $attrs
@@ -161,14 +161,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Scoped exists
 
-        if (!$this->usersModel->idExists($scoped_id)) {
+        if (!$this->tenantsModel->idExists($scoped_id)) {
 
-            $msg = 'Unable to create user meta';
-            $reason = 'User does not exist';
+            $msg = 'Unable to create tenant meta';
+            $reason = 'Tenant does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -179,12 +179,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (Arr::isMissing($attrs, $this->getRequiredAttrs())) {
 
-            $msg = 'Unable to create user meta';
+            $msg = 'Unable to create tenant meta';
             $reason = 'Missing required attribute(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -195,12 +195,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!empty(Arr::except($attrs, $this->getAllowedAttrs()))) {
 
-            $msg = 'Unable to create user meta';
+            $msg = 'Unable to create tenant meta';
             $reason = 'Invalid attribute(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -211,12 +211,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!Validate::as($attrs, $this->getAttrsRules())) {
 
-            $msg = 'Unable to create user meta';
+            $msg = 'Unable to create tenant meta';
             $reason = 'Invalid attribute type(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_meta' => $scoped_id
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
@@ -229,12 +229,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected === false && str_starts_with($attrs['id'], '00-')) {
 
-            $msg = 'Unable to create user meta';
+            $msg = 'Unable to create tenant meta';
             $reason = 'Meta ID is protected';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -247,12 +247,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             if ($this->idExists($scoped_id, $attrs['id'])) {
 
-                $msg = 'Unable to create user meta';
+                $msg = 'Unable to create tenant meta';
                 $reason = 'ID (' . $attrs['id'] . ') already exists';
 
                 $this->log->notice($msg, [
                     'reason' => $reason,
-                    'user_id' => $scoped_id
+                    'tenant_id' => $scoped_id
                 ]);
 
                 throw new ConflictException($msg . ': ' . $reason);
@@ -261,9 +261,9 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             // Create
 
-            $this->db->query("INSERT INTO api_user_meta SET id = :id, userId = UUID_TO_BIN(:user_id, 1), metaValue = :value", [
+            $this->db->query("INSERT INTO api_tenant_meta SET id = :id, tenantId = UUID_TO_BIN(:tenant_id, 1), metaValue = :value", [
                 'id' => $attrs['id'],
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'value' => $attrs['metaValue']
             ]);
 
@@ -271,10 +271,10 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             // Create
 
-            $this->db->query("INSERT INTO api_user_meta SET id = :id, userId = UUID_TO_BIN(:user_id, 1), metaValue = :value
-                                        ON DUPLICATE KEY UPDATE id=VALUES(id), userId=VALUES(userId), metaValue=VALUES(metaValue)", [
+            $this->db->query("INSERT INTO api_tenant_meta SET id = :id, tenantId = UUID_TO_BIN(:tenant_id, 1), metaValue = :value
+                                        ON DUPLICATE KEY UPDATE id=VALUES(id), tenantId=VALUES(tenantId), metaValue=VALUES(metaValue)", [
                 'id' => $attrs['id'],
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'value' => $attrs['metaValue']
             ]);
 
@@ -284,8 +284,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('User meta created', [
-                'user_id' => $scoped_id,
+            $this->log->info('Tenant meta created', [
+                'tenant_id' => $scoped_id,
                 'meta_id' => $attrs['id']
             ]);
 
@@ -293,14 +293,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.create', $scoped_id, $attrs['id'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.meta.create', $scoped_id, $attrs['id'], Arr::only($attrs, array_keys($this->getSelectableCols())));
 
         return $attrs['id'];
 
     }
 
     /**
-     * Get user meta collection.
+     * Get tenant meta collection.
      *
      * @param string $scoped_id
      * @param array $args
@@ -321,14 +321,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Scoped exists
 
-        if (!$this->usersModel->idExists($scoped_id)) {
+        if (!$this->tenantsModel->idExists($scoped_id)) {
 
-            $msg = 'Unable to get user meta collection';
-            $reason = 'User does not exist';
+            $msg = 'Unable to get tenant meta collection';
+            $reason = 'Tenant does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id
+                'tenant_id' => $scoped_id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -339,8 +339,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         try {
 
-            $query = $this->startNewQuery()->table('api_user_meta')
-                ->where('userId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
+            $query = $this->startNewQuery()->table('api_tenant_meta')
+                ->where('tenantId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
 
             if ($allow_protected === false) {
 
@@ -358,7 +358,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         } catch (BadRequestException $e) {
 
-            $msg = 'Unable to get user meta collection';
+            $msg = 'Unable to get tenant meta collection';
 
             $this->log->notice($msg, [
                 'reason' => $e->getMessage(),
@@ -373,8 +373,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('User meta read', [
-                'user_id' => $scoped_id,
+            $this->log->info('Tenant meta read', [
+                'tenant_id' => $scoped_id,
                 'meta_id' => Arr::pluck($results['data'], 'id')
             ]);
 
@@ -382,14 +382,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.read', $scoped_id, Arr::pluck($results['data'], 'id'));
+        $this->events->doEvent('api.tenant.meta.read', $scoped_id, Arr::pluck($results['data'], 'id'));
 
         return $results;
 
     }
 
     /**
-     * Get user meta.
+     * Get tenant meta.
      *
      * @param string $scoped_id
      * @param string $id
@@ -414,12 +414,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->idExists($scoped_id, $id, $allow_protected)) {
 
-            $msg = 'Unable to get user meta';
-            $reason = 'User and / or meta ID does not exist';
+            $msg = 'Unable to get tenant meta';
+            $reason = 'Tenant and / or meta ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -431,12 +431,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected === false && str_starts_with($id, '00-')) {
 
-            $msg = 'Unable to get user meta';
+            $msg = 'Unable to get tenant meta';
             $reason = 'Meta ID is protected';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -446,12 +446,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Query
 
-        $query = $this->startNewQuery()->table('api_user_meta');
+        $query = $this->startNewQuery()->table('api_tenant_meta');
 
         try {
 
             $query->where('id', 'eq', $id)
-                ->where('userId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
+                ->where('tenantId', 'eq', "UUID_TO_BIN('" . $scoped_id . "', 1)");
 
         } catch (QueryException $e) {
             throw new UnexpectedApiException($e->getMessage());
@@ -463,11 +463,11 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         } catch (BadRequestException|NotFoundException $e) {
 
-            $msg = 'Unable to get user meta';
+            $msg = 'Unable to get tenant meta';
 
             $this->log->notice($msg, [
                 'reason' => $e->getMessage(),
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -479,8 +479,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('User meta read', [
-                'user_id' => $scoped_id,
+            $this->log->info('Tenant meta read', [
+                'tenant_id' => $scoped_id,
                 'meta_id' => [$result['id']]
             ]);
 
@@ -488,14 +488,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.read', $scoped_id, [$result['id']]);
+        $this->events->doEvent('api.tenant.meta.read', $scoped_id, [$result['id']]);
 
         return $result;
 
     }
 
     /**
-     * Get value of single user meta or false if not existing.
+     * Get value of single tenant meta or false if not existing.
      *
      * @param string $scoped_id
      * @param string $id
@@ -519,7 +519,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Update user meta.
+     * Update tenant meta.
      *
      * @param string $scoped_id
      * @param string $id
@@ -541,12 +541,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!$this->idExists($scoped_id, $id, $allow_protected)) {
 
-            $msg = 'Unable to update user meta';
-            $reason = 'User and / or meta ID does not exist';
+            $msg = 'Unable to update tenant meta';
+            $reason = 'Tenant and / or meta ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -560,12 +560,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!empty(Arr::except($attrs, Arr::except($this->getAllowedAttrs(), 'id')))) {
 
-            $msg = 'Unable to update user meta';
+            $msg = 'Unable to update tenant meta';
             $reason = 'Invalid attribute(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -577,12 +577,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (!Validate::as($attrs, $this->getAttrsRules())) {
 
-            $msg = 'Unable to update user meta';
+            $msg = 'Unable to update tenant meta';
             $reason = 'Invalid attribute type(s)';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -594,12 +594,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected === false && str_starts_with($id, '00-')) {
 
-            $msg = 'Unable to update user meta';
+            $msg = 'Unable to update tenant meta';
             $reason = 'Meta ID is protected';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -612,14 +612,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
         $placeholders = [];
 
         /** @noinspection SqlWithoutWhere */
-        $query = "UPDATE api_user_meta SET" . " ";
+        $query = "UPDATE api_tenant_meta SET" . " ";
 
         foreach ($attrs as $k => $v) {
             $placeholders[] = $v;
             $query .= $k . ' = ? ';
         }
 
-        $query .= "WHERE id = ? and userId = UUID_TO_BIN(?, 1)";
+        $query .= "WHERE id = ? and tenantId = UUID_TO_BIN(?, 1)";
 
         array_push($placeholders, $id, $scoped_id);
 
@@ -629,8 +629,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('User meta updated', [
-                'user_id' => $scoped_id,
+            $this->log->info('Tenant meta updated', [
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -638,12 +638,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.meta.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
 
     }
 
     /**
-     * Delete user meta.
+     * Delete tenant meta.
      *
      * @param string $scoped_id
      * @param string $id
@@ -655,14 +655,14 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
     public function delete(string $scoped_id, string $id, bool $allow_protected = false): void
     {
 
-        if (!$this->idExists($scoped_id, $id)) {
+        if (!$this->idExists($scoped_id, $id, $allow_protected)) {
 
-            $msg = 'Unable to delete user meta';
-            $reason = 'User and / or meta ID does not exist';
+            $msg = 'Unable to delete tenant meta';
+            $reason = 'Tenant and / or meta ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -674,12 +674,12 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         if ($allow_protected === false && str_starts_with($id, '00-')) {
 
-            $msg = 'Unable to delete user meta';
+            $msg = 'Unable to delete tenant meta';
             $reason = 'Meta ID is protected';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'user_id' => $scoped_id,
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -689,17 +689,17 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Delete
 
-        $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+        $this->db->query("DELETE FROM api_tenant_meta WHERE id = :id AND tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'id' => $id,
-            'user_id' => $scoped_id
+            'tenant_id' => $scoped_id
         ]);
 
         // Log
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
 
-            $this->log->info('User meta deleted', [
-                'user_id' => $scoped_id,
+            $this->log->info('Tenant meta deleted', [
+                'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
 
@@ -707,7 +707,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.delete', $scoped_id, $id);
+        $this->events->doEvent('api.tenant.meta.delete', $scoped_id, $id);
 
     }
 
