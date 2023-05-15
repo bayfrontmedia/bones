@@ -13,29 +13,27 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\Resources\TenantGroupsModel;
-use Bayfront\Bones\Services\Api\Schemas\Resources\TenantGroupsCollection;
-use Bayfront\Bones\Services\Api\Schemas\Resources\TenantGroupsResource;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
+use Bayfront\Bones\Services\Api\Schemas\Resources\TenantInvitationsCollection;
+use Bayfront\Bones\Services\Api\Schemas\Resources\TenantInvitationsResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class TenantGroupsController extends PrivateApiController implements ScopedResourceInterface
+class TenantInvitationsController extends PrivateApiController implements ScopedResourceInterface
 {
 
-    protected TenantGroupsModel $tenantGroupsModel;
+    protected TenantInvitationsModel $tenantInvitationsModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantGroupsModel $tenantGroupsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantInvitationsModel $tenantInvitationsModel)
     {
-        $this->tenantGroupsModel = $tenantGroupsModel;
+        $this->tenantInvitationsModel = $tenantInvitationsModel;
 
         parent::__construct($events, $filters, $response);
     }
 
     /**
-     * Create tenant group.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -47,13 +45,13 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     public function create(array $args): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('tenantGroups', $this->tenantGroupsModel->getRequiredAttrs(), $this->tenantGroupsModel->getAllowedAttrs());
+        $attrs = $this->getResourceAttributesOrAbort('tenantInvitations', $this->tenantInvitationsModel->getRequiredAttrs(), $this->tenantInvitationsModel->getAllowedAttrs());
 
         try {
 
-            $id = $this->tenantGroupsModel->create($args['tenant_id'], $attrs);
+            $id = $this->tenantInvitationsModel->create($args['tenant_id'], $attrs);
 
-            $created = $this->tenantGroupsModel->get($args['tenant_id'], $id);
+            $created = $this->tenantInvitationsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -63,7 +61,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             App::abort(404, $e->getMessage());
         }
 
-        $schema = TenantGroupsResource::create($created, [
+        $schema = TenantInvitationsResource::create($created, [
             'tenant_id' => $args['tenant_id']
         ]);
 
@@ -74,7 +72,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     }
 
     /**
-     * Get tenant group collection.
+     * Get tenant invitation collection.
      *
      * @param array $args
      * @return void
@@ -87,11 +85,11 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     public function getCollection(array $args): void
     {
 
-        $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantGroups');
+        $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantInvitations');
 
         try {
 
-            $results = $this->tenantGroupsModel->getCollection($args['tenant_id'], $query);
+            $results = $this->tenantInvitationsModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -99,9 +97,9 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             App::abort(404, $e->getMessage());
         }
 
-        $schema = TenantGroupsCollection::create($results, [
+        $schema = TenantInvitationsCollection::create($results, [
             'tenant_id' => $args['tenant_id'],
-            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/groups',
+            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/invitations',
             'query_string' => Request::getQuery()
         ]);
 
@@ -110,7 +108,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     }
 
     /**
-     * Get tenant group.
+     * Get tenant invitation.
      *
      * @param array $args
      * @return void
@@ -123,11 +121,11 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     public function get(array $args): void
     {
 
-        $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantGroups', array_keys($this->tenantGroupsModel->getSelectableCols()));
+        $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantInvitations', array_keys($this->tenantInvitationsModel->getSelectableCols()));
 
         try {
 
-            $results = $this->tenantGroupsModel->get($args['tenant_id'], $args['group_id'], $fields);
+            $results = $this->tenantInvitationsModel->get($args['tenant_id'], $args['invitation_id'], $fields);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -135,7 +133,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             App::abort(404, $e->getMessage());
         }
 
-        $schema = TenantGroupsResource::create($results, [
+        $schema = TenantInvitationsResource::create($results, [
             'tenant_id' => $args['tenant_id']
         ]);
 
@@ -144,7 +142,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     }
 
     /**
-     * Update tenant group.
+     * Update tenant invitation.
      *
      * @param array $args
      * @return void
@@ -157,23 +155,21 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     public function update(array $args): void
     {
 
-        $attrs = $this->getResourceAttributesOrAbort('tenantGroups', [], $this->tenantGroupsModel->getAllowedAttrs());
+        $attrs = $this->getResourceAttributesOrAbort('tenantInvitations', [], $this->tenantInvitationsModel->getAllowedAttrs());
 
         try {
 
-            $this->tenantGroupsModel->update($args['tenant_id'], $args['group_id'], $attrs);
+            $this->tenantInvitationsModel->update($args['tenant_id'], $args['invitation_id'], $attrs);
 
-            $updated = $this->tenantGroupsModel->get($args['tenant_id'], $args['group_id']);
+            $updated = $this->tenantInvitationsModel->get($args['tenant_id'], $args['invitation_id']);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
-        } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
 
-        $schema = TenantGroupsResource::create($updated, [
+        $schema = TenantInvitationsResource::create($updated, [
             'tenant_id' => $args['tenant_id']
         ]);
 
@@ -182,7 +178,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
     }
 
     /**
-     * Delete tenant group.
+     * Delete tenant invitation.
      *
      * @param array $args
      * @return void
@@ -195,7 +191,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
 
         try {
 
-            $this->tenantGroupsModel->delete($args['tenant_id'], $args['group_id']);
+            $this->tenantInvitationsModel->delete($args['tenant_id'], $args['invitation_id']);
 
             $this->response->setStatusCode(204)->send();
 
@@ -204,4 +200,5 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
         }
 
     }
+
 }

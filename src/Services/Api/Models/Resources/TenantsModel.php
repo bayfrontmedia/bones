@@ -52,6 +52,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
     /**
      * @inheritDoc
+     *
+     * TODO:
+     * Can validate owner as UUID?
      */
     public function getAttrsRules(): array
     {

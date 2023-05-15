@@ -125,6 +125,28 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     }
 
     /**
+     * Does tenant have user with email?
+     *
+     * @param string $resource_id
+     * @param string $relationship_id (Email)
+     * @return bool
+     */
+    public function hasEmail(string $resource_id, string $relationship_id): bool
+    {
+
+        if (!Validate::uuid($resource_id)) {
+            return false;
+        }
+
+        return (bool)$this->db->single("SELECT 1 FROM api_users AS au LEFT JOIN api_tenant_users as atu ON au.id = atu.userId
+         WHERE atu.tenantId = UUID_TO_BIN(:tenant_id, 1) AND au.email = :email", [
+            'tenant_id' => $resource_id,
+            'email' => $relationship_id
+        ]);
+
+    }
+
+    /**
      * Add users to tenant.
      *
      * @param string $resource_id
