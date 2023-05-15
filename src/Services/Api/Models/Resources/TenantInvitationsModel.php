@@ -8,6 +8,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
@@ -24,12 +25,14 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
     protected TenantsModel $tenantsModel;
     protected TenantRolesModel $tenantRolesModel;
     protected TenantUsersModel $tenantUsersModel;
+    protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel, UsersModel $usersModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->tenantRolesModel = $tenantRolesModel;
         $this->tenantUsersModel = $tenantUsersModel;
+        $this->usersModel = $usersModel;
 
         parent::__construct($events, $db, $log);
     }
@@ -127,6 +130,95 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
             'email' => $id,
             'tenant_id' => $scoped_id
         ]);
+
+    }
+
+    /**
+     * Verify new tenant invitation and add user to tenant if valid.
+     *
+     * @param string $tenant_id
+     * @param string $email
+     * @return bool
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function verifyTenantInvitation(string $tenant_id, string $email): bool
+    {
+
+        // Get invitation
+
+        $invitation = $this->get($tenant_id, $email);
+
+        // Verify not expired
+
+        if (strtotime($invitation['expiresAt']) <= time()) {
+
+            $this->delete($tenant_id, $email);
+
+            $msg = 'Unable to verify tenant invitation';
+            $reason = 'Tenant invitation expired';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $tenant_id,
+                'invitation_id' => $email
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Get user if existing
+
+        try {
+
+            $user = $this->usersModel->getEntireFromEmail($email);
+
+        } catch (NotFoundException) {
+
+            // Valid invitation, but user does not yet exist
+
+            $msg = 'Unable to verify tenant invitation';
+            $reason = 'User does not exist with email';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $tenant_id,
+                'invitation_id' => $email
+            ]);
+
+            throw new ConflictException($msg . ': ' . $reason);
+
+        }
+
+        // Check enabled
+
+        if (!$user['enabled']) {
+
+            //$this->delete($tenant_id, $email);
+
+            $msg = 'Unable to verify tenant invitation';
+            $reason = 'User disabled';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $tenant_id,
+                'invitation_id' => $email
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        /*
+         * TODO:
+         * Finish this once TenantUserRolesModel is completed
+         */
+
+        return false;
 
     }
 

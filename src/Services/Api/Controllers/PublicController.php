@@ -10,8 +10,10 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Abstracts\Controllers\PublicApiController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
@@ -26,6 +28,7 @@ class PublicController extends PublicApiController
 
     protected UsersModel $usersModel;
     protected TenantsModel $tenantsModel;
+    protected TenantInvitationsModel $tenantInvitationsModel;
 
     /**
      * @param EventService $events
@@ -33,18 +36,19 @@ class PublicController extends PublicApiController
      * @param Response $response
      * @param UsersModel $usersModel
      * @param TenantsModel $tenantsModel
+     * @param TenantInvitationsModel $tenantInvitationsModel
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel, TenantsModel $tenantsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel, TenantsModel $tenantsModel, TenantInvitationsModel $tenantInvitationsModel)
     {
-        parent::__construct($events, $filters, $response);
-
         $this->usersModel = $usersModel;
         $this->tenantsModel = $tenantsModel;
+        $this->tenantInvitationsModel = $tenantInvitationsModel;
 
+        parent::__construct($events, $filters, $response);
     }
 
     /**
@@ -106,6 +110,41 @@ class PublicController extends PublicApiController
     }
 
     /**
+     * Verify new user verification meta and enable user if valid.
+     *
+     * @param array $args
+     * @return void
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function verifyUser(array $args): void
+    {
+
+        if ($this->usersModel->verifyNewUserVerification($args['user_id'], $args['verify_id'])) {
+
+            $results = $this->usersModel->get($args['user_id']);
+
+            $schema = UsersResource::create($results, [
+                'user_id' => $args['user_id']
+            ]);
+
+            $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
+
+            return;
+
+        }
+
+        App::abort(404);
+
+    }
+
+    /**
      * Create tenant.
      *
      * @return void
@@ -144,6 +183,36 @@ class PublicController extends PublicApiController
         $this->response->setStatusCode(201)->setHeaders([
             'Location' => Request::getUrl() . '/' . $id
         ])->sendJson($this->filters->doFilter('api.response', $schema));
+
+    }
+
+    /**
+     * Verify new tenant invitation and add user to tenant if valid.
+     *
+     * @param array $args
+     * @return void
+     * @throws BadRequestException
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
+     */
+    public function verifyTenantInvitation(array $args): void
+    {
+
+        try {
+
+            $this->tenantInvitationsModel->verifyTenantInvitation($args['tenant_id'], $args['email']);
+
+        } catch (ConflictException $e) {
+            App::abort(409, $e->getMessage());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
+        } catch (NotFoundException $e) {
+            App::abort(404, $e->getMessage());
+        }
+
+        $this->response->setStatusCode(204)->send();
 
     }
 
