@@ -5,11 +5,11 @@ namespace Bayfront\Bones\Services\Api\Models\Resources;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
-use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
@@ -163,6 +163,25 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
             'name' => $name,
             'id' => $exclude_id
         ]);
+
+    }
+
+    /**
+     * Get all role ID's for tenant.
+     *
+     * @param string $scoped_id
+     * @return array
+     */
+    public function getAllIds(string $scoped_id): array
+    {
+
+        if (!Validate::uuid($scoped_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(id, 1) as id FROM api_tenant_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $scoped_id
+        ]), 'id');
 
     }
 

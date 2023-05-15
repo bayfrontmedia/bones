@@ -8,7 +8,7 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
-use Bayfront\Bones\Services\Api\Abstracts\Controllers\ApiController;
+use Bayfront\Bones\Services\Api\Controllers\Abstracts\ApiController;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Schemas\StatusResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;

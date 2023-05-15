@@ -4,8 +4,8 @@ namespace Bayfront\Bones\Services\Api\Models;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Services\Api\Abstracts\Models\ApiModel;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
+use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\PDO\Db;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Abstracts\Controllers;
+namespace Bayfront\Bones\Services\Api\Controllers\Abstracts;
 
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -12,7 +12,7 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-abstract class AuthApiController extends ApiController
+abstract class PublicApiController extends ApiController
 {
 
     /**
@@ -26,13 +26,15 @@ abstract class AuthApiController extends ApiController
      */
     public function __construct(EventService $events, FilterService $filters, Response $response)
     {
+
         parent::__construct($events, $filters, $response);
 
         $this->initApi();
 
-        $this->rateLimitOrAbort(md5('auth-' . Request::getIp()), App::getConfig('api.rate_limit.auth'));
+        $this->rateLimitOrAbort(md5('public-' . Request::getIp()), App::getConfig('api.rate_limit.public'));
 
         $events->doEvent('api.controller', $this);
+
     }
 
 }

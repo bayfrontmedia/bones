@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Abstracts\Controllers;
+namespace Bayfront\Bones\Services\Api\Controllers\Abstracts;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Controller;
@@ -20,6 +20,7 @@ use Bayfront\LeakyBucket\BucketException;
 use Bayfront\Validator\Validate;
 use DateTimeInterface;
 use Exception;
+use function Bayfront\Bones\Services\Api\Abstracts\Controllers\str_contains;
 
 abstract class ApiController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Services\Api\Abstracts\Controllers;
+namespace Bayfront\Bones\Services\Api\Controllers\Abstracts;
 
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;

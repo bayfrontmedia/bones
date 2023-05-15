@@ -7,7 +7,7 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
-use Bayfront\Bones\Services\Api\Abstracts\Controllers\PublicApiController;
+use Bayfront\Bones\Services\Api\Controllers\Abstracts\PublicApiController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
