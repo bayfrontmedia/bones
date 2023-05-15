@@ -3,15 +3,14 @@
 namespace Bayfront\Bones\Services\Api\Schemas;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\ArraySchema\SchemaInterface;
-use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 
 class AuthResource implements SchemaInterface
 {
 
     /**
      * @inheritDoc
-     * @throws UnexpectedApiException
      */
     public static function create(array $array, array $config = []): array
     {
@@ -22,7 +21,7 @@ class AuthResource implements SchemaInterface
             'expires_in',
             'expires_at'
         ])) {
-            throw new UnexpectedApiException('Unable to create AuthResource schema: missing required keys');
+            throw new InvalidSchemaException('Unable to create AuthResource schema: missing required keys');
         }
 
         return [

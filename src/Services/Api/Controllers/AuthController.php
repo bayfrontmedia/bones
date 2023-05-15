@@ -36,11 +36,11 @@ class AuthController extends AuthApiController
     /**
      * @param string $user_id
      * @return void
-     * @throws InvalidSchemaException
-     * @throws HttpException
-     * @throws UnexpectedApiException
      * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
      */
     protected function returnAuthResource(string $user_id): void
     {
@@ -80,11 +80,11 @@ class AuthController extends AuthApiController
      * Login with email + password.
      *
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws ContainerNotFoundException
      */
     public function login(): void
     {
@@ -115,11 +115,11 @@ class AuthController extends AuthApiController
 
     /**
      * @return void
+     * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
-     * @throws ContainerNotFoundException
      */
     public function refresh(): void
     {
