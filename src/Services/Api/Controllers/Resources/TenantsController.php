@@ -136,6 +136,11 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     public function update(array $args): void
     {
 
+        /*
+         * TODO:
+         * Can control "enabled" with permissions
+         */
+
         $attrs = $this->getResourceAttributesOrAbort('tenants', [], $this->tenantsModel->getAllowedAttrs());
 
         try {

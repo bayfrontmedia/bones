@@ -119,6 +119,11 @@ class PublicController extends PublicApiController
     public function createTenant(): void
     {
 
+        /*
+         * TODO:
+         * Can control "enabled" with permissions
+         */
+
         $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), $this->tenantsModel->getAllowedAttrs());
 
         try {

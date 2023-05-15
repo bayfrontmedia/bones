@@ -21,8 +21,12 @@ use Monolog\Logger;
 class TenantsModel extends ApiModel implements ResourceInterface
 {
 
-    public function __construct(EventService $events, Db $db, Logger $log)
+    protected UsersModel $usersModel;
+
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
     {
+        $this->usersModel = $usersModel;
+
         parent::__construct($events, $db, $log);
     }
 
@@ -52,13 +56,11 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
     /**
      * @inheritDoc
-     *
-     * TODO:
-     * Can validate owner as UUID?
      */
     public function getAttrsRules(): array
     {
         return [
+            'owner' => 'uuid',
             'name' => 'string',
             'meta' => 'array',
             'enabled' => 'boolean'
@@ -174,6 +176,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
+     * @throws UnexpectedApiException
      */
     public function create(array $attrs): string
     {
@@ -259,26 +262,12 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         }
 
-        // Enabled
+        // Check owner exists
 
-        if (isset($attrs['enabled'])) { // Cast to integer
-            $attrs['enabled'] = (int)$attrs['enabled'];
-        }
-
-        // Tenant ID
-
-        $uuid = $this->createUUID();
-
-        $attrs['id'] = $uuid['bin'];
-
-        // Owner ID
-
-        // UUID
-
-        if (!Validate::uuid($attrs['owner'])) {
+        if (!$this->usersModel->idExists($attrs['owner'])) {
 
             $msg = 'Unable to create tenant';
-            $reason = 'Invalid owner ID';
+            $reason = 'Owner ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -288,26 +277,27 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Enabled
+
+        if (isset($attrs['enabled'])) { // Cast to integer
+            $attrs['enabled'] = (int)$attrs['enabled'];
+        }
+
         // Create
 
-        $owner_id = $attrs['owner'];
+        $uuid = $this->createUUID();
+
+        $attrs['id'] = $uuid['bin'];
+
         $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
 
         try {
 
             $this->db->beginTransaction();
 
+            // Create tenant
+
             $this->db->insert('api_tenants', $attrs);
-
-            /** @noinspection SqlInsertValues */
-            /*
-            $sql = sprintf("INSERT INTO api_tenants (%s) VALUES (%s)",
-                implode(', ', array_keys($attrs)),
-                implode(', ', array_fill(0, count($attrs), '?')));
-
-
-            $this->db->query($sql, array_values($attrs));
-            */
 
             // Add owner as tenant user
 
@@ -318,18 +308,11 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             $this->db->commitTransaction();
 
-        } catch (Exception) {
+        } catch (Exception $e) {
 
             $this->db->rollbackTransaction();
 
-            $msg = 'Unable to create tenant';
-            $reason = 'Owner ID (' . $owner_id . ') does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason
-            ]);
-
-            throw new BadRequestException($msg . ': ' . $reason);
+            throw new UnexpectedApiException($e->getMessage());
 
         }
 
@@ -425,12 +408,12 @@ class TenantsModel extends ApiModel implements ResourceInterface
             $cols = array_merge($cols, ['id']); // Force return ID
         }
 
-        // UUID
+        // Exists
 
-        if (!Validate::uuid($id)) {
+        if (!$this->idExists($id)) {
 
             $msg = 'Unable to get tenant';
-            $reason = 'Invalid tenant ID';
+            $reason = 'Tenant does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
@@ -522,6 +505,26 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Exists
+
+        $existing = $this->db->row("SELECT id, meta from api_tenants WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
+        ]);
+
+        if (!$existing) {
+
+            $msg = 'Unable to update tenant';
+            $reason = 'Does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
         // Allowed attributes
 
         if (!empty(Arr::except($attrs, $this->getAllowedAttrs()))) {
@@ -551,26 +554,6 @@ class TenantsModel extends ApiModel implements ResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Check exists
-
-        $existing = $this->db->row("SELECT id, meta from api_tenants WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $id
-        ]);
-
-        if (!$existing) {
-
-            $msg = 'Unable to update tenant';
-            $reason = 'Does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'tenant_id' => $id
-            ]);
-
-            throw new NotFoundException($msg . ': ' . $reason);
 
         }
 
@@ -703,12 +686,12 @@ class TenantsModel extends ApiModel implements ResourceInterface
     public function delete(string $id): void
     {
 
-        // UUID
+        // Exists
 
-        if (!Validate::uuid($id)) {
+        if (!$this->idExists($id)) {
 
             $msg = 'Unable to delete tenant';
-            $reason = 'Invalid tenant ID';
+            $reason = 'Tenant ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
@@ -725,35 +708,19 @@ class TenantsModel extends ApiModel implements ResourceInterface
             'id' => $id
         ]);
 
-        if ($this->db->rowCount() > 0) {
+        // Log
 
-            // Log
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
 
-            if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
-
-                $this->log->info('Tenant deleted', [
-                    'tenant_id' => $id
-                ]);
-
-            }
-
-            // Event
-
-            $this->events->doEvent('api.tenant.delete', $id);
-
-            return;
+            $this->log->info('Tenant deleted', [
+                'tenant_id' => $id
+            ]);
 
         }
 
-        $msg = 'Unable to delete tenant';
-        $reason = 'Tenant does not exist';
+        // Event
 
-        $this->log->notice($msg, [
-            'reason' => $reason,
-            'tenant_id' => $id
-        ]);
-
-        throw new NotFoundException($msg . ': ' . $reason);
+        $this->events->doEvent('api.tenant.delete', $id);
 
     }
 

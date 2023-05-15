@@ -194,5 +194,4 @@ class UsersController extends PrivateApiController implements ResourceInterface
 
     }
 
-
 }
