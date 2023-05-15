@@ -143,7 +143,7 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
         try {
 
-            $this->db->beginTransaction();
+            $pdo->beginTransaction();
 
             $stmt = $pdo->prepare("INSERT INTO api_tenant_user_roles SET tenantId = UUID_TO_BIN(:tenant_id, 1), userId = UUID_TO_BIN(:user_id, 1), roleId = UUID_TO_BIN(:role_id, 1) 
                                   ON DUPLICATE KEY UPDATE tenantId = VALUES(tenantId), userId = VALUES(userId), roleId = VALUES(roleId)");
@@ -204,6 +204,17 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
     }
 
+    /**
+     * Get tenant user roles collection.
+     *
+     * @param string $scoped_id
+     * @param string $resource_id
+     * @param array $args
+     * @return array
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
     public function getCollection(string $scoped_id, string $resource_id, array $args = []): array
     {
 
@@ -283,8 +294,90 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
     }
 
+    /**
+     * Remove roles from tenant user.
+     *
+     * @param string $scoped_id
+     * @param string $resource_id
+     * @param array $relationship_ids
+     * @return void
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
     public function remove(string $scoped_id, string $resource_id, array $relationship_ids): void
     {
-        // TODO: Implement remove() method.
+
+        // Tenant user exists
+
+        if (!$this->tenantUsersModel->has($scoped_id, $resource_id)) {
+
+            $msg = 'Unable to remove roles from tenant user';
+            $reason = 'User ID (' . $resource_id . ') does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $scoped_id,
+                'user_id' => $resource_id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Remove
+
+        try {
+            $pdo = $this->db->get();
+        } catch (InvalidDatabaseException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        try {
+
+            $pdo->beginTransaction();
+
+            $stmt = $pdo->prepare("DELETE FROM api_tenant_user_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1) AND roleId = UUID_TO_BIN(:role_id, 1)");
+
+            foreach ($relationship_ids as $role) {
+
+                if (!Validate::uuid($role)) {
+                    continue;
+                }
+
+                $stmt->execute([
+                    'tenant_id' => $scoped_id,
+                    'user_id' => $resource_id,
+                    'role_id' => $role
+                ]);
+
+            }
+
+            $pdo->commit();
+
+        } catch (PDOException $e) {
+
+            $pdo->rollBack();
+
+            throw new UnexpectedApiException($e->getMessage());
+
+        }
+
+        // Log
+
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('Roles removed from tenant user', [
+                'tenant_id' => $scoped_id,
+                'user_id' => $resource_id,
+                'role_ids' => $relationship_ids
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.tenant.user.roles.remove', $scoped_id, $resource_id, $relationship_ids);
+
     }
+
 }

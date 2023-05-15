@@ -139,7 +139,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
 
         try {
 
-            $this->db->beginTransaction();
+            $pdo->beginTransaction();
 
             $stmt = $pdo->prepare("INSERT INTO api_tenant_users SET tenantId = UUID_TO_BIN(:tenant_id, 1), userId = UUID_TO_BIN(:user_id, 1) ON DUPLICATE KEY UPDATE tenantId = VALUES(tenantId), userId = VALUES(userId)");
 
@@ -322,7 +322,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
 
         try {
 
-            $this->db->beginTransaction();
+            $pdo->beginTransaction();
 
             $stmt = $pdo->prepare("DELETE FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)");
 
