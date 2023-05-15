@@ -367,7 +367,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $attrs['password'] = $this->hashPassword($attrs['password'], $attrs['salt']);
 
-        // Check exists
+        // Check email exists
 
         $attrs['email'] = strtolower($attrs['email']);
 
@@ -390,13 +390,11 @@ class UsersModel extends ApiModel implements ResourceInterface
             $attrs['enabled'] = (int)$attrs['enabled'];
         }
 
-        // ID
+        // Create
 
         $uuid = $this->createUUID();
 
         $attrs['id'] = $uuid['bin'];
-
-        // Create
 
         $this->db->insert('api_users', $attrs);
 
@@ -499,12 +497,12 @@ class UsersModel extends ApiModel implements ResourceInterface
             $cols = array_merge($cols, ['id']); // Force return ID
         }
 
-        // UUID
+        // Exists
 
-        if (!Validate::uuid($id)) {
+        if (!$this->idExists($id)) {
 
             $msg = 'Unable to get user';
-            $reason = 'Invalid user ID';
+            $reason = 'User does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
@@ -576,35 +574,27 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function getEntire(string $id): array
     {
 
-        if (!Validate::uuid($id)) {
+        // Exists
 
-            $msg = 'Unable to get user';
-            $reason = 'Invalid user ID';
-
-            $this->log->notice($msg, [
-                'reason' => $reason
-            ]);
-
-            throw new NotFoundException($msg . ': ' . $reason);
-
-        }
-
-        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $id
-        ]);
-
-        if (!$result) {
+        if (!$this->idExists($id)) {
 
             $msg = 'Unable to get user';
             $reason = 'User does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'user_id' => $id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
 
         }
+
+        // Query
+
+        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
+        ]);
 
         // Log
 
@@ -634,22 +624,27 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function getEntireFromEmail(string $email): array
     {
 
-        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE email = :email", [
-            'email' => strtolower($email)
-        ]);
+        // Exists
 
-        if (!$result) {
+        if (!$this->emailExists($email)) {
 
             $msg = 'Unable to get user';
             $reason = 'User does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'email' => $email
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
 
         }
+
+        // Query
+
+        $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE email = :email", [
+            'email' => strtolower($email)
+        ]);
 
         // Log
 
@@ -678,7 +673,7 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function getSalt(string $id): string
     {
 
-        if (!Validate::uuid($id)) {
+        if (!$this->idExists($id)) {
             return '';
         }
 
@@ -721,6 +716,26 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
+        // Exists
+
+        $existing = $this->db->row("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
+            'id' => $id
+        ]);
+
+        if (!$existing) {
+
+            $msg = 'Unable to update user';
+            $reason = 'Does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
         // Allowed attributes
 
         if (!empty(Arr::except($attrs, $this->getAllowedAttrs()))) {
@@ -750,26 +765,6 @@ class UsersModel extends ApiModel implements ResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Check exists
-
-        $existing = $this->db->row("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $id
-        ]);
-
-        if (!$existing) {
-
-            $msg = 'Unable to update user';
-            $reason = 'Does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'user_id' => $id
-            ]);
-
-            throw new NotFoundException($msg . ': ' . $reason);
 
         }
 
@@ -825,7 +820,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         }
 
-        // Check exists
+        // Check email exists
 
         if (isset($attrs['email'])) {
 
@@ -889,12 +884,12 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function delete(string $id): void
     {
 
-        // UUID
+        // Exists
 
-        if (!Validate::uuid($id)) {
+        if (!$this->idExists($id)) {
 
             $msg = 'Unable to delete user';
-            $reason = 'Invalid user ID';
+            $reason = 'User ID does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
@@ -911,35 +906,19 @@ class UsersModel extends ApiModel implements ResourceInterface
             'id' => $id
         ]);
 
-        if ($this->db->rowCount() > 0) {
+        // Log
 
-            // Log
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
 
-            if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
-
-                $this->log->info('User deleted', [
-                    'user_id' => $id
-                ]);
-
-            }
-
-            // Event
-
-            $this->events->doEvent('api.user.delete', $id);
-
-            return;
+            $this->log->info('User deleted', [
+                'user_id' => $id
+            ]);
 
         }
 
-        $msg = 'Unable to delete user';
-        $reason = 'User does not exist';
+        // Event
 
-        $this->log->notice($msg, [
-            'reason' => $reason,
-            'user_id' => $id
-        ]);
-
-        throw new NotFoundException($msg . ': ' . $reason);
+        $this->events->doEvent('api.user.delete', $id);
 
     }
 

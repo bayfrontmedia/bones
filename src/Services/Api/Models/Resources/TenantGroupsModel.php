@@ -525,7 +525,7 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-        // Check exists
+        // Check name exists
 
         if (isset($attrs['name']) && $this->nameExists($scoped_id, $attrs['name'], $id)) {
 
