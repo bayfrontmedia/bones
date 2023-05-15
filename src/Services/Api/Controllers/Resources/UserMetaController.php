@@ -53,6 +53,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
         try {
 
             $id = $this->userMetaModel->create($args['user_id'], $attrs);
+
             $created = $this->userMetaModel->get($args['user_id'], $id);
 
         } catch (BadRequestException $e) {
