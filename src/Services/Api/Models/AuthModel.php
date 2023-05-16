@@ -74,7 +74,7 @@ class AuthModel extends ApiModel
 
         $time = time();
 
-        $expiration = $time + App::getConfig('api.token_duration.access');
+        $expiration = $time + (App::getConfig('api.token_duration.access') * 60);
 
         $jwt = new Jwt(App::getConfig('app.key'));
 
@@ -88,7 +88,7 @@ class AuthModel extends ApiModel
 
         return [
             'token' => $token,
-            'expires_in' => (string)App::getConfig('api.token_duration.access'),
+            'expires_in' => (string)App::getConfig('api.token_duration.access') * 60,
             'expires_at' => (string)$expiration
         ];
 
@@ -121,7 +121,7 @@ class AuthModel extends ApiModel
             'id' => '00-refresh-token',
             'metaValue' => json_encode([
                 'token' => $this->hashPassword($refresh_token, $this->usersModel->getSalt($user_id)),
-                'expiresAt' => time() + App::getConfig('api.token_duration.refresh')
+                'expiresAt' => time() + (App::getConfig('api.token_duration.refresh') * 60)
             ])
         ], true, true);
 
