@@ -20,7 +20,6 @@ use Bayfront\LeakyBucket\BucketException;
 use Bayfront\Validator\Validate;
 use DateTimeInterface;
 use Exception;
-use function Bayfront\Bones\Services\Api\Abstracts\Controllers\str_contains;
 
 abstract class ApiController extends Controller
 {
