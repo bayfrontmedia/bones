@@ -91,6 +91,25 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
+     * Get all tenant group ID's.
+     *
+     * @param string $tenant_id
+     * @return array
+     */
+    public function getAllIds(string $tenant_id): array
+    {
+
+        if (!Validate::uuid($tenant_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(id, 1) as id FROM api_tenant_groups WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $tenant_id
+        ]), 'id');
+
+    }
+
+    /**
      * Get tenant group count.
      *
      * @param string $scoped_id
