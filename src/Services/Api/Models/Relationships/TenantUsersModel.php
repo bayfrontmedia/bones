@@ -173,7 +173,8 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
             $reason = 'Tenant ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'tenant_id' => $resource_id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -275,7 +276,8 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
             $reason = 'Tenant ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'tenant_id' => $resource_id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
@@ -354,7 +356,8 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
             $reason = 'Tenant ID (' . $resource_id . ') does not exist';
 
             $this->log->notice($msg, [
-                'reason' => $reason
+                'reason' => $reason,
+                'tenant_id' => $resource_id
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
