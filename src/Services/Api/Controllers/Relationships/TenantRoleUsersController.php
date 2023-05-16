@@ -118,6 +118,8 @@ class TenantRoleUsersController extends ApiController implements RelationshipInt
             App::abort(404, $e->getMessage());
         }
 
+        $this->response->setStatusCode(204)->send();
+
     }
 
 }

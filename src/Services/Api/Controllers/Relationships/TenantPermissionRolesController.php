@@ -125,6 +125,8 @@ class TenantPermissionRolesController extends ApiController implements Relations
             App::abort(404, $e->getMessage());
         }
 
+        $this->response->setStatusCode(204)->send();
+
     }
 
 }
