@@ -30,23 +30,17 @@ class UserModel extends ApiModel
      * @param UsersModel $usersModel
      * @param UserMetaModel $userMetaModel
      * @param string $user_id
+     * @param bool $skip_log (Skip api.user.read logs and events - used when a user authenticates)
      * @throws NotFoundException
      */
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, string $user_id)
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, string $user_id, bool $skip_log = false)
     {
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
 
         $this->user_id = $user_id;
 
-        /*
-         * TODO:
-         * Can add another argument of: bool $skip_log = false
-         * To skip logging "read" action, perhaps when authenticating from the
-         * PrivateApiController
-         */
-
-        $this->user = Arr::except($this->usersModel->getEntire($this->getId()), [
+        $this->user = Arr::except($this->usersModel->getEntire($this->getId(), $skip_log), [
             'password'
         ]);
 

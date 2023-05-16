@@ -5,6 +5,7 @@ namespace Bayfront\Bones\Services\Api\Models\Resources;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Exceptions\BonesException;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
@@ -538,7 +539,6 @@ class TenantUserMetaModel extends ApiModel
      * @param string $id
      * @param bool $allow_protected
      * @return mixed
-     * @throws UnexpectedApiException
      */
     public function getValue(string $scoped_id, string $user_id, string $id, bool $allow_protected = false): mixed
     {
@@ -547,7 +547,7 @@ class TenantUserMetaModel extends ApiModel
 
             $result = $this->get($scoped_id, $user_id, $id, ['metaValue'], $allow_protected);
 
-        } catch (BadRequestException|ForbiddenException|NotFoundException) {
+        } catch (BonesException) {
             return false;
         }
 

@@ -587,10 +587,11 @@ class UsersModel extends ApiModel implements ResourceInterface
      * Get entire user, including protected fields (password and salt).
      *
      * @param string $id
+     * @param bool $skip_log (Skip logs and events - used when a user authenticates)
      * @return array
      * @throws NotFoundException
      */
-    public function getEntire(string $id): array
+    public function getEntire(string $id, bool $skip_log = false): array
     {
 
         // Exists
@@ -615,19 +616,23 @@ class UsersModel extends ApiModel implements ResourceInterface
             'id' => $id
         ]);
 
-        // Log
+        if (!$skip_log) {
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+            // Log
 
-            $this->log->info('User read', [
-                'user_id' => [$result['id']]
-            ]);
+            if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+
+                $this->log->info('User read', [
+                    'user_id' => [$result['id']]
+                ]);
+
+            }
+
+            // Event
+
+            $this->events->doEvent('api.user.read', [$result['id']]);
 
         }
-
-        // Event
-
-        $this->events->doEvent('api.user.read', [$result['id']]);
 
         return $result;
 

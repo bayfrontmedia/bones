@@ -183,7 +183,8 @@ class AuthModel extends ApiModel
 
         try {
 
-            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $decoded['payload']['sub']);
+            // Skip api.user.read event and logging for self
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $decoded['payload']['sub'], true);
 
         } catch (NotFoundException) {
 
@@ -265,7 +266,8 @@ class AuthModel extends ApiModel
 
         try {
 
-            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $valid_key['userId']);
+            // Skip api.user.read event and logging for self
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $valid_key['userId'], true);
 
         } catch (NotFoundException) {
 
