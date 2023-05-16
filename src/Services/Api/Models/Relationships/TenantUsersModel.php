@@ -92,6 +92,25 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     }
 
     /**
+     * Get all ID's of users who own or belong to tenant.
+     *
+     * @param string $tenant_id
+     * @return array
+     */
+    public function getAllIds(string $tenant_id): array
+    {
+
+        if (!Validate::uuid($tenant_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(userId, 1) as userId FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $tenant_id
+        ]), 'userId');
+
+    }
+
+    /**
      * Get tenant users count.
      *
      * @param string $resource_id
