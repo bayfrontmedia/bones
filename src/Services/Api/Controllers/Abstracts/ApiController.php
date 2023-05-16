@@ -9,7 +9,6 @@ use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -158,43 +157,37 @@ abstract class ApiController extends Controller
 
         try {
 
-            /**
-             * @var Bucket $bucket
-             */
-
-            $bucket = App::make('Bayfront\LeakyBucket\Bucket', [
-                'id' => $id,
-                'settings' => [
-                    'capacity' => $limit,
-                    'leak' => 1
-                ]
+            $bucket = new Bucket($id, App::make('Bayfront\LeakyBucket\Adapters\PDO', [
+                'pdo' => App::get('Bayfront\PDO\Db')->get(),
+                'table' => 'api_buckets'
+            ]), [
+                'capacity' => $limit,
+                'leak' => 1
             ]);
 
-        } catch (ContainerException $e) {
+        } catch (Exception $e) {
             throw new UnexpectedApiException($e->getMessage());
         }
 
         try {
 
-            try {
-
-                $bucket->leak()->fill()->save();
-
-            } catch (BucketException) {
-
-                $wait = round($bucket->getSecondsUntilCapacity());
-
-                App::abort(429, 'Rate limit exceeded. Try again in ' . $wait . ' seconds', [
-                    'X-RateLimit-Limit' => $limit,
-                    'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()),
-                    'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty()),
-                    'Retry-After' => $wait
-                ]);
-
-            }
+            $bucket->leak()->fill()->save();
 
         } catch (AdapterException $e) {
+
             throw new UnexpectedApiException($e->getMessage());
+
+        } catch (BucketException) {
+
+            $wait = round($bucket->getSecondsUntilCapacity());
+
+            App::abort(429, 'Rate limit exceeded. Try again in ' . $wait . ' seconds', [
+                'X-RateLimit-Limit' => $limit,
+                'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()),
+                'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty()),
+                'Retry-After' => $wait
+            ]);
+
         }
 
         // Set headers
@@ -219,12 +212,10 @@ abstract class ApiController extends Controller
 
         try {
 
-            /**
-             * @var Bucket $bucket
-             */
-            $bucket = App::make('Bayfront\LeakyBucket\Bucket', [
-                'id' => $bucket_name
-            ]);
+            $bucket = new Bucket($bucket_name, App::make('Bayfront\LeakyBucket\Adapters\PDO', [
+                'pdo' => App::get('Bayfront\PDO\Db')->get(),
+                'table' => 'api_buckets'
+            ]));
 
             $bucket->delete();
 

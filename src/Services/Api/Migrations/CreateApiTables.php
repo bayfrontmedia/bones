@@ -3,9 +3,11 @@
 namespace Bayfront\Bones\Services\Api\Migrations;
 
 use Bayfront\Bones\Interfaces\MigrationInterface;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\LeakyBucket\AdapterException;
 use Bayfront\LeakyBucket\Adapters\PDO;
 use Bayfront\PDO\Db;
+use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 
 class CreateApiTables implements MigrationInterface
 {
@@ -13,10 +15,21 @@ class CreateApiTables implements MigrationInterface
     protected Db $db;
     protected PDO $bucketAdapter;
 
-    public function __construct(Db $db, PDO $bucketAdapter)
+
+    /**
+     * @param Db $db
+     * @throws UnexpectedApiException
+     */
+    public function __construct(Db $db)
     {
         $this->db = $db;
-        $this->bucketAdapter = $bucketAdapter;
+
+        try {
+            $this->bucketAdapter = new PDO($this->db->get(), 'api_buckets');
+        } catch (InvalidDatabaseException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
     }
 
     /**

@@ -7,7 +7,7 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
-use Bayfront\Bones\Services\Api\Controllers\Abstracts\ApiController;
+use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\RelationshipInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
@@ -19,7 +19,7 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
-class TenantPermissionRolesController extends ApiController implements RelationshipInterface
+class TenantPermissionRolesController extends PrivateApiController implements RelationshipInterface
 {
 
     protected TenantPermissionRolesModel $tenantPermissionRolesModel;
