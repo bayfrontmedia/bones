@@ -167,6 +167,25 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
+     * Get all permission ID's for tenant.
+     *
+     * @param string $scoped_id
+     * @return array
+     */
+    public function getAllIds(string $scoped_id): array
+    {
+
+        if (!Validate::uuid($scoped_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(id, 1) as id FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $scoped_id
+        ]), 'id');
+
+    }
+
+    /**
      * Create tenant permission.
      *
      * @param string $scoped_id
