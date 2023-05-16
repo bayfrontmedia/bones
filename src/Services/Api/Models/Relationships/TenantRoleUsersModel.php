@@ -38,14 +38,7 @@ class TenantRoleUsersModel extends ApiModel implements ScopedRelationshipInterfa
      */
     public function getSelectableCols(): array
     {
-        return [
-            'id' => 'BIN_TO_UUID(api_users.id, 1) as id',
-            'email' => 'email',
-            'meta' => 'meta',
-            'enabled' => 'enabled',
-            'createdAt' => 'createdAt',
-            'updatedAt' => 'updatedAt'
-        ];
+        return $this->tenantUsersModel->getSelectableCols();
     }
 
     /**
@@ -53,9 +46,7 @@ class TenantRoleUsersModel extends ApiModel implements ScopedRelationshipInterfa
      */
     public function getJsonCols(): array
     {
-        return [
-            'meta'
-        ];
+        return $this->tenantUsersModel->getJsonCols();
     }
 
     /**

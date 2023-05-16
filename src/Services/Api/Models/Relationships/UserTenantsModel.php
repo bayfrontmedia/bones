@@ -40,15 +40,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
      */
     public function getSelectableCols(): array
     {
-        return [
-            'id' => 'BIN_TO_UUID(api_tenants.id, 1) as id',
-            'owner' => 'BIN_TO_UUID(api_tenants.owner, 1) as owner',
-            'name' => 'name',
-            'meta' => 'meta',
-            'enabled' => 'enabled',
-            'createdAt' => 'createdAt',
-            'updatedAt' => 'updatedAt'
-        ];
+        return $this->tenantsModel->getSelectableCols();
     }
 
     /**
@@ -56,9 +48,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
      */
     public function getJsonCols(): array
     {
-        return [
-            'meta'
-        ];
+        return $this->tenantsModel->getJsonCols();
     }
 
     /**
