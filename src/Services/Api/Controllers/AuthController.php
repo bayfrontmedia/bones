@@ -103,10 +103,8 @@ class AuthController extends AuthApiController
 
         } catch (ForbiddenException $e) {
             App::abort(403, $e->getMessage());
-        } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
-        } catch (UnauthorizedException $e) {
-            App::abort(401, $e->getMessage());
+        } catch (NotFoundException|UnauthorizedException) {
+            App::abort(401, 'Invalid email and / or password');
         }
 
         $this->returnAuthResource($user['id']);
@@ -140,10 +138,8 @@ class AuthController extends AuthApiController
 
         } catch (ForbiddenException $e) {
             App::abort(403, $e->getMessage());
-        } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
-        } catch (UnauthorizedException $e) {
-            App::abort(401, $e->getMessage());
+        } catch (NotFoundException|UnauthorizedException) {
+            App::abort(401, 'Token is invalid or has expired');
         }
 
         $this->returnAuthResource($user['id']);
