@@ -4,7 +4,6 @@ namespace Bayfront\Bones\Services\Api\Models;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
@@ -21,6 +20,7 @@ class UserModel extends ApiModel
 
     protected UsersModel $usersModel;
     protected UserMetaModel $userMetaModel;
+    protected TenantUsersModel $tenantUsersModel;
 
     private string $user_id;
     private array $user;
@@ -31,14 +31,16 @@ class UserModel extends ApiModel
      * @param Logger $log
      * @param UsersModel $usersModel
      * @param UserMetaModel $userMetaModel
+     * @param TenantUsersModel $tenantUsersModel
      * @param string $user_id
      * @param bool $skip_log (Skip api.user.read logs and events - used when a user authenticates)
      * @throws NotFoundException
      */
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, string $user_id, bool $skip_log = false)
+    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel, string $user_id, bool $skip_log = false)
     {
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
+        $this->tenantUsersModel = $tenantUsersModel;
 
         $this->user_id = $user_id;
 
@@ -73,14 +75,15 @@ class UserModel extends ApiModel
     
     // -------------------------User meta -------------------------
 
-    /*
-     * TODO:
-     * Can remove UserMetaModel if not needed here,
-     * although it will most likely be used often by the app.
-     */
-
     private static array $meta = [];
 
+    /**
+     * Get value of single user meta or false if not existing.
+     * This method includes protected meta.
+     *
+     * @param string $id
+     * @return mixed
+     */
     public function getMetaValue(string $id): mixed
     {
 
@@ -88,7 +91,7 @@ class UserModel extends ApiModel
             return self::$meta[$id];
         }
 
-        self::$meta[$id] = $this->userMetaModel->getValue($this->getId(), $id);
+        self::$meta[$id] = $this->userMetaModel->getValue($this->getId(), $id, true);
 
         return self::$meta[$id];
 
@@ -98,17 +101,26 @@ class UserModel extends ApiModel
 
     private static array $permissions = [];
 
+    /**
+     * Return array of all global and tenant user permission names.
+     *
+     * @param string $tenant_id
+     * @return array
+     */
     public function getPermissions(string $tenant_id): array
     {
 
         if (!isset(self::$permissions[$tenant_id])) {
 
-            /**
-             * @var TenantUsersModel $tenantUsersModel
-             */
-            $tenantUsersModel = App::make('Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel');
+            $global = $this->getMetaValue('00-global-permissions');
 
-            self::$permissions[$tenant_id] = $tenantUsersModel->getPermissionNames($tenant_id, $this->getId());
+            if (!$global) {
+                $global = [];
+            } else {
+                $global = json_decode($global, true);
+            }
+
+            self::$permissions[$tenant_id] = array_merge($this->tenantUsersModel->getPermissionNames($tenant_id, $this->getId()), $global);
 
         }
 
@@ -117,7 +129,7 @@ class UserModel extends ApiModel
     }
 
     /**
-     * Does user have all permissions?
+     * Does user have all global and tenant permissions?
      *
      * @param string $tenant_id
      * @param array $permissions
@@ -129,7 +141,7 @@ class UserModel extends ApiModel
     }
 
     /**
-     * Does user have any permissions?
+     * Does user have any global and tenant permissions?
      *
      * @param string $tenant_id
      * @param array $permissions
@@ -139,9 +151,5 @@ class UserModel extends ApiModel
     {
         return Arr::hasAnyValues($this->getPermissions($tenant_id), $permissions);
     }
-
-
-
-
 
 }
