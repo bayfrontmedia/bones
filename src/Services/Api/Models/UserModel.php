@@ -4,8 +4,10 @@ namespace Bayfront\Bones\Services\Api\Models;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
+use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\PDO\Db;
@@ -90,6 +92,52 @@ class UserModel extends ApiModel
 
         return self::$meta[$id];
 
+    }
+
+    // ------------------------- Tenant permissions -------------------------
+
+    private static array $permissions = [];
+
+    public function getPermissions(string $tenant_id): array
+    {
+
+        if (!isset(self::$permissions[$tenant_id])) {
+
+            /**
+             * @var TenantUsersModel $tenantUsersModel
+             */
+            $tenantUsersModel = App::make('Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel');
+
+            self::$permissions[$tenant_id] = $tenantUsersModel->getPermissionNames($tenant_id, $this->getId());
+
+        }
+
+        return self::$permissions[$tenant_id];
+
+    }
+
+    /**
+     * Does user have all permissions?
+     *
+     * @param string $tenant_id
+     * @param array $permissions
+     * @return bool
+     */
+    public function hasAllPermissions(string $tenant_id, array $permissions): bool
+    {
+        return Arr::hasAllValues($this->getPermissions($tenant_id), $permissions);
+    }
+
+    /**
+     * Does user have any permissions?
+     *
+     * @param string $tenant_id
+     * @param array $permissions
+     * @return bool
+     */
+    public function hasAnyPermissions(string $tenant_id, array $permissions): bool
+    {
+        return Arr::hasAnyValues($this->getPermissions($tenant_id), $permissions);
     }
 
 

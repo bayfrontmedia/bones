@@ -11,6 +11,7 @@ use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
@@ -26,11 +27,13 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
     protected TenantsModel $tenantsModel;
     protected UsersModel $usersModel;
+    protected TenantPermissionsModel $tenantPermissionsModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel, TenantPermissionsModel $tenantPermissionsModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;
+        $this->tenantPermissionsModel = $tenantPermissionsModel;
 
         parent::__construct($events, $db, $log);
     }
@@ -98,6 +101,167 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(userId, 1) as userId FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'tenant_id' => $tenant_id
         ]), 'userId');
+
+    }
+
+    /**
+     * Get tenant user permission collection.
+     *
+     * If either the tenant or user is disabled, no permissions are returned.
+     *
+     * @param string $tenant_id
+     * @param string $user_id
+     * @param array $args
+     * @return array
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function getPermissionCollection(string $tenant_id, string $user_id, array $args = []): array
+    {
+
+        if (empty($args['select'])) {
+            $args['select'][] = '*';
+        } else {
+            $args['select'] = array_merge($args['select'], ['id']); // Force return ID
+        }
+
+        // Check tenant has user
+
+        if (!$this->has($tenant_id, $user_id)) {
+
+            $msg = 'Unable to get tenant user permission collection';
+            $reason = 'Tenant and / or user does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $tenant_id,
+                'user_id' => $user_id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Check tenant and user are enabled
+
+        if (!$this->tenantsModel->isEnabled($tenant_id)
+            || !$this->usersModel->isEnabled($user_id)) {
+
+            return $this->returnEmptyCollection($args, $args['limit']);
+
+        }
+
+        if ($this->isOwner($tenant_id, $user_id)) { // Owner inherits all tenant permissions
+
+            return $this->tenantPermissionsModel->getCollection($tenant_id, $args);
+
+        }
+
+        /*
+         * Get all user roles
+         *
+         * Mimic tenantUserRolesModel->getAllIds()
+         */
+
+        $roles = Arr::pluck($this->db->select("SELECT BIN_TO_UUID(roleId, 1) as roleId FROM api_tenant_user_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)", [
+            'tenant_id' => $tenant_id,
+            'user_id' => $user_id
+        ]), 'roleId');
+
+        if (empty($roles)) { // No roles
+            return $this->returnEmptyCollection($args, $args['limit']);
+        }
+
+        // Query
+
+        $query = $this->startNewQuery();
+
+        try {
+
+            $query->table('api_tenant_permissions')
+                ->leftJoin('api_tenant_role_permissions', 'api_tenant_permissions.id', 'api_tenant_role_permissions.permissionId')
+                ->where('api_tenant_role_permissions.tenantId', 'eq', "UUID_TO_BIN('" . $tenant_id . "', 1)")
+                ->where('BIN_TO_UUID(api_tenant_role_permissions.roleId, 1)', 'in', implode(',', $roles));
+
+        } catch (QueryException $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        try {
+
+            $results = $this->queryCollection($query, $args, $this->tenantPermissionsModel->getSelectableCols(), 'name', $args['limit'], $this->tenantPermissionsModel->getJsonCols());
+
+        } catch (BadRequestException $e) {
+
+            $msg = 'Unable to get tenant user permission collection';
+
+            $this->log->notice($msg, [
+                'reason' => $e->getMessage(),
+                'tenant_id' => $tenant_id,
+                'user_id' => $user_id
+            ]);
+
+            throw $e;
+
+        }
+
+        // Log
+
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('Tenant user permissions read', [
+                'tenant_id' => $tenant_id,
+                'user_id' => $user_id,
+                'permission_ids' => Arr::pluck($results['data'], 'id')
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.tenant.user.permissions.read', $tenant_id, $user_id, Arr::pluck($results['data'], 'id'));
+
+        return $results;
+
+    }
+
+    /**
+     * Return array of all tenant user permission names.
+     *
+     * @param string $tenant_id
+     * @param string $user_id
+     * @return array
+     */
+    public function getPermissionNames(string $tenant_id, string $user_id): array
+    {
+
+        if (!$this->has($tenant_id, $user_id)
+            || !$this->tenantsModel->isEnabled($tenant_id)
+            || !$this->usersModel->isEnabled($user_id)) {
+            return [];
+        }
+
+        if ($this->isOwner($tenant_id, $user_id)) { // Owner inherits all tenant permissions
+
+            return $this->tenantPermissionsModel->getAllNames($tenant_id);
+
+        }
+
+        $roles = Arr::pluck($this->db->select("SELECT BIN_TO_UUID(roleId, 1) as roleId FROM api_tenant_user_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND userId = UUID_TO_BIN(:user_id, 1)", [
+            'tenant_id' => $tenant_id,
+            'user_id' => $user_id
+        ]), 'roleId');
+
+        if (empty($roles)) { // No roles
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT atp.name FROM api_tenant_permissions AS atp LEFT JOIN api_tenant_role_permissions AS atrp ON atp.id = atrp.permissionId 
+                WHERE atrp.tenantId = UUID_TO_BIN(:tenant_id, 1) AND BIN_TO_UUID(atrp.roleId, 1) IN (:role_ids) ORDER BY atp.name", [
+            'tenant_id' => $tenant_id,
+            'role_ids' => implode(',', $roles)
+        ]), 'name');
 
     }
 

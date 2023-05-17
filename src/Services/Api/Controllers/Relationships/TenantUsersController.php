@@ -14,6 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
+use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersCollection;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
@@ -123,6 +124,42 @@ class TenantUsersController extends PrivateApiController implements Relationship
         }
 
         $this->response->setStatusCode(204)->send();
+
+    }
+
+    /**
+     * Get tenant user permission collection.
+     *
+     * @param array $args
+     * @return void
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
+     */
+    public function getPermissionCollection(array $args): void
+    {
+
+        $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
+
+        try {
+
+            $results = $this->tenantUsersModel->getPermissionCollection($args['tenant_id'], $args['user_id'], $query);
+
+        } catch (BadRequestException $e) {
+            App::abort(400, $e->getMessage());
+        } catch (NotFoundException $e) {
+            App::abort(404, $e->getMessage());
+        }
+
+        $schema = TenantPermissionsCollection::create($results, [
+            'tenant_id' => $args['tenant_id'],
+            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/permissions',
+            'query_string' => Request::getQuery()
+        ]);
+
+        $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
 
     }
 

@@ -243,6 +243,34 @@ abstract class ApiModel extends Model
     }
 
     /**
+     * Return a mock empty collection from queryCollection method.
+     *
+     * @param array $args
+     * @param int $max_size
+     * @return array
+     */
+    protected function returnEmptyCollection(array $args, int $max_size): array
+    {
+
+        // limit & offset
+
+        $limit = ceil(min(Arr::get($args, 'limit', $max_size), $max_size));
+        $offset = ceil(min(Arr::get($args, 'offset', 0), $max_size));
+
+        return [
+            'data' => [],
+            'meta' => [
+                'count' => 0,
+                'total' => 0,
+                'pages' => 0,
+                'pageSize' => $limit,
+                'pageNumber' => floor(($offset / $limit) + 1)
+            ]
+        ];
+
+    }
+
+    /**
      * Query a single row using a query builder.
      *
      * See: https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md

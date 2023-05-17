@@ -72,6 +72,26 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
     }
 
     /**
+     * Get all permission names for tenant role.
+     *
+     * @param string $scoped_id
+     * @param string $resource_id
+     * @return array
+     */
+    public function getAllNames(string $scoped_id, string $resource_id): array
+    {
+
+        if (!Validate::uuid($scoped_id) || !Validate::uuid($resource_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT name FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $scoped_id
+        ]), 'name');
+
+    }
+
+    /**
      * Does role have permission?
      *
      * @param string $scoped_id
