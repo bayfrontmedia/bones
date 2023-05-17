@@ -123,43 +123,54 @@ class UserModel extends ApiModel
 
     // ------------------------- Tenant permissions -------------------------
 
+    private static array $global_permissions = [];
     private static array $permissions = [];
 
     /**
      * Return array of all global and tenant user permission names.
      *
-     * @param string $tenant_id
+     * @param string $tenant_id (Leaving blank will return only global permissions)
      * @return array
      */
-    public function getPermissions(string $tenant_id): array
+    public function getPermissions(string $tenant_id = ''): array
     {
 
-        if (!isset(self::$permissions[$tenant_id])) {
+        // Global permissions
 
-            $global = $this->getMetaValue('00-global-permissions');
+        if (empty(self::$global_permissions)) {
 
-            if (!$global) {
-                $global = [];
+            $gp = $this->getMetaValue('00-global-permissions');
+
+            if (!$gp) {
+                self::$global_permissions = [];
             } else {
-                $global = json_decode($global, true);
+                self::$global_permissions = json_decode($gp, true);
             }
-
-            self::$permissions[$tenant_id] = array_merge($this->tenantUsersModel->getPermissionNames($tenant_id, $this->getId()), $global);
 
         }
 
-        return self::$permissions[$tenant_id];
+        if ($tenant_id == '') {
+            return self::$global_permissions;
+        }
+
+        // Tenant permissions
+
+        if (!isset(self::$permissions[$tenant_id])) {
+            self::$permissions[$tenant_id] = $this->tenantUsersModel->getPermissionNames($tenant_id, $this->getId());
+        }
+
+        return array_merge(self::$permissions[$tenant_id], self::$global_permissions);
 
     }
 
     /**
      * Does user have all global and tenant permissions?
      *
-     * @param string $tenant_id
      * @param array $permissions
+     * @param string $tenant_id
      * @return bool
      */
-    public function hasAllPermissions(string $tenant_id, array $permissions): bool
+    public function hasAllPermissions(array $permissions, string $tenant_id = ''): bool
     {
         return Arr::hasAllValues($this->getPermissions($tenant_id), $permissions);
     }
@@ -167,11 +178,11 @@ class UserModel extends ApiModel
     /**
      * Does user have any global and tenant permissions?
      *
-     * @param string $tenant_id
      * @param array $permissions
+     * @param string $tenant_id
      * @return bool
      */
-    public function hasAnyPermissions(string $tenant_id, array $permissions): bool
+    public function hasAnyPermissions(array $permissions, string $tenant_id = ''): bool
     {
         return Arr::hasAnyValues($this->getPermissions($tenant_id), $permissions);
     }

@@ -172,17 +172,17 @@ abstract class PrivateApiController extends ApiController
     /**
      * User has all global and tenant permissions or abort.
      *
-     * @param string $tenant_id
      * @param array $permissions
+     * @param string $tenant_id
      * @return void
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
      */
-    public function canDoAll(string $tenant_id, array $permissions): void
+    public function canDoAllOrAbort(array $permissions, string $tenant_id = ''): void
     {
 
-        if (!$this->user->hasAllPermissions($tenant_id, $permissions)) {
+        if (!$this->user->hasAllPermissions($permissions, $tenant_id)) {
             App::abort(403);
         }
 
@@ -191,17 +191,17 @@ abstract class PrivateApiController extends ApiController
     /**
      * User has any global and tenant permissions or abort.
      *
-     * @param string $tenant_id
      * @param array $permissions
+     * @param string $tenant_id
      * @return void
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
      */
-    public function canDoAny(string $tenant_id, array $permissions): void
+    public function canDoAnyOrAbort(array $permissions, string $tenant_id = ''): void
     {
 
-        if (!$this->user->hasAnyPermissions($tenant_id, $permissions)) {
+        if (!$this->user->hasAnyPermissions($permissions, $tenant_id)) {
             App::abort(403);
         }
 
