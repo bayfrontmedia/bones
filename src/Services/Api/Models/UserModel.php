@@ -97,6 +97,30 @@ class UserModel extends ApiModel
 
     }
 
+    // ------------------------- Tenant -------------------------
+
+    /**
+     * Is user in tenant?
+     *
+     * @param string $tenant_id
+     * @return bool
+     */
+    public function inTenant(string $tenant_id): bool
+    {
+        return $this->tenantUsersModel->has($tenant_id, $this->getId());
+    }
+
+    /**
+     * Does user own tenant?
+     *
+     * @param string $tenant_id
+     * @return bool
+     */
+    public function ownsTenant(string $tenant_id): bool
+    {
+        return $this->tenantUsersModel->isOwner($tenant_id, $this->getId());
+    }
+
     // ------------------------- Tenant permissions -------------------------
 
     private static array $permissions = [];
