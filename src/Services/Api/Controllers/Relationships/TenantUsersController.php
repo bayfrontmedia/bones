@@ -54,6 +54,8 @@ class TenantUsersController extends PrivateApiController implements Relationship
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }

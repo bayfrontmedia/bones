@@ -11,6 +11,7 @@ use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
@@ -27,12 +28,14 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
     protected TenantsModel $tenantsModel;
     protected UsersModel $usersModel;
+    protected TenantMetaModel $tenantMetaModel;
     protected TenantPermissionsModel $tenantPermissionsModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel, TenantPermissionsModel $tenantPermissionsModel)
+    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel, TenantMetaModel $tenantMetaModel, TenantPermissionsModel $tenantPermissionsModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;
+        $this->tenantMetaModel = $tenantMetaModel;
         $this->tenantPermissionsModel = $tenantPermissionsModel;
 
         parent::__construct($events, $db, $log);
@@ -101,6 +104,25 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(userId, 1) as userId FROM api_tenant_users WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
             'tenant_id' => $tenant_id
         ]), 'userId');
+
+    }
+
+    /**
+     * Get maximum number of users allowed in tenant.
+     *
+     * @param string $tenant_id
+     * @return int
+     */
+    public function getTotalAllowed(string $tenant_id): int
+    {
+
+        $max_users = $this->tenantMetaModel->getValue($tenant_id, '00-max-users', true);
+
+        if ($max_users) {
+            return (int)$max_users;
+        }
+
+        return App::getConfig('api.tenants.max_users');
 
     }
 
@@ -333,11 +355,28 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
      * @param array $relationship_ids
      * @return void
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     public function add(string $resource_id, array $relationship_ids): void
     {
+
+        $total_allowed = $this->getTotalAllowed($resource_id);
+
+        if ($this->getCount($resource_id) + count($relationship_ids) > $total_allowed) {
+
+            $msg = 'Unable to add users to tenant';
+            $reason = 'Maximum number of users (' . $total_allowed . ') exceeded';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $resource_id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
 
         // Exists
 

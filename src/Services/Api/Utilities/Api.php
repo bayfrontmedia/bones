@@ -51,7 +51,7 @@ class Api
     {
 
         $this->db->query("DELETE FROM api_user_meta WHERE id = '00-refresh-token' AND updatedAt <= DATE_SUB(NOW(), INTERVAL :max_mins MINUTE)", [
-            'max_mins' => (int)max(array_values(App::getConfig('api.token_duration.refresh')))
+            'max_mins' => (int)max(array_values(App::getConfig('api.duration.refresh_token')))
         ]);
 
         return $this->db->rowCount();

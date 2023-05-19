@@ -357,7 +357,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         $attrs['roleId'] = $this->UUIDtoBIN($attrs['roleId']);
 
         $attrs['tenantId'] = $this->UUIDtoBIN($scoped_id);
-        $attrs['expiresAt'] = date('Y-m-d H:i:s', time() + (App::getConfig('api.invitation_duration') * 60)); // Convert seconds to minutes
+        $attrs['expiresAt'] = date('Y-m-d H:i:s', time() + (App::getConfig('api.duration.invitation') * 60)); // Convert seconds to minutes
 
         $this->db->insert('api_tenant_invitations', $attrs);
 

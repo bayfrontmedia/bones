@@ -30,6 +30,20 @@ abstract class AuthApiController extends ApiController
 
         $this->initApi();
 
+        // Restrict domains
+
+        if (!empty(App::getConfig('api.auth.domains'))
+            && !in_array(Request::getReferer(), App::getConfig('api.auth.domains'))) {
+            App::abort(403, 'Domain not allowed');
+        }
+
+        // Restrict IPs
+
+        if (!empty(App::getConfig('api.auth.ips'))
+            && !in_array(Request::getIp(), App::getConfig('api.auth.ips'))) {
+            App::abort(403, 'IP not allowed');
+        }
+
         $this->rateLimitOrAbort(md5('auth-' . Request::getIp()), App::getConfig('api.rate_limit.auth'));
     }
 
