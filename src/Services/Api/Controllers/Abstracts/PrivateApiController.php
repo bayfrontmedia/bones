@@ -11,7 +11,6 @@ use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
 use Bayfront\Bones\Services\Api\Models\UserModel;
-use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -38,13 +37,9 @@ abstract class PrivateApiController extends ApiController
 
         $this->initApi();
 
-        $this->user = $this->validateCredentialsOrAbort();
-
-        $events->doEvent('api.auth', $this->user->getId());
+        $this->user = $this->authenticateUserOrAbort();
 
         $this->rateLimitOrAbort(md5('private-' . $this->user->getId()), $this->user_rate_limit);
-
-        $events->doEvent('api.controller', $this);
     }
 
     /*
@@ -55,7 +50,7 @@ abstract class PrivateApiController extends ApiController
     protected int $user_rate_limit = 0;
 
     /**
-     * Validate user credentials or abort with 401 or 403 status.
+     * Authenticate user credentials or abort with 401 or 403 status.
      * If not validated, an "auth" rate limit attempt is recorded.
      *
      * @return UserModel
@@ -64,20 +59,20 @@ abstract class PrivateApiController extends ApiController
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    private function validateCredentialsOrAbort(): UserModel
+    private function authenticateUserOrAbort(): UserModel
     {
 
         /*
          * Check for enabled authentication methods
          */
 
-        if (Request::hasHeader('Authorization') && in_array(Api::AUTH_TOKEN, App::getConfig('api.auth.methods'))) {
+        if (Request::hasHeader('Authorization')) {
 
-            return $this->validateAccessTokenOrAbort(Request::getHeader('Authorization'));
+            return $this->authenticateWithAccessTokenOrAbort(Request::getHeader('Authorization'));
 
-        } else if (Request::hasHeader('X-Api-Key') && in_array(Api::AUTH_KEY, App::getConfig('api.auth.methods'))) {
+        } else if (Request::hasHeader('X-Api-Key')) {
 
-            return $this->validateUserKeyOrAbort(Request::getHeader('X-Api-Key'));
+            return $this->authenticateWithKeyOrAbort(Request::getHeader('X-Api-Key'));
 
         } else {
 
@@ -90,7 +85,7 @@ abstract class PrivateApiController extends ApiController
     }
 
     /**
-     * Validate access token (JWT) or abort with 401 or 403.
+     * Authenticate with access token (JWT) or abort with 401 or 403.
      *
      * @param string $token
      * @return UserModel
@@ -99,7 +94,7 @@ abstract class PrivateApiController extends ApiController
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    private function validateAccessTokenOrAbort(string $token): UserModel
+    private function authenticateWithAccessTokenOrAbort(string $token): UserModel
     {
 
         try {
@@ -112,7 +107,7 @@ abstract class PrivateApiController extends ApiController
         }
 
         try {
-            $valid = $authModel->validateToken($token);
+            $valid = $authModel->authenticateWithAccessToken($token);
         } catch (ForbiddenException $e) {
             App::abort(403, $e->getMessage());
         } catch (UnauthorizedException $e) {
@@ -126,7 +121,7 @@ abstract class PrivateApiController extends ApiController
     }
 
     /**
-     * Validate user (API) key or abort with 401 or 403.
+     * Authenticate with user (API) key or abort with 401 or 403.
      *
      * @param string $key
      * @return UserModel
@@ -135,7 +130,7 @@ abstract class PrivateApiController extends ApiController
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    private function validateUserKeyOrAbort(string $key): UserModel
+    private function authenticateWithKeyOrAbort(string $key): UserModel
     {
 
         try {
@@ -156,7 +151,7 @@ abstract class PrivateApiController extends ApiController
         }
 
         try {
-            $valid = $authModel->validateKey($key, $referer, Request::getIp('UNKNOWN'));
+            $valid = $authModel->authenticateWithKey($key, $referer, Request::getIp('UNKNOWN'));
         } catch (ForbiddenException $e) {
             App::abort(403, $e->getMessage());
         } catch (UnauthorizedException $e) {

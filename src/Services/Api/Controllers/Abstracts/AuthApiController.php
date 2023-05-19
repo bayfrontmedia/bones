@@ -31,8 +31,6 @@ abstract class AuthApiController extends ApiController
         $this->initApi();
 
         $this->rateLimitOrAbort(md5('auth-' . Request::getIp()), App::getConfig('api.rate_limit.auth'));
-
-        $events->doEvent('api.controller', $this);
     }
 
 }

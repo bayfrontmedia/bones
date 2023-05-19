@@ -39,6 +39,8 @@ abstract class ApiController extends Controller
         $this->response = $response;
 
         parent::__construct($events);
+
+        $events->doEvent('api.controller', $this);
     }
 
     /**

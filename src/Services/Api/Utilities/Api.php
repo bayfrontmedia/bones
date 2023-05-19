@@ -27,10 +27,18 @@ class Api
     public const ACTION_UPDATE = 'update';
     public const ACTION_DELETE = 'delete';
 
-    // Validation methods
+    // Authentication methods
 
-    public const AUTH_TOKEN = 'token';
+    public const AUTH_PASSWORD = 'password';
+    public const AUTH_REFRESH_TOKEN = 'refresh-token';
+    public const AUTH_ACCESS_TOKEN = 'token';
     public const AUTH_KEY = 'key';
+
+    // Permissions
+
+    public const RBAC_PERMISSIONS = [ // TODO
+
+    ];
 
     // ------------------------- Functions -------------------------
 

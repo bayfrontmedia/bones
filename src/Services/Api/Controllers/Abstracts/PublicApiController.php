@@ -26,15 +26,11 @@ abstract class PublicApiController extends ApiController
      */
     public function __construct(EventService $events, FilterService $filters, Response $response)
     {
-
         parent::__construct($events, $filters, $response);
 
         $this->initApi();
 
         $this->rateLimitOrAbort(md5('public-' . Request::getIp()), App::getConfig('api.rate_limit.public'));
-
-        $events->doEvent('api.controller', $this);
-
     }
 
 }

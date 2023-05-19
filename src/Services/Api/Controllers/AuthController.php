@@ -16,6 +16,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
 use Bayfront\Bones\Services\Api\Schemas\AuthResource;
+use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -129,8 +130,6 @@ class AuthController extends AuthApiController
             'accessToken',
             'refreshToken'
         ]);
-
-        // Validate access token
 
         try {
 

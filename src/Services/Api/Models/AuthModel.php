@@ -155,15 +155,309 @@ class AuthModel extends ApiModel
     }
 
     /**
-     * Validate identity with token (JWT), ensuring user exists and is enabled.
+     * Authenticate with email + password.
+     * Returns user.
+     *
+     * @param string $email
+     * @param string $password
+     * @return array
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
+     */
+    public function authenticateWithPassword(string $email, string $password): array
+    {
+
+        if (!in_array(Api::AUTH_PASSWORD, App::getConfig('api.auth.methods'))) {
+
+            $msg = 'Unable to authenticate with password';
+            $reason = 'Authentication with password not allowed';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        try {
+
+            $user = $this->usersModel->getEntireFromEmail($email);
+
+        } catch (NotFoundException) {
+
+            $msg = 'Unable to authenticate with password';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'email' => $email
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        if ($user['enabled'] !== 1) {
+
+            $msg = 'Unable to authenticate with password';
+            $reason = 'User disabled';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'email' => $email
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        if (!$this->verifyPassword($password, $user['salt'], $user['password'])) {
+
+            $msg = 'Unable to authenticate with password';
+            $reason = 'Incorrect password';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'email' => $email
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        if ($user['meta']) {
+            $user['meta'] = json_decode($user['meta'], true);
+        }
+
+        $user = Arr::except($user, [
+            'password',
+            'salt'
+        ]);
+
+        $this->log->info('Successful authentication with password', [
+            'user_id' => $user['id']
+        ]);
+
+        $this->events->doEvent('api.authenticate', $user['id'], Api::AUTH_PASSWORD);
+
+        return $user;
+
+    }
+
+    /**
+     * Authenticate with access + refresh tokens.
+     * Returns user.
+     *
+     * @param string $access_token
+     * @param string $refresh_token
+     * @return array
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
+     * @throws UnexpectedApiException
+     */
+    public function authenticateWithRefreshToken(string $access_token, string $refresh_token): array
+    {
+
+        if (!in_array(Api::AUTH_REFRESH_TOKEN, App::getConfig('api.auth.methods'))) {
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Authentication with refresh token not allowed';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        $jwt = new Jwt(App::getConfig('app.key'));
+
+        try {
+
+            /*
+             * Validate the JWT has not been modified, even if it is expired.
+             * All that is needed is the user ID
+             */
+
+            $token = $jwt->validateSignature($access_token)->decode($access_token, false);
+
+        } catch (TokenException) { // Invalid JWT
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Invalid access token';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Attempt to fetch refresh token
+
+        $existing_refresh_token = $this->userMetaModel->getValue($token['payload']['sub'], '00-refresh-token', true);
+
+        if (!$existing_refresh_token) {
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Refresh token does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Validate refresh token format
+
+        $existing_refresh_token = json_decode($existing_refresh_token, true);
+
+        if (Arr::isMissing($existing_refresh_token, [
+            'token',
+            'expiresAt'
+        ])) {
+
+            // Delete invalid token
+
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Invalid refresh token format';
+
+            $this->log->critical($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnexpectedApiException($msg . ': ' . $reason);
+
+        }
+
+        // Validate refresh token time
+
+        if ($existing_refresh_token['expiresAt'] <= time()) {
+
+            // Delete invalid token
+
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Refresh token is expired';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Validate refresh token value
+
+        try {
+
+            $user = $this->usersModel->getEntire($token['payload']['sub']);
+
+        } catch (NotFoundException) {
+
+            // Delete invalid token
+
+            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'User does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // Validate password
+
+        if (!$this->verifyPassword($refresh_token, $user['salt'], $existing_refresh_token['token'])) {
+
+            // Do not delete token as the token itself is valid
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'Invalid credentials';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new UnauthorizedException($msg . ': ' . $reason);
+
+        }
+
+        // User enabled?
+
+        if (!$user['enabled']) {
+
+            $msg = 'Unable to authenticate with refresh token';
+            $reason = 'User disabled';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'access_token' => $access_token
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        $user = Arr::except($user, [
+            'password',
+            'salt'
+        ]);
+
+        $this->log->info('Successful authentication with refresh token', [
+            'user_id' => $user['id']
+        ]);
+
+
+        $this->events->doEvent('api.authenticate', $user['id'], Api::AUTH_REFRESH_TOKEN);
+
+        return $user;
+
+    }
+
+    /**
+     * Authenticate with access token (JWT), ensuring user exists and is enabled.
      *
      * @param string $token
      * @return array (Keys: user_model, rate_limit)
      * @throws ForbiddenException
      * @throws UnauthorizedException
      */
-    public function validateToken(string $token): array
+    public function authenticateWithAccessToken(string $token): array
     {
+
+        if (!in_array(Api::AUTH_ACCESS_TOKEN, App::getConfig('api.auth.methods'))) {
+
+            $msg = 'Unable to authenticate with access token';
+            $reason = 'Authentication with access token not allowed';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+        }
 
         try {
 
@@ -171,7 +465,7 @@ class AuthModel extends ApiModel
 
         } catch (UnauthorizedException) {
 
-            $msg = 'Unable to validate token';
+            $msg = 'Unable to authenticate with access token';
             $reason = 'Invalid token';
 
             $this->log->notice($msg, [
@@ -191,7 +485,7 @@ class AuthModel extends ApiModel
 
         } catch (NotFoundException) {
 
-            $msg = 'Unable to validate token';
+            $msg = 'Unable to authenticate with access token';
             $reason = 'User does not exist';
 
             $this->log->notice($msg, [
@@ -206,7 +500,7 @@ class AuthModel extends ApiModel
 
         if (!$user->isEnabled()) {
 
-            $msg = 'Unable to validate token';
+            $msg = 'Unable to authenticate with access token';
             $reason = 'User disabled';
 
             $this->log->notice($msg, [
@@ -218,9 +512,13 @@ class AuthModel extends ApiModel
 
         }
 
+        /*
+         * No log on success as this would be done on each PrivateApiController request.
+         */
+
         // Event
 
-        $this->events->doEvent('auth.validate', $user->getId(), Api::AUTH_TOKEN);
+        $this->events->doEvent('api.authenticate', $user->getId(), Api::AUTH_ACCESS_TOKEN);
 
         return [
             'user_model' => $user,
@@ -230,7 +528,7 @@ class AuthModel extends ApiModel
     }
 
     /**
-     * Validate identity with user (API) key, ensuring user exists and is enabled.
+     * Authenticate with user (API) key, ensuring user exists and is enabled.
      *
      * @param string $key
      * @param string $domain
@@ -239,8 +537,20 @@ class AuthModel extends ApiModel
      * @throws ForbiddenException
      * @throws UnauthorizedException
      */
-    public function validateKey(string $key, string $domain = '', string $ip = ''): array
+    public function authenticateWithKey(string $key, string $domain = '', string $ip = ''): array
     {
+
+        if (!in_array(Api::AUTH_KEY, App::getConfig('api.auth.methods'))) {
+
+            $msg = 'Unable to authenticate with key';
+            $reason = 'Authentication with key not allowed';
+
+            $this->log->notice($msg, [
+                'reason' => $reason
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+        }
 
         $id_short = substr($key, 0, 7);
 
@@ -253,7 +563,7 @@ class AuthModel extends ApiModel
 
         if (!$valid_key) {
 
-            $msg = 'Unable to validate key';
+            $msg = 'Unable to authenticate with key';
             $reason = 'Key does not exist';
 
             $this->log->notice($msg, [
@@ -274,7 +584,7 @@ class AuthModel extends ApiModel
 
         } catch (NotFoundException) {
 
-            $msg = 'Unable to validate key';
+            $msg = 'Unable to authenticate with key';
             $reason = 'User does not exist';
 
             $this->log->notice($msg, [
@@ -298,7 +608,7 @@ class AuthModel extends ApiModel
 
         if (!$user->isEnabled()) {
 
-            $msg = 'Unable to validate key';
+            $msg = 'Unable to authenticate with key';
             $reason = 'User disabled';
 
             $this->log->notice($msg, [
@@ -318,7 +628,7 @@ class AuthModel extends ApiModel
 
             if (!in_array($domain, $domains)) {
 
-                $msg = 'Unable to validate key';
+                $msg = 'Unable to authenticate with key';
                 $reason = 'Invalid domain';
 
                 $this->log->notice($msg, [
@@ -340,7 +650,7 @@ class AuthModel extends ApiModel
 
             if (!in_array($ip, $ips)) {
 
-                $msg = 'Unable to validate key';
+                $msg = 'Unable to authenticate with key';
                 $reason = 'Invalid IP';
 
                 $this->log->notice($msg, [
@@ -374,7 +684,11 @@ class AuthModel extends ApiModel
 
             }
 
-            $this->events->doEvent('auth.validate', $user->getId(), Api::AUTH_KEY);
+            /*
+             * No log on success as this would be done on each PrivateApiController request.
+             */
+
+            $this->events->doEvent('api.authenticate', $user->getId(), Api::AUTH_KEY);
 
             return [
                 'user_model' => $user,
@@ -383,7 +697,7 @@ class AuthModel extends ApiModel
 
         }
 
-        $msg = 'Unable to validate key';
+        $msg = 'Unable to authenticate with key';
         $reason = 'Invalid key';
 
         $this->log->notice($msg, [
@@ -392,262 +706,6 @@ class AuthModel extends ApiModel
         ]);
 
         throw new UnauthorizedException($msg . ': ' . $reason);
-
-    }
-
-    /**
-     * Authenticate with email + password.
-     * Returns user.
-     *
-     * @param string $email
-     * @param string $password
-     * @return array
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     * @throws UnauthorizedException
-     */
-    public function authenticateWithPassword(string $email, string $password): array
-    {
-
-        try {
-
-            $user = $this->usersModel->getEntireFromEmail($email);
-
-        } catch (NotFoundException) {
-
-            $msg = 'Unsuccessful authentication with password';
-            $reason = 'User does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'email' => $email
-            ]);
-
-            throw new NotFoundException($msg . ': ' . $reason);
-
-        }
-
-        if ($user['enabled'] !== 1) {
-
-            $msg = 'Unsuccessful authentication with password';
-            $reason = 'User disabled';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'email' => $email
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
-
-        }
-
-        if (!$this->verifyPassword($password, $user['salt'], $user['password'])) {
-
-            $msg = 'Unsuccessful authentication with password';
-            $reason = 'Incorrect password';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'email' => $email
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        if ($user['meta']) {
-            $user['meta'] = json_decode($user['meta'], true);
-        }
-
-        $user = Arr::except($user, [
-            'password',
-            'salt'
-        ]);
-
-        $this->log->info('Successful authentication with password', [
-            'email' => $email,
-            'user_id' => $user['id'],
-        ]);
-
-        $this->events->doEvent('auth.success', $user, 'password');
-
-        return $user;
-
-    }
-
-    /**
-     * Authenticate with access + refresh tokens.
-     * Returns user.
-     *
-     * @param string $access_token
-     * @param string $refresh_token
-     * @return array
-     * @throws ForbiddenException
-     * @throws NotFoundException
-     * @throws UnauthorizedException
-     * @throws UnexpectedApiException
-     */
-    public function authenticateWithRefreshToken(string $access_token, string $refresh_token): array
-    {
-
-        $jwt = new Jwt(App::getConfig('app.key'));
-
-        try {
-
-            /*
-             * Validate the JWT has not been modified, even if it is expired.
-             * All that is needed is the user ID
-             */
-
-            $token = $jwt->validateSignature($access_token)->decode($access_token, false);
-
-        } catch (TokenException) { // Invalid JWT
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'Invalid access token';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        // Attempt to fetch refresh token
-
-        $existing_refresh_token = $this->userMetaModel->getValue($token['payload']['sub'], '00-refresh-token', true);
-
-        if (!$existing_refresh_token) {
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'Refresh token does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        // Validate refresh token format
-
-        $existing_refresh_token = json_decode($existing_refresh_token, true);
-
-        if (Arr::isMissing($existing_refresh_token, [
-            'token',
-            'expiresAt'
-        ])) {
-
-            // Delete invalid token
-
-            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'Invalid refresh token format';
-
-            $this->log->critical($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnexpectedApiException($msg . ': ' . $reason);
-
-        }
-
-        // Validate refresh token time
-
-        if ($existing_refresh_token['expiresAt'] <= time()) {
-
-            // Delete invalid token
-
-            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'Refresh token is expired';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        // Validate refresh token value
-
-        try {
-
-            $user = $this->usersModel->getEntire($token['payload']['sub']);
-
-        } catch (NotFoundException) {
-
-            // Delete invalid token
-
-            $this->userMetaModel->delete($token['payload']['sub'], '00-refresh-token', true);
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'User does not exist';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        // Validate password
-
-        if (!$this->verifyPassword($refresh_token, $user['salt'], $existing_refresh_token['token'])) {
-
-            // Do not delete token as the token itself is valid
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'Invalid credentials';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new UnauthorizedException($msg . ': ' . $reason);
-
-        }
-
-        // User enabled?
-
-        if (!$user['enabled']) {
-
-            $msg = 'Unsuccessful authentication with token';
-            $reason = 'User disabled';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'access_token' => $access_token
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
-
-        }
-
-        $user = Arr::except($user, [
-            'password',
-            'salt'
-        ]);
-
-        $this->log->info('Successful authentication with token', [
-            'user_id' => $user['id'],
-        ]);
-
-        $this->events->doEvent('auth.success', $user, 'token');
-
-        return $user;
 
     }
 
