@@ -362,22 +362,6 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     public function add(string $resource_id, array $relationship_ids): void
     {
 
-        $total_allowed = $this->getTotalAllowed($resource_id);
-
-        if ($this->getCount($resource_id) + count($relationship_ids) > $total_allowed) {
-
-            $msg = 'Unable to add users to tenant';
-            $reason = 'Maximum number of users (' . $total_allowed . ') exceeded';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'tenant_id' => $resource_id
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
-
-        }
-
         // Exists
 
         if (!$this->tenantsModel->idExists($resource_id)) {
@@ -391,6 +375,24 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Check max allowed values
+
+        $total_allowed = $this->getTotalAllowed($resource_id);
+
+        if ($this->getCount($resource_id) + count($relationship_ids) > $total_allowed) {
+
+            $msg = 'Unable to add users to tenant';
+            $reason = 'Maximum number of allowed users (' . $total_allowed . ') exceeded';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $resource_id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
 
         }
 

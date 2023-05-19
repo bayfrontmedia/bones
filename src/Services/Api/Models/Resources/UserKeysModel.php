@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
@@ -157,7 +158,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         if (!Validate::date($expires_at)
             || $time <= time()
-            || $time >= time() + (60 * 60 * 24 * App::getConfig('api.auth.max_key_duration'))) {
+            || $time >= time() + (60 * 60 * 24 * App::getConfig('api.keys.max_duration'))) {
             return false;
         }
 
@@ -173,6 +174,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
      * @param array $attrs
      * @return string
      * @throws BadRequestException
+     * @throws ForbiddenException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
@@ -251,6 +253,52 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
             $msg = 'Unable to create user key';
             $reason = 'Invalid attribute type(s)';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id
+            ]);
+
+            throw new BadRequestException($msg . ': ' . $reason);
+
+        }
+
+        // Check max allowed values
+
+        if ($this->getCount($scoped_id) >= App::getConfig('api.keys.total')) {
+
+            $msg = 'Unable to create user key';
+            $reason = 'Maximum number of allowed user keys (' . App::getConfig('api.keys.total') . ') exceeded';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
+
+        if (isset($attrs['allowedDomains'])
+            && count($attrs['allowedDomains']) > App::getConfig('api.keys.domains')) {
+
+            $msg = 'Unable to create user key';
+            $reason = 'Maximum number of allowed domains (' . App::getConfig('api.keys.domains') . ') exceeded';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id
+            ]);
+
+            throw new BadRequestException($msg . ': ' . $reason);
+
+        }
+
+        if (isset($attrs['allowedIps'])
+            && count($attrs['allowedIps']) > App::getConfig('api.keys.ips')) {
+
+            $msg = 'Unable to create user key';
+            $reason = 'Maximum number of allowed IPs (' . App::getConfig('api.keys.ips') . ') exceeded';
 
             $this->log->notice($msg, [
                 'reason' => $reason,

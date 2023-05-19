@@ -10,6 +10,7 @@ use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\UserKeysModel;
@@ -57,6 +58,8 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
