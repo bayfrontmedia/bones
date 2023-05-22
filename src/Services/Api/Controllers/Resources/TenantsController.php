@@ -166,7 +166,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
         if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'tenants.update'
-            ]) && !$this->user->ownsTenant($args['user_id'])) {
+            ]) && !$this->user->ownsTenant($args['tenant_id'])) {
             App::abort(403);
         }
 
@@ -197,9 +197,6 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     /**
      * Delete tenant.
      *
-     * TODO:
-     * Add api config to allow/deny ability for owners to delete tenant..?
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -212,7 +209,9 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
         if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'tenants.delete'
-            ]) && !$this->user->ownsTenant($args['user_id'])) {
+            ]) && (!$this->user->ownsTenant($args['user_id']) || !$this->user->hasAllPermissions([
+                    'tenant.delete'
+                ], $args['tenant_id']))) {
             App::abort(403);
         }
 
