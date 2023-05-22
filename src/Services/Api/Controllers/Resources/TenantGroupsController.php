@@ -96,7 +96,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
         $this->canDoAnyOrAbort([
             'global.admin',
             'tenants.groups.read',
-            'tenant.group.read'
+            'tenant.groups.read'
         ], $args['tenant_id']);
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantGroups');
@@ -178,7 +178,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
         $this->canDoAnyOrAbort([
             'global.admin',
             'tenants.groups.update',
-            'tenant.group.update'
+            'tenant.groups.update'
         ], $args['tenant_id']);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantGroups', [], $this->tenantGroupsModel->getAllowedAttrs());
@@ -220,7 +220,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
         $this->canDoAnyOrAbort([
             'global.admin',
             'tenants.groups.delete',
-            'tenant.group.delete'
+            'tenant.groups.delete'
         ], $args['tenant_id']);
 
         try {

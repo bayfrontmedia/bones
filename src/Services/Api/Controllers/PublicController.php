@@ -71,12 +71,7 @@ class PublicController extends PublicApiController
          * or use API config
          */
 
-        $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), [
-            'email',
-            'password',
-            'meta',
-            //'enabled'
-        ]);
+        $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), $this->usersModel->getAllowedAttrs());
 
         try {
 
