@@ -45,6 +45,12 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
     public function create(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.invitations.create',
+            'tenant.invitations.create'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantInvitations', $this->tenantInvitationsModel->getRequiredAttrs(), $this->tenantInvitationsModel->getAllowedAttrs());
 
         try {
@@ -85,6 +91,12 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
     public function getCollection(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.invitations.read',
+            'tenant.invitations.read'
+        ], $args['tenant_id']);
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantInvitations');
 
         try {
@@ -121,6 +133,12 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
     public function get(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.invitations.read',
+            'tenant.invitations.read'
+        ], $args['tenant_id']);
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantInvitations', array_keys($this->tenantInvitationsModel->getSelectableCols()));
 
         try {
@@ -155,6 +173,12 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
     public function update(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.invitations.update',
+            'tenant.invitations.update'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantInvitations', [], $this->tenantInvitationsModel->getAllowedAttrs());
 
         try {
@@ -188,6 +212,12 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
      */
     public function delete(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.invitations.delete',
+            'tenant.invitations.delete'
+        ], $args['tenant_id']);
 
         try {
 

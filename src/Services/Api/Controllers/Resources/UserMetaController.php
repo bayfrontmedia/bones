@@ -48,13 +48,31 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function create(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.create'
+        ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('userMeta', $this->userMetaModel->getRequiredAttrs(), $this->userMetaModel->getAllowedAttrs());
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.create'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $id = $this->userMetaModel->create($args['user_id'], $attrs);
+            $id = $this->userMetaModel->create($args['user_id'], $attrs, $allow_protected);
 
-            $created = $this->userMetaModel->get($args['user_id'], $id);
+            $created = $this->userMetaModel->get($args['user_id'], $id, [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -90,11 +108,29 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function getCollection(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.meta.read'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'userMeta');
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.read'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $results = $this->userMetaModel->getCollection($args['user_id'], $query);
+            $results = $this->userMetaModel->getCollection($args['user_id'], $query, $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -126,11 +162,29 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function get(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.meta.read'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'userMeta', array_keys($this->userMetaModel->getSelectableCols()));
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.read'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $results = $this->userMetaModel->get($args['user_id'], $args['meta_id'], $fields);
+            $results = $this->userMetaModel->get($args['user_id'], $args['meta_id'], $fields, $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -162,15 +216,33 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function update(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.meta.update'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('userMeta', [], [
             'metaValue'
         ]);
 
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.update'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
+
         try {
 
-            $this->userMetaModel->update($args['user_id'], $args['meta_id'], $attrs);
+            $this->userMetaModel->update($args['user_id'], $args['meta_id'], $attrs, $allow_protected);
 
-            $updated = $this->userMetaModel->get($args['user_id'], $args['meta_id']);
+            $updated = $this->userMetaModel->get($args['user_id'], $args['meta_id'], [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -200,9 +272,27 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
     public function delete(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.meta.delete'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.meta.delete'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
+
         try {
 
-            $this->userMetaModel->delete($args['user_id'], $args['meta_id']);
+            $this->userMetaModel->delete($args['user_id'], $args['meta_id'], $allow_protected);
 
             $this->response->setStatusCode(204)->send();
 

@@ -47,6 +47,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
     public function create(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.roles.create',
+            'tenant.roles.create'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantRoles', $this->tenantRolesModel->getRequiredAttrs(), $this->tenantRolesModel->getAllowedAttrs());
 
         try {
@@ -87,6 +93,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
     public function getCollection(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.roles.read',
+            'tenant.roles.read'
+        ], $args['tenant_id']);
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantRoles');
 
         try {
@@ -123,6 +135,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
     public function get(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.roles.read',
+            'tenant.roles.read'
+        ], $args['tenant_id']);
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantRoles', array_keys($this->tenantRolesModel->getSelectableCols()));
 
         try {
@@ -146,9 +164,6 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
     /**
      * Update tenant role.
      *
-     * TODO:
-     * Check if a default role.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -159,6 +174,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
      */
     public function update(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.roles.update',
+            'tenant.roles.update'
+        ], $args['tenant_id']);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantRoles', [], $this->tenantRolesModel->getAllowedAttrs());
 
@@ -187,9 +208,6 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
     /**
      * Delete tenant role.
      *
-     * TODO:
-     * Check for default permission.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -198,6 +216,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
      */
     public function delete(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.roles.delete',
+            'tenant.roles.delete'
+        ], $args['tenant_id']);
 
         try {
 

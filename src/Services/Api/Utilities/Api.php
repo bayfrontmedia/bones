@@ -36,8 +36,46 @@ class Api
 
     // Permissions
 
-    public const RBAC_PERMISSIONS = [ // TODO
-
+    public const PROTECTED_PERMISSIONS = [ // TODO
+        'tenant.groups.create',
+        'tenant.groups.read',
+        'tenant.groups.update',
+        'tenant.groups.delete',
+        'tenant.invitations.create',
+        'tenant.invitations.read',
+        'tenant.invitations.update',
+        'tenant.invitations.delete',
+        'tenant.meta.create',
+        'tenant.meta.read',
+        'tenant.meta.update',
+        'tenant.meta.delete',
+        'tenant.permissions.create',
+        'tenant.permissions.read',
+        'tenant.permissions.update',
+        'tenant.permissions.delete',
+        'tenant.roles.create',
+        'tenant.roles.read',
+        'tenant.roles.update',
+        'tenant.roles.delete',
+        'tenant.read',
+        'tenant.update',
+        'tenant.user.meta.create',
+        'tenant.user.meta.read',
+        'tenant.user.meta.update',
+        'tenant.user.meta.delete',
+        'tenant.group.users.add',
+        'tenant.group.users.read',
+        'tenant.group.users.remove',
+        'tenant.role.permissions.add',
+        'tenant.role.permissions.read',
+        'tenant.role.permissions.remove',
+        'tenant.user.roles.add',
+        'tenant.user.roles.read',
+        'tenant.user.roles.remove',
+        'tenant.users.add',
+        'tenant.users.read',
+        'tenant.users.remove',
+        'tenant.user.permissions.read'
     ];
 
     // ------------------------- Functions -------------------------

@@ -44,6 +44,12 @@ class TenantGroupUsersController extends PrivateApiController implements Relatio
     public function add(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.group.users.add',
+            'tenant.group.users.add'
+        ], $args['tenant_id']);
+
         $ids = $this->getToManyRelationshipIdsOrAbort('users');
 
         try {
@@ -73,6 +79,12 @@ class TenantGroupUsersController extends PrivateApiController implements Relatio
      */
     public function getCollection(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.group.users.read',
+            'tenant.group.users.read'
+        ], $args['tenant_id']);
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'users');
 
@@ -107,6 +119,12 @@ class TenantGroupUsersController extends PrivateApiController implements Relatio
      */
     public function remove(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.group.users.remove',
+            'tenant.group.users.remove'
+        ], $args['tenant_id']);
 
         $ids = $this->getToManyRelationshipIdsOrAbort('users');
 

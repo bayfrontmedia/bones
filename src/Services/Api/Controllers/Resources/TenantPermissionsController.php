@@ -47,6 +47,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
     public function create(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.permissions.create',
+            'tenant.permissions.create'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', $this->tenantPermissionsModel->getRequiredAttrs(), $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
@@ -87,6 +93,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
     public function getCollection(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.permissions.read',
+            'tenant.permissions.read'
+        ], $args['tenant_id']);
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
 
         try {
@@ -123,6 +135,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
     public function get(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.permissions.read',
+            'tenant.permissions.read'
+        ], $args['tenant_id']);
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantPermissions', array_keys($this->tenantPermissionsModel->getSelectableCols()));
 
         try {
@@ -146,9 +164,6 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
     /**
      * Update tenant permission.
      *
-     * TODO:
-     * Check if a default permission.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -159,6 +174,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
      */
     public function update(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.permissions.update',
+            'tenant.permissions.update'
+        ], $args['tenant_id']);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', [], $this->tenantPermissionsModel->getAllowedAttrs());
 
@@ -187,9 +208,6 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
     /**
      * Delete tenant permission.
      *
-     * TODO:
-     * Check for default permission.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -198,6 +216,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
      */
     public function delete(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.permissions.delete',
+            'tenant.permissions.delete'
+        ], $args['tenant_id']);
 
         try {
 

@@ -48,13 +48,30 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
     public function create(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.meta.create',
+            'tenant.meta.create'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantMeta', $this->tenantMetaModel->getRequiredAttrs(), $this->tenantMetaModel->getAllowedAttrs());
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.meta.create'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $id = $this->tenantMetaModel->create($args['tenant_id'], $attrs);
+            $id = $this->tenantMetaModel->create($args['tenant_id'], $attrs, $allow_protected);
 
-            $created = $this->tenantMetaModel->get($args['tenant_id'], $id);
+            $created = $this->tenantMetaModel->get($args['tenant_id'], $id, [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -90,11 +107,28 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
     public function getCollection(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.meta.read',
+            'tenant.meta.read'
+        ], $args['tenant_id']);
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantMeta');
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.meta.read'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $results = $this->tenantMetaModel->getCollection($args['tenant_id'], $query);
+            $results = $this->tenantMetaModel->getCollection($args['tenant_id'], $query, $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -126,11 +160,28 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
     public function get(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.meta.read',
+            'tenant.meta.read'
+        ], $args['tenant_id']);
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenantMeta', array_keys($this->tenantMetaModel->getSelectableCols()));
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.meta.read'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
 
         try {
 
-            $results = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id'], $fields);
+            $results = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id'], $fields, $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -162,15 +213,32 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
     public function update(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.meta.update',
+            'tenant.meta.update'
+        ], $args['tenant_id']);
+
         $attrs = $this->getResourceAttributesOrAbort('tenantMeta', [], [
             'metaValue'
         ]);
 
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.meta.update'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
+
         try {
 
-            $this->tenantMetaModel->update($args['tenant_id'], $args['meta_id'], $attrs);
+            $this->tenantMetaModel->update($args['tenant_id'], $args['meta_id'], $attrs, $allow_protected);
 
-            $updated = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id']);
+            $updated = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id'], [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -200,9 +268,26 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
     public function delete(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.meta.delete',
+            'tenant.meta.delete'
+        ], $args['tenant_id']);
+
+        // Protected meta
+
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.meta.delete'
+        ])) {
+            $allow_protected = true;
+        } else {
+            $allow_protected = false;
+        }
+
         try {
 
-            $this->tenantMetaModel->delete($args['tenant_id'], $args['meta_id']);
+            $this->tenantMetaModel->delete($args['tenant_id'], $args['meta_id'], $allow_protected);
 
             $this->response->setStatusCode(204)->send();
 

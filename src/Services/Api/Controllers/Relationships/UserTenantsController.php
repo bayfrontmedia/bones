@@ -45,6 +45,21 @@ class UserTenantsController extends PrivateApiController implements Relationship
     public function add(array $args): void
     {
 
+        /*
+         * TODO:
+         * Check if has permission tenant.users.add?
+         * Which permissions are needed to perform this action?
+         */
+
+        /*
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.users.add'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+        */
+
         $ids = $this->getToManyRelationshipIdsOrAbort('tenants');
 
         try {
@@ -75,6 +90,13 @@ class UserTenantsController extends PrivateApiController implements Relationship
      */
     public function getCollection(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.users.read'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenants');
 
@@ -110,6 +132,13 @@ class UserTenantsController extends PrivateApiController implements Relationship
      */
     public function remove(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.users.remove'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         $ids = $this->getToManyRelationshipIdsOrAbort('tenants');
 

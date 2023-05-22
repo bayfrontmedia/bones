@@ -34,9 +34,6 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
     /**
      * Add permissions to tenant role.
      *
-     * TODO:
-     * Check permissions for default roles.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -46,6 +43,12 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
      */
     public function add(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.role.permissions.add',
+            'tenant.role.permissions.add'
+        ], $args['tenant_id']);
 
         $ids = $this->getToManyRelationshipIdsOrAbort('tenantPermissions');
 
@@ -77,6 +80,12 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
     public function getCollection(array $args): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.role.permissions.read',
+            'tenant.role.permissions.read'
+        ], $args['tenant_id']);
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
 
         try {
@@ -102,9 +111,6 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
     /**
      * Remove permissions from tenant role.
      *
-     * TODO:
-     * Check permissions for default role.
-     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -114,6 +120,12 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
      */
     public function remove(array $args): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.role.permissions.remove',
+            'tenant.role.permissions.remove'
+        ], $args['tenant_id']);
 
         $ids = $this->getToManyRelationshipIdsOrAbort('tenantPermissions');
 
