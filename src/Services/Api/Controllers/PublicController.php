@@ -68,7 +68,7 @@ class PublicController extends PublicApiController
         /*
          * TODO:
          * Can control "enabled" with permissions
-         * or use API config
+         * or use API config.
          */
 
         $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), $this->usersModel->getAllowedAttrs());
@@ -157,7 +157,7 @@ class PublicController extends PublicApiController
         /*
          * TODO:
          * Can control "enabled" with permissions
-         * or use API config to set enabled...
+         * or use API config to set enabled.
          */
 
         $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), $this->tenantsModel->getAllowedAttrs());
