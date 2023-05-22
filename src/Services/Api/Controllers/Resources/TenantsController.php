@@ -38,6 +38,10 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     /**
      * Create tenant.
      *
+     * TODO:
+     * Without tenants.create permission, can only create a tenant which belongs
+     * to yourself.
+     *
      * @return void
      * @throws ContainerException
      * @throws ContainerNotFoundException
@@ -71,6 +75,17 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenants');
 
+        // Filter tenants
+
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.read'
+        ])) {
+
+            $query['where']['owner']['eq'] = "UUID_TO_BIN('" . $this->user->getId() . "', 1)";
+
+        }
+
         try {
 
             $results = $this->tenantsModel->getCollection($query);
@@ -101,6 +116,13 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
      */
     public function get(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.read'
+            ]) && !$this->user->inTenant($args['user_id'])) {
+            App::abort(403);
+        }
 
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenants', array_keys($this->tenantsModel->getSelectableCols()));
 
@@ -141,6 +163,13 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
          * Can control "enabled" with permissions
          */
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.update'
+            ]) && !$this->user->ownsTenant($args['user_id'])) {
+            App::abort(403);
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('tenants', [], $this->tenantsModel->getAllowedAttrs());
 
         try {
@@ -168,6 +197,9 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     /**
      * Delete tenant.
      *
+     * TODO:
+     * Add api config to allow/deny ability for owners to delete tenant..?
+     *
      * @param array $args
      * @return void
      * @throws ContainerNotFoundException
@@ -176,6 +208,13 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
      */
     public function delete(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.delete'
+            ]) && !$this->user->ownsTenant($args['user_id'])) {
+            App::abort(403);
+        }
 
         try {
 

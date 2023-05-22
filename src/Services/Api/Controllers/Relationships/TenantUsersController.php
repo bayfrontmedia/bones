@@ -161,11 +161,13 @@ class TenantUsersController extends PrivateApiController implements Relationship
     public function getPermissionCollection(array $args): void
     {
 
-        $this->canDoAnyOrAbort([
-            'global.admin',
-            'tenants.user.permissions.read',
-            'tenant.user.permissions.read'
-        ], $args['tenant_id']);
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.user.permissions.read',
+                'tenant.user.permissions.read'
+            ]) && ($this->user->getId() !== $args['user_id'] || !$this->user->inTenant($args['tenant_id']))) {
+            App::abort(403);
+        }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
 

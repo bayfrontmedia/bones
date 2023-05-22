@@ -45,20 +45,10 @@ class UserTenantsController extends PrivateApiController implements Relationship
     public function add(array $args): void
     {
 
-        /*
-         * TODO:
-         * Check if has permission tenant.users.add?
-         * Which permissions are needed to perform this action?
-         */
-
-        /*
-        if (!$this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.users.add'
-            ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
-        }
-        */
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'tenants.users.add'
+        ]);
 
         $ids = $this->getToManyRelationshipIdsOrAbort('tenants');
 

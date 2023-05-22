@@ -38,6 +38,9 @@ class UsersController extends PrivateApiController implements ResourceInterface
     /**
      * Create user.
      *
+     * TODO:
+     * Require users.create if registration is not public.
+     *
      * @return void
      * @throws ContainerNotFoundException
      * @throws HttpException
@@ -68,6 +71,11 @@ class UsersController extends PrivateApiController implements ResourceInterface
      */
     public function getCollection(): void
     {
+
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'users.read'
+        ]);
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'users');
 
@@ -101,6 +109,13 @@ class UsersController extends PrivateApiController implements ResourceInterface
      */
     public function get(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.read'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'users', array_keys($this->usersModel->getSelectableCols()));
 
@@ -140,6 +155,13 @@ class UsersController extends PrivateApiController implements ResourceInterface
          * TODO:
          * Can control "enabled" with permissions
          */
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.update'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         $attrs = $this->getResourceAttributesOrAbort('users', [], [
             'email',
@@ -181,6 +203,13 @@ class UsersController extends PrivateApiController implements ResourceInterface
      */
     public function delete(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.delete'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         try {
 
