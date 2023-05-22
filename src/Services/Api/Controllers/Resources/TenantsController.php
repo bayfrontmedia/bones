@@ -158,11 +158,6 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     public function update(array $args): void
     {
 
-        /*
-         * TODO:
-         * Can control "enabled" with permissions
-         */
-
         if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'tenants.update'
@@ -174,7 +169,16 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
 
         try {
 
-            $this->tenantsModel->update($args['tenant_id'], $attrs);
+            // Restrict "enabled"
+
+            if ($this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.update'
+            ])) {
+                $this->tenantsModel->update($args['tenant_id'], $attrs, true);
+            } else {
+                $this->tenantsModel->update($args['tenant_id'], $attrs);
+            }
 
             $updated = $this->tenantsModel->get($args['tenant_id']);
 

@@ -151,11 +151,6 @@ class UsersController extends PrivateApiController implements ResourceInterface
     public function update(array $args): void
     {
 
-        /*
-         * TODO:
-         * Can control "enabled" with permissions
-         */
-
         if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'users.update'
@@ -163,16 +158,20 @@ class UsersController extends PrivateApiController implements ResourceInterface
             App::abort(403);
         }
 
-        $attrs = $this->getResourceAttributesOrAbort('users', [], [
-            'email',
-            'password',
-            'meta',
-            //'enabled'
-        ]);
+        $attrs = $this->getResourceAttributesOrAbort('users', [], $this->usersModel->getAllowedAttrs());
 
         try {
 
-            $this->usersModel->update($args['user_id'], $attrs);
+            // Restrict "enabled"
+
+            if ($this->user->hasAnyPermissions([
+                'global.admin',
+                'users.update'
+            ])) {
+                $this->usersModel->update($args['user_id'], $attrs, true);
+            } else {
+                $this->usersModel->update($args['user_id'], $attrs);
+            }
 
             $updated = $this->usersModel->get($args['user_id']);
 
