@@ -49,7 +49,8 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.create'
+            'tenants.permissions.create',
+            'tenant.permissions.create'
         ]);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', $this->tenantPermissionsModel->getRequiredAttrs(), $this->tenantPermissionsModel->getAllowedAttrs());
@@ -175,7 +176,8 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.update'
+            'tenants.permissions.update',
+            'tenant.permissions.update'
         ]);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', [], $this->tenantPermissionsModel->getAllowedAttrs());
@@ -215,7 +217,8 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.delete'
+            'tenants.permissions.delete',
+            'tenant.permissions.delete'
         ]);
 
         try {
