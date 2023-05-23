@@ -14,9 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
-use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
-use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
@@ -27,7 +25,6 @@ class PublicController extends PublicApiController
 {
 
     protected UsersModel $usersModel;
-    protected TenantsModel $tenantsModel;
     protected TenantInvitationsModel $tenantInvitationsModel;
 
     /**
@@ -35,17 +32,15 @@ class PublicController extends PublicApiController
      * @param FilterService $filters
      * @param Response $response
      * @param UsersModel $usersModel
-     * @param TenantsModel $tenantsModel
      * @param TenantInvitationsModel $tenantInvitationsModel
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
      * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel, TenantsModel $tenantsModel, TenantInvitationsModel $tenantInvitationsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, UsersModel $usersModel, TenantInvitationsModel $tenantInvitationsModel)
     {
         $this->usersModel = $usersModel;
-        $this->tenantsModel = $tenantsModel;
         $this->tenantInvitationsModel = $tenantInvitationsModel;
 
         parent::__construct($events, $filters, $response);
@@ -137,49 +132,6 @@ class PublicController extends PublicApiController
         }
 
         App::abort(404);
-
-    }
-
-    /**
-     * Create tenant.
-     *
-     * @return void
-     * @throws ContainerNotFoundException
-     * @throws HttpException
-     * @throws InvalidSchemaException
-     * @throws InvalidStatusCodeException
-     * @throws NotFoundException
-     * @throws UnexpectedApiException
-     */
-    public function createTenant(): void
-    {
-
-        /*
-         * TODO:
-         * Can control "enabled" with permissions
-         * or use API config to set enabled.
-         */
-
-        $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), $this->tenantsModel->getAllowedAttrs());
-
-        try {
-
-            $id = $this->tenantsModel->create($attrs);
-            $created= $this->tenantsModel->get($id);
-
-        } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
-        } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
-        }
-
-        $schema = TenantsResource::create($created, [
-            'tenant_id' => $id
-        ]);
-
-        $this->response->setStatusCode(201)->setHeaders([
-            'Location' => Request::getUrl() . '/' . $id
-        ])->sendJson($this->filters->doFilter('api.response', $schema));
 
     }
 

@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers\Resources;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -9,7 +10,6 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ResourceInterface;
-use Bayfront\Bones\Services\Api\Controllers\PublicController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
@@ -17,7 +17,6 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantsResource;
-use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -38,12 +37,10 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     /**
      * Create tenant.
      *
-     * TODO:
-     * Without tenants.create permission, can only create a tenant which belongs
-     * to yourself.
+     * If registration is open, "enabled" field is not allowed,
+     * as all tenants are enabled by default.
      *
      * @return void
-     * @throws ContainerException
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
@@ -54,9 +51,48 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
     public function create(): void
     {
 
-        /** @var PublicController $publicController */
-        $publicController = App::make('Bayfront\Bones\Services\Api\Controllers\PublicController');
-        $publicController->createTenant();
+        if (App::getConfig('api.registration.tenants.open')) {
+
+            $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), Arr::except($this->tenantsModel->getAllowedAttrs(), 'enabled'));
+
+            if (!$this->user->hasAnyPermissions([
+                    'global.admin',
+                    'tenants.create'
+                ]) && $this->user->getId() !== $attrs['owner']) {
+                App::abort(400, 'Tenant must be owned by self');
+            }
+
+            $attrs['enabled'] = true;
+
+        } else {
+
+            $attrs = $this->getResourceAttributesOrAbort('tenants', $this->tenantsModel->getRequiredAttrs(), $this->tenantsModel->getAllowedAttrs());
+
+            $this->canDoAnyOrAbort([
+                'global.admin',
+                'tenants.create'
+            ]);
+
+        }
+
+        try {
+
+            $id = $this->tenantsModel->create($attrs);
+            $created= $this->tenantsModel->get($id);
+
+        } catch (BadRequestException $e) {
+            App::abort(400, $e->getMessage());
+        } catch (ConflictException $e) {
+            App::abort(409, $e->getMessage());
+        }
+
+        $schema = TenantsResource::create($created, [
+            'tenant_id' => $id
+        ]);
+
+        $this->response->setStatusCode(201)->setHeaders([
+            'Location' => Request::getUrl() . '/' . $id
+        ])->sendJson($this->filters->doFilter('api.response', $schema));
 
     }
 
@@ -161,25 +197,28 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
         if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'tenants.update'
-            ]) && !$this->user->ownsTenant($args['tenant_id'])) {
+            ]) && (!$this->user->ownsTenant($args['tenant_id']) || !$this->user->hasAllPermissions([
+                'tenant.update'
+                ], $args['tenant_id']))) {
             App::abort(403);
         }
 
-        $attrs = $this->getResourceAttributesOrAbort('tenants', [], $this->tenantsModel->getAllowedAttrs());
-
-        try {
-
-            // Restrict "enabled"
-
-            if ($this->user->hasAnyPermissions([
+        if (!$this->user->hasAnyPermissions([
                 'global.admin',
                 'tenants.update'
             ])) {
-                $this->tenantsModel->update($args['tenant_id'], $attrs, true);
-            } else {
-                $this->tenantsModel->update($args['tenant_id'], $attrs);
-            }
 
+            $attrs = $this->getResourceAttributesOrAbort('tenants', [], Arr::except($this->tenantsModel->getAllowedAttrs(), 'enabled'));
+
+        } else {
+
+            $attrs = $this->getResourceAttributesOrAbort('tenants', [], $this->tenantsModel->getAllowedAttrs());
+
+        }
+
+        try {
+
+            $this->tenantsModel->update($args['tenant_id'], $attrs);
             $updated = $this->tenantsModel->get($args['tenant_id']);
 
         } catch (BadRequestException $e) {
