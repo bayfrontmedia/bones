@@ -34,9 +34,10 @@ class Api
     public const AUTH_ACCESS_TOKEN = 'token';
     public const AUTH_KEY = 'key';
 
-    // Permissions
-
-    public const PROTECTED_PERMISSIONS = [ // TODO
+    /*
+     * Default permissions used by the Api service
+     */
+    public const DEFAULT_PERMISSIONS = [
         'tenant.groups.create',
         'tenant.groups.read',
         'tenant.groups.update',
@@ -57,8 +58,8 @@ class Api
         'tenant.roles.read',
         'tenant.roles.update',
         'tenant.roles.delete',
-        'tenant.read',
         'tenant.update',
+        'tenant.delete',
         'tenant.user.meta.create',
         'tenant.user.meta.read',
         'tenant.user.meta.update',

@@ -11,11 +11,13 @@ use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
+use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsResource;
+use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -57,7 +59,14 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         try {
 
-            $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs);
+            if ($this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.permissions.create'
+            ])) {
+                $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs);
+            } else {
+                $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs, $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
+            }
 
             $created = $this->tenantPermissionsModel->get($args['tenant_id'], $id);
 
@@ -65,6 +74,8 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -185,7 +196,14 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         try {
 
-            $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
+            if ($this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.permissions.create'
+            ])) {
+                $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
+            } else {
+                $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs, $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
+            }
 
             $updated = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id']);
 
@@ -193,6 +211,8 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -213,6 +233,7 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
      */
     public function delete(array $args): void
     {
@@ -225,10 +246,19 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         try {
 
-            $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
+            if ($this->user->hasAnyPermissions([
+                'global.admin',
+                'tenants.permissions.delete'
+            ])) {
+                $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
+            } else {
+                $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id'], $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
+            }
 
             $this->response->setStatusCode(204)->send();
 
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
