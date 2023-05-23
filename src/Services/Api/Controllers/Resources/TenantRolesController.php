@@ -61,11 +61,11 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $created = $this->tenantRolesModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10480);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10481);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10482);
         }
 
         $schema = TenantRolesResource::create($created, [
@@ -105,9 +105,9 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $results = $this->tenantRolesModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10483);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10484);
         }
 
         $schema = TenantRolesCollection::create($results, [
@@ -147,9 +147,9 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $results = $this->tenantRolesModel->get($args['tenant_id'], $args['role_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10485);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10486);
         }
 
         $schema = TenantRolesResource::create($results, [
@@ -188,11 +188,11 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $updated = $this->tenantRolesModel->get($args['tenant_id'], $args['role_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10487);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10488);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10489);
         }
 
         $schema = TenantRolesResource::create($updated, [
@@ -228,7 +228,7 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10490);
         }
 
     }

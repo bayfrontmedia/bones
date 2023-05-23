@@ -57,9 +57,9 @@ class TenantUserGroupsController extends PrivateApiController implements Relatio
             $this->tenantUserGroupsModel->add($args['tenant_id'], $args['user_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10280);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10281);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -85,7 +85,7 @@ class TenantUserGroupsController extends PrivateApiController implements Relatio
             'tenants.group.users.read',
             'tenant.group.users.read'
         ], $args['tenant_id']) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10282);
         }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantGroups');
@@ -95,9 +95,9 @@ class TenantUserGroupsController extends PrivateApiController implements Relatio
             $results = $this->tenantUserGroupsModel->getCollection($args['tenant_id'], $args['user_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10283);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10284);
         }
 
         $schema = TenantGroupsCollection::create($results, [
@@ -136,7 +136,7 @@ class TenantUserGroupsController extends PrivateApiController implements Relatio
             $this->tenantUserGroupsModel->remove($args['tenant_id'], $args['user_id'], $ids);
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10285);
         }
 
         $this->response->setStatusCode(204)->send();

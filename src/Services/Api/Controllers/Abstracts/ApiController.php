@@ -63,11 +63,11 @@ abstract class ApiController extends Controller
 
                 App::abort(503, 'API undergoing routine maintenance until ' . $until->format('Y-m-d H:i:s T'), [
                     'Retry-After' => $until->getTimestamp() - time()
-                ]);
+                ], 10000);
 
             } else {
 
-                App::abort(503, 'API undergoing routine maintenance');
+                App::abort(503, 'API undergoing routine maintenance', [], 10000);
 
             }
 
@@ -87,7 +87,7 @@ abstract class ApiController extends Controller
     {
 
         if (!Request::isHttps() && in_array(App::environment(), App::getConfig('api.https_env'))) {
-            App::abort(406, 'All requests must be made over HTTPS');
+            App::abort(406, 'All requests must be made over HTTPS', [], 10001);
         }
 
     }
@@ -104,7 +104,7 @@ abstract class ApiController extends Controller
     {
 
         if (Request::getHeader('Accept') !== App::getConfig('api.request.header.accept')) {
-            App::abort(406, 'Required header is missing or invalid: Accept');
+            App::abort(406, 'Required header is missing or invalid: Accept', [], 10002);
         }
 
     }
@@ -121,7 +121,7 @@ abstract class ApiController extends Controller
     {
 
         if (Request::hasBody() && Request::getHeader('Content-Type') !== App::getConfig('api.request.header.content_type')) {
-            App::abort(406, 'Required header is missing or invalid: Content-Type');
+            App::abort(406, 'Required header is missing or invalid: Content-Type', [], 10003);
         }
 
     }
@@ -188,7 +188,7 @@ abstract class ApiController extends Controller
                 'X-RateLimit-Remaining' => floor($bucket->getCapacityRemaining()),
                 'X-RateLimit-Reset' => round($bucket->getSecondsUntilEmpty()),
                 'Retry-After' => $wait
-            ]);
+            ], 10004);
 
         }
 
@@ -249,7 +249,7 @@ abstract class ApiController extends Controller
 
             App::abort(405, 'Request method (' . $method . ') not allowed', [
                 'Allow' => implode(', ', $methods)
-            ]);
+            ], 10005);
 
         }
 
@@ -280,17 +280,17 @@ abstract class ApiController extends Controller
         $body = Request::getBody();
 
         if (!Validate::json($body)) {
-            App::abort(400, 'Invalid content body');
+            App::abort(400, 'Invalid content body', [], 10006);
         }
 
         $body = json_decode($body, true);
 
         if (Arr::isMissing($body, $required)) {
-            App::abort(400, 'Content body missing required members');
+            App::abort(400, 'Content body missing required members', [], 10007);
         }
 
         if (!empty($allowed) && !empty(Arr::except($body, $allowed))) {
-            App::abort(400, 'Content body contains invalid members');
+            App::abort(400, 'Content body contains invalid members', [], 10008);
         }
 
         return $body;
@@ -314,7 +314,7 @@ abstract class ApiController extends Controller
         ]);
 
         if (!is_array($body['data'])) {
-            App::abort(400, 'Content body is invalid');
+            App::abort(400, 'Content body is invalid', [], 10009);
         }
 
         $return = [];
@@ -325,11 +325,11 @@ abstract class ApiController extends Controller
                 'type',
                 'id'
             ])) {
-                App::abort(400, 'Invalid resource identifier');
+                App::abort(400, 'Invalid resource identifier', [], 10010);
             }
 
             if ($relationship['type'] !== $type) {
-                App::abort(409, 'Invalid resource identifier type');
+                App::abort(409, 'Invalid resource identifier type', [], 10011);
             }
 
             $return[] = $relationship['id'];
@@ -365,15 +365,15 @@ abstract class ApiController extends Controller
                 'type',
                 'attributes'
             ]) || Arr::isMissing(Arr::dot($body['data']['attributes']), $required)) {
-            App::abort(400, 'Content body missing required members');
+            App::abort(400, 'Content body missing required members', [], 10012);
         }
 
         if (!empty(Arr::except($body['data']['attributes'], $allowed))) {
-            App::abort(400, 'Content body contains invalid members');
+            App::abort(400, 'Content body contains invalid members', [], 10013);
         }
 
         if ($body['data']['type'] !== $type) {
-            App::abort(409, 'Invalid resource object type');
+            App::abort(409, 'Invalid resource object type', [], 10014);
         }
 
         return $body['data']['attributes'];
@@ -407,7 +407,7 @@ abstract class ApiController extends Controller
             foreach ($fields as $v) { // Drop all not allowed
 
                 if (!in_array($v, $allowed_fields)) {
-                    App::abort(400, 'Malformed request: Invalid field value(s)');
+                    App::abort(400, 'Malformed request: Invalid field value(s)', [], 10015);
                 }
 
             }
@@ -465,7 +465,7 @@ abstract class ApiController extends Controller
         $fields = Arr::get($query, 'fields', ['*']);
 
         if (!is_array($fields)) {
-            App::abort(400, 'Malformed request: Invalid field key(s)');
+            App::abort(400, 'Malformed request: Invalid field key(s)', [], 10016);
         }
 
         foreach ($fields as $k => $v) {
@@ -479,11 +479,11 @@ abstract class ApiController extends Controller
             }
 
             if (!is_string($v)) {
-                App::abort(400, 'Malformed request: Invalid field value(s)');
+                App::abort(400, 'Malformed request: Invalid field value(s)', [], 10017);
             }
 
             if (str_contains($v, ' ')) { // Contains space
-                App::abort(400, 'Malformed request: Invalid field value(s)');
+                App::abort(400, 'Malformed request: Invalid field value(s)', [], 10017);
             }
 
             $fields[$k] = array_unique(explode(',', $v)); // Remove duplicate values
@@ -499,13 +499,13 @@ abstract class ApiController extends Controller
         $filters = Arr::get($query, 'filter', []);
 
         if (!is_array($filters)) {
-            App::abort(400, 'Malformed request: Invalid filter type');
+            App::abort(400, 'Malformed request: Invalid filter type', [], 10018);
         }
 
         foreach ($filters as $filter) {
 
             if (!is_array($filter)) {
-                App::abort(400, 'Malformed request: Invalid filter value');
+                App::abort(400, 'Malformed request: Invalid filter value', [], 10019);
             }
 
         }
@@ -515,13 +515,13 @@ abstract class ApiController extends Controller
         $include = Arr::get($query, 'include', '');
 
         if (!is_string($include)) {
-            App::abort(400, 'Malformed request: Invalid include value');
+            App::abort(400, 'Malformed request: Invalid include value', [], 10020);
         }
 
         if ($include != '') {
 
             if (str_contains($include, ' ')) { // Contains space
-                App::abort(400, 'Malformed request: Invalid include value(s)');
+                App::abort(400, 'Malformed request: Invalid include value(s)', [], 10020);
             }
 
             $include_arr = explode(',', $include);
@@ -535,13 +535,13 @@ abstract class ApiController extends Controller
         $sort = Arr::get($query, 'sort', '');
 
         if (!is_string($sort)) {
-            App::abort(400, 'Malformed request: Invalid sort type');
+            App::abort(400, 'Malformed request: Invalid sort type', [], 10021);
         }
 
         if ($sort != '') {
 
             if (str_contains($sort, ' ')) { // Contains space
-                App::abort(400, 'Malformed request: Invalid sort value(s)');
+                App::abort(400, 'Malformed request: Invalid sort value(s)', [], 10022);
             }
 
             $order = explode(',', $sort);
@@ -558,11 +558,11 @@ abstract class ApiController extends Controller
 
         if (
             ($limit < 1) || $page_number < 1) {
-            App::abort(400, 'Malformed request: Invalid page value(s)');
+            App::abort(400, 'Malformed request: Invalid page value(s)', [], 10023);
         }
 
         if ($limit > App::getConfig('api.response.collection_size.max')) {
-            App::abort(400, 'Malformed request: Page size (' . $limit . ') exceeds maximum (' . App::getConfig('api.response.collection_size.max') . ')');
+            App::abort(400, 'Malformed request: Page size (' . $limit . ') exceeds maximum (' . App::getConfig('api.response.collection_size.max') . ')', [], 10024);
         }
 
         if (empty($order)) {

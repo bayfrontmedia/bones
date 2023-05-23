@@ -57,9 +57,9 @@ class UserTenantsController extends PrivateApiController implements Relationship
             $this->userTenantsModel->add($args['user_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10340);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10341);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -85,7 +85,7 @@ class UserTenantsController extends PrivateApiController implements Relationship
                 'global.admin',
                 'tenants.users.read'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10342);
         }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenants');
@@ -95,9 +95,9 @@ class UserTenantsController extends PrivateApiController implements Relationship
             $results = $this->userTenantsModel->getCollection($args['user_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10343);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10344);
         }
 
         $schema = TenantsCollection::create($results, [
@@ -127,7 +127,7 @@ class UserTenantsController extends PrivateApiController implements Relationship
                 'global.admin',
                 'tenants.users.remove'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10345);
         }
 
         $ids = $this->getToManyRelationshipIdsOrAbort('tenants');
@@ -137,9 +137,9 @@ class UserTenantsController extends PrivateApiController implements Relationship
             $this->userTenantsModel->remove($args['user_id'], $ids);
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10346);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10347);
         }
 
         $this->response->setStatusCode(204)->send();

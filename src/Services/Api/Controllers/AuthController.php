@@ -63,13 +63,13 @@ class AuthController extends AuthApiController
             ]);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10600);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10601);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10602);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10603);
         }
 
         $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
@@ -102,9 +102,9 @@ class AuthController extends AuthApiController
             $user = $this->authModel->authenticateWithPassword($body['email'], $body['password']);
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10604);
         } catch (NotFoundException|UnauthorizedException) {
-            App::abort(401, 'Invalid email and / or password');
+            App::abort(401, 'Invalid email and / or password', [], 10605);
         }
 
         $this->returnAuthResource($user['id']);
@@ -135,9 +135,9 @@ class AuthController extends AuthApiController
             $user = $this->authModel->authenticateWithRefreshToken($body['accessToken'], $body['refreshToken']);
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10606);
         } catch (NotFoundException|UnauthorizedException) {
-            App::abort(401, 'Token is invalid or has expired');
+            App::abort(401, 'Token is invalid or has expired', [], 10607);
         }
 
         $this->returnAuthResource($user['id']);

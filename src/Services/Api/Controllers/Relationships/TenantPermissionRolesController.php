@@ -57,9 +57,9 @@ class TenantPermissionRolesController extends PrivateApiController implements Re
             $this->tenantPermissionRolesModel->add($args['tenant_id'], $args['permission_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10220);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10221);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -93,9 +93,9 @@ class TenantPermissionRolesController extends PrivateApiController implements Re
             $results = $this->tenantPermissionRolesModel->getCollection($args['tenant_id'], $args['permission_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10222);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10223);
         }
 
         $schema = TenantRolesCollection::create($results, [
@@ -134,7 +134,7 @@ class TenantPermissionRolesController extends PrivateApiController implements Re
             $this->tenantPermissionRolesModel->remove($args['tenant_id'], $args['permission_id'], $ids);
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10224);
         }
 
         $this->response->setStatusCode(204)->send();

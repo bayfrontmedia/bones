@@ -62,11 +62,11 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             $created = $this->tenantGroupsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10400);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10401);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10402);
         }
 
         $schema = TenantGroupsResource::create($created, [
@@ -106,9 +106,9 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             $results = $this->tenantGroupsModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10403);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10404);
         }
 
         $schema = TenantGroupsCollection::create($results, [
@@ -148,9 +148,9 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             $results = $this->tenantGroupsModel->get($args['tenant_id'], $args['group_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10405);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10406);
         }
 
         $schema = TenantGroupsResource::create($results, [
@@ -190,11 +190,11 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             $updated = $this->tenantGroupsModel->get($args['tenant_id'], $args['group_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10407);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10408);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10409);
         }
 
         $schema = TenantGroupsResource::create($updated, [
@@ -230,7 +230,7 @@ class TenantGroupsController extends PrivateApiController implements ScopedResou
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10410);
         }
 
     }

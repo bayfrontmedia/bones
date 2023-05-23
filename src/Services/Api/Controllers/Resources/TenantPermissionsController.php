@@ -61,11 +61,11 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $created = $this->tenantPermissionsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10460);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10461);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10462);
         }
 
         $schema = TenantPermissionsResource::create($created, [
@@ -105,9 +105,9 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $results = $this->tenantPermissionsModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10463);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10464);
         }
 
         $schema = TenantPermissionsCollection::create($results, [
@@ -147,9 +147,9 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $results = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10465);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10466);
         }
 
         $schema = TenantPermissionsResource::create($results, [
@@ -188,11 +188,11 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $updated = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10467);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10468);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10469);
         }
 
         $schema = TenantPermissionsResource::create($updated, [
@@ -228,7 +228,7 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10470);
         }
 
     }

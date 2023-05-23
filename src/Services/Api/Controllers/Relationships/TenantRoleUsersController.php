@@ -57,9 +57,9 @@ class TenantRoleUsersController extends PrivateApiController implements Relation
             $this->tenantRoleUsersModel->add($args['tenant_id'], $args['role_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10260);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10261);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -93,9 +93,9 @@ class TenantRoleUsersController extends PrivateApiController implements Relation
             $results = $this->tenantRoleUsersModel->getCollection($args['tenant_id'], $args['role_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10262);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10263);
         }
 
         $schema = UsersCollection::create($results, [
@@ -133,7 +133,7 @@ class TenantRoleUsersController extends PrivateApiController implements Relation
             $this->tenantRoleUsersModel->remove($args['tenant_id'], $args['role_id'], $ids);
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10264);
         }
 
         $this->response->setStatusCode(204)->send();

@@ -119,9 +119,9 @@ class PublicController extends PublicApiController
             }
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10620);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10621);
         }
 
         $schema = UsersResource::create($created, [
@@ -165,7 +165,7 @@ class PublicController extends PublicApiController
 
         }
 
-        App::abort(404);
+        App::abort(404, '', [], 10622);
 
     }
 
@@ -188,11 +188,11 @@ class PublicController extends PublicApiController
             $this->tenantInvitationsModel->verifyTenantInvitation($args['tenant_id'], $args['email']);
 
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10623);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10624);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10625);
         }
 
         $this->response->setStatusCode(204)->send();

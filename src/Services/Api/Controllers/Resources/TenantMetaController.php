@@ -74,13 +74,13 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
             $created = $this->tenantMetaModel->get($args['tenant_id'], $id, [], $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10440);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10441);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10442);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10443);
         }
 
         $schema = TenantMetaResource::create($created, [
@@ -131,9 +131,9 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
             $results = $this->tenantMetaModel->getCollection($args['tenant_id'], $query, $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10444);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10445);
         }
 
         $schema = TenantMetaCollection::create($results, [
@@ -184,11 +184,11 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
             $results = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id'], $fields, $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10446);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10447);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10448);
         }
 
         $schema = TenantMetaResource::create($results, [
@@ -241,11 +241,11 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
             $updated = $this->tenantMetaModel->get($args['tenant_id'], $args['meta_id'], [], $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10449);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10450);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10451);
         }
 
         $schema = TenantMetaResource::create($updated, [
@@ -292,9 +292,9 @@ class TenantMetaController extends PrivateApiController implements ScopedResourc
             $this->response->setStatusCode(204)->send();
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10452);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10453);
         }
 
     }

@@ -60,11 +60,11 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
             $created = $this->tenantInvitationsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10420);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10421);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10422);
         }
 
         $schema = TenantInvitationsResource::create($created, [
@@ -104,9 +104,9 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
             $results = $this->tenantInvitationsModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10423);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10424);
         }
 
         $schema = TenantInvitationsCollection::create($results, [
@@ -146,9 +146,9 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
             $results = $this->tenantInvitationsModel->get($args['tenant_id'], $args['invitation_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10425);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10426);
         }
 
         $schema = TenantInvitationsResource::create($results, [
@@ -188,9 +188,9 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
             $updated = $this->tenantInvitationsModel->get($args['tenant_id'], $args['invitation_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10427);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10428);
         }
 
         $schema = TenantInvitationsResource::create($updated, [
@@ -226,7 +226,7 @@ class TenantInvitationsController extends PrivateApiController implements Scoped
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10429);
         }
 
     }

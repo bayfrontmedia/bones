@@ -52,7 +52,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             'global.admin',
             'users.meta.create'
         ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10560);
         }
 
         $attrs = $this->getResourceAttributesOrAbort('userMeta', $this->userMetaModel->getRequiredAttrs(), $this->userMetaModel->getAllowedAttrs());
@@ -75,13 +75,13 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             $created = $this->userMetaModel->get($args['user_id'], $id, [], $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10561);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10562);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10563);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10564);
         }
 
         $schema = UserMetaResource::create($created, [
@@ -112,7 +112,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
                 'global.admin',
                 'users.meta.read'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10565);
         }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'userMeta');
@@ -133,9 +133,9 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             $results = $this->userMetaModel->getCollection($args['user_id'], $query, $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10566);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10567);
         }
 
         $schema = UserMetaCollection::create($results, [
@@ -166,7 +166,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
                 'global.admin',
                 'users.meta.read'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10568);
         }
 
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'userMeta', array_keys($this->userMetaModel->getSelectableCols()));
@@ -187,11 +187,11 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             $results = $this->userMetaModel->get($args['user_id'], $args['meta_id'], $fields, $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10569);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10570);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10571);
         }
 
         $schema = UserMetaResource::create($results, [
@@ -220,7 +220,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
                 'global.admin',
                 'users.meta.update'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10572);
         }
 
         $attrs = $this->getResourceAttributesOrAbort('userMeta', [], [
@@ -245,11 +245,11 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             $updated = $this->userMetaModel->get($args['user_id'], $args['meta_id'], [], $allow_protected);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10573);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10574);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10575);
         }
 
         $schema = UserMetaResource::create($updated, [
@@ -276,7 +276,7 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
                 'global.admin',
                 'users.meta.delete'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10576);
         }
 
         // Protected meta
@@ -297,9 +297,9 @@ class UserMetaController extends PrivateApiController implements ScopedResourceI
             $this->response->setStatusCode(204)->send();
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10577);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10578);
         }
 
     }

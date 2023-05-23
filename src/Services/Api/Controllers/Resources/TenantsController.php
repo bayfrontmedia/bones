@@ -59,7 +59,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
                     'global.admin',
                     'tenants.create'
                 ]) && $this->user->getId() !== $attrs['owner']) {
-                App::abort(403);
+                App::abort(403, '', [], 10500);
             }
 
             $attrs['enabled'] = true;
@@ -81,9 +81,9 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             $created= $this->tenantsModel->get($id);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10501);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10502);
         }
 
         $schema = TenantsResource::create($created, [
@@ -127,7 +127,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             $results = $this->tenantsModel->getCollection($query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10503);
         }
 
         $schema = TenantsCollection::create($results, [
@@ -157,7 +157,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
                 'global.admin',
                 'tenants.read'
             ]) && !$this->user->inTenant($args['user_id'])) {
-            App::abort(403);
+            App::abort(403, '', [], 10504);
         }
 
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'tenants', array_keys($this->tenantsModel->getSelectableCols()));
@@ -167,9 +167,9 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             $results = $this->tenantsModel->get($args['tenant_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10505);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10506);
         }
 
         $schema = TenantsResource::create($results, [
@@ -200,7 +200,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             ]) && (!$this->user->ownsTenant($args['tenant_id']) || !$this->user->hasAllPermissions([
                 'tenant.update'
                 ], $args['tenant_id']))) {
-            App::abort(403);
+            App::abort(403, '', [], 10507);
         }
 
         if (!$this->user->hasAnyPermissions([
@@ -222,11 +222,11 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             $updated = $this->tenantsModel->get($args['tenant_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10508);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10509);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10510);
         }
 
         $schema = TenantsResource::create($updated, [
@@ -255,7 +255,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             ]) && (!$this->user->ownsTenant($args['user_id']) || !$this->user->hasAllPermissions([
                     'tenant.delete'
                 ], $args['tenant_id']))) {
-            App::abort(403);
+            App::abort(403, '', [], 10511);
         }
 
         try {
@@ -265,7 +265,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10512);
         }
 
     }

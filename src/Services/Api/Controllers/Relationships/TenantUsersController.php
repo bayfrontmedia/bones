@@ -59,11 +59,11 @@ class TenantUsersController extends PrivateApiController implements Relationship
             $this->tenantUsersModel->add($args['tenant_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10320);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10321);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10322);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -98,9 +98,9 @@ class TenantUsersController extends PrivateApiController implements Relationship
             $results = $this->tenantUsersModel->getCollection($args['tenant_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10323);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10324);
         }
 
         $schema = UsersCollection::create($results, [
@@ -138,9 +138,9 @@ class TenantUsersController extends PrivateApiController implements Relationship
             $this->tenantUsersModel->remove($args['tenant_id'], $ids);
 
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10325);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10326);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -166,7 +166,7 @@ class TenantUsersController extends PrivateApiController implements Relationship
                 'tenants.user.permissions.read',
                 'tenant.user.permissions.read'
             ]) && ($this->user->getId() !== $args['user_id'] || !$this->user->inTenant($args['tenant_id']))) {
-            App::abort(403);
+            App::abort(403, '', [], 10327);
         }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantPermissions');
@@ -176,9 +176,9 @@ class TenantUsersController extends PrivateApiController implements Relationship
             $results = $this->tenantUsersModel->getPermissionCollection($args['tenant_id'], $args['user_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10328);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10329);
         }
 
         $schema = TenantPermissionsCollection::create($results, [

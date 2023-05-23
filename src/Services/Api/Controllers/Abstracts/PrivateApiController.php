@@ -78,7 +78,7 @@ abstract class PrivateApiController extends ApiController
 
             $this->rateLimitOrAbort(md5('auth-' . Request::getIp()), App::getConfig('api.rate_limit.auth'));
 
-            App::abort(401, 'Invalid credentials');
+            App::abort(401, 'Invalid credentials', [], 10100);
 
         }
 
@@ -109,9 +109,9 @@ abstract class PrivateApiController extends ApiController
         try {
             $valid = $authModel->authenticateWithAccessToken($token);
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10101);
         } catch (UnauthorizedException $e) {
-            App::abort(401, $e->getMessage());
+            App::abort(401, $e->getMessage(), [], 10102);
         }
 
         $this->user_rate_limit = $valid['rate_limit'];
@@ -153,9 +153,9 @@ abstract class PrivateApiController extends ApiController
         try {
             $valid = $authModel->authenticateWithKey($key, $referer, Request::getIp('UNKNOWN'));
         } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
+            App::abort(403, $e->getMessage(), [], 10103);
         } catch (UnauthorizedException $e) {
-            App::abort(401, $e->getMessage());
+            App::abort(401, $e->getMessage(), [], 10104);
         }
 
         $this->user_rate_limit = $valid['rate_limit'];
@@ -178,7 +178,7 @@ abstract class PrivateApiController extends ApiController
     {
 
         if (!$this->user->hasAllPermissions($permissions, $tenant_id)) {
-            App::abort(403);
+            App::abort(403, '', [], 10105);
         }
 
     }
@@ -197,7 +197,7 @@ abstract class PrivateApiController extends ApiController
     {
 
         if (!$this->user->hasAnyPermissions($permissions, $tenant_id)) {
-            App::abort(403);
+            App::abort(403, '', [], 10106);
         }
 
     }

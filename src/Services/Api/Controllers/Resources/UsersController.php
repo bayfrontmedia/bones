@@ -87,7 +87,7 @@ class UsersController extends PrivateApiController implements ResourceInterface
             $results = $this->usersModel->getCollection($query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10580);
         }
 
         $schema = UsersCollection::create($results, [
@@ -117,7 +117,7 @@ class UsersController extends PrivateApiController implements ResourceInterface
                 'global.admin',
                 'users.read'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10581);
         }
 
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'users', array_keys($this->usersModel->getSelectableCols()));
@@ -127,9 +127,9 @@ class UsersController extends PrivateApiController implements ResourceInterface
             $results = $this->usersModel->get($args['user_id'], $fields);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10582);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10583);
         }
 
         $schema = UsersResource::create($results, [
@@ -158,7 +158,7 @@ class UsersController extends PrivateApiController implements ResourceInterface
                 'global.admin',
                 'users.update'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10584);
         }
 
         if ($this->user->hasAnyPermissions([
@@ -180,11 +180,11 @@ class UsersController extends PrivateApiController implements ResourceInterface
             $updated = $this->usersModel->get($args['user_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage());
+            App::abort(400, $e->getMessage(), [], 10585);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage());
+            App::abort(409, $e->getMessage(), [], 10586);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10587);
         }
 
         $schema = UsersResource::create($updated, [
@@ -211,7 +211,7 @@ class UsersController extends PrivateApiController implements ResourceInterface
                 'global.admin',
                 'users.delete'
             ]) && $this->user->getId() !== $args['user_id']) {
-            App::abort(403);
+            App::abort(403, '', [], 10588);
         }
 
         try {
@@ -221,7 +221,7 @@ class UsersController extends PrivateApiController implements ResourceInterface
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage());
+            App::abort(404, $e->getMessage(), [], 10589);
         }
 
     }
