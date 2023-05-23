@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers\Resources;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -38,24 +39,26 @@ class UsersController extends PrivateApiController implements ResourceInterface
     /**
      * Create user.
      *
-     * TODO:
-     * Require users.create if registration is not public.
-     *
      * @return void
+     * @throws ContainerException
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidSchemaException
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
-     * @throws ContainerException
      */
     public function create(): void
     {
 
+        $this->canDoAnyOrAbort([
+            'global.admin',
+            'users.create'
+        ]);
+
         /** @var PublicController $publicController */
         $publicController = App::make('Bayfront\Bones\Services\Api\Controllers\PublicController');
-        $publicController->createUser();
+        $publicController->createUserProcess();
 
     }
 
@@ -158,21 +161,22 @@ class UsersController extends PrivateApiController implements ResourceInterface
             App::abort(403);
         }
 
-        $attrs = $this->getResourceAttributesOrAbort('users', [], $this->usersModel->getAllowedAttrs());
+        if ($this->user->hasAnyPermissions([
+            'global.admin',
+            'users.update'
+        ])) {
+
+            $attrs = $this->getResourceAttributesOrAbort('users', [], $this->usersModel->getAllowedAttrs());
+
+        } else {
+
+            $attrs = $this->getResourceAttributesOrAbort('users', [], Arr::except($this->usersModel->getAllowedAttrs(), 'enabled'));
+
+        }
 
         try {
 
-            // Restrict "enabled"
-
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'users.update'
-            ])) {
-                $this->usersModel->update($args['user_id'], $attrs, true);
-            } else {
-                $this->usersModel->update($args['user_id'], $attrs);
-            }
-
+            $this->usersModel->update($args['user_id'], $attrs);
             $updated = $this->usersModel->get($args['user_id']);
 
         } catch (BadRequestException $e) {

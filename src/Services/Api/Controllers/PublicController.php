@@ -2,12 +2,14 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Controllers\Abstracts\PublicApiController;
+use Bayfront\Bones\Services\Api\Controllers\Resources\UsersController;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
@@ -16,6 +18,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
+use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -56,17 +59,48 @@ class PublicController extends PublicApiController
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws UnexpectedApiException
+     * @throws ContainerException
      */
     public function createUser(): void
     {
 
-        /*
-         * TODO:
-         * Can control "enabled" with permissions
-         * or use API config.
-         */
+        if (!App::getConfig('api.registration.users.public')) {
 
-        $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), $this->usersModel->getAllowedAttrs());
+            /*
+             * Required permissions handled by UsersController
+             */
+
+            /** @var UsersController $usersController */
+            $usersController = App::make('Bayfront\Bones\Services\Api\Controllers\Resources\UsersController');
+            $usersController->create();
+
+            return;
+
+        }
+
+        // Public registration
+
+        $this->createUserProcess();
+
+    }
+
+    /**
+     * Create user process.
+     * This method should not be mapped to a route, but is used by
+     * createUser() and the create() method of UsersController.
+     *
+     * @return void
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function createUserProcess(): void
+    {
+
+        $attrs = $this->getResourceAttributesOrAbort('users', $this->usersModel->getRequiredAttrs(), Arr::except($this->usersModel->getAllowedAttrs(), 'enabled'));
 
         try {
 

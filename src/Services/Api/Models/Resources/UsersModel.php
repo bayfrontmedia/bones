@@ -276,13 +276,12 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param array $attrs
      * @param bool $include_verification
-     * @param bool $allow_enabled
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
      * @throws UnexpectedApiException
      */
-    public function create(array $attrs, bool $include_verification = false, bool $allow_enabled = false): string
+    public function create(array $attrs, bool $include_verification = false): string
     {
 
         // Required attributes
@@ -306,21 +305,6 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             $msg = 'Unable to create user';
             $reason = 'Invalid attribute(s)';
-
-            $this->log->notice($msg, [
-                'reason' => $reason
-            ]);
-
-            throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Protected attribute
-
-        if ($allow_enabled === false && isset($attrs['enabled'])) {
-
-            $msg = 'Unable to create user';
-            $reason = 'Invalid attribute (enabled)';
 
             $this->log->notice($msg, [
                 'reason' => $reason
@@ -728,13 +712,12 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @param array $attrs
-     * @param bool $allow_enabled
      * @return void
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
      */
-    public function update(string $id, array $attrs, bool $allow_enabled = false): void
+    public function update(string $id, array $attrs): void
     {
 
         if (empty($attrs)) { // Nothing to update
@@ -787,21 +770,6 @@ class UsersModel extends ApiModel implements ResourceInterface
             $this->log->notice($msg, [
                 'reason' => $reason,
                 'user_id' => $id
-            ]);
-
-            throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Protected attribute
-
-        if ($allow_enabled === false && isset($attrs['enabled'])) {
-
-            $msg = 'Unable to update tenant';
-            $reason = 'Invalid attribute (enabled)';
-
-            $this->log->notice($msg, [
-                'reason' => $reason
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
