@@ -80,11 +80,13 @@ class TenantUserGroupsController extends PrivateApiController implements Relatio
     public function getCollection(array $args): void
     {
 
-        $this->canDoAnyOrAbort([
+        if (!$this->user->hasAnyPermissions([
             'global.admin',
             'tenants.group.users.read',
             'tenant.group.users.read'
-        ], $args['tenant_id']);
+        ], $args['tenant_id']) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'tenantGroups');
 
