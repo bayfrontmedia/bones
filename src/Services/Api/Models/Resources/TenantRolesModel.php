@@ -7,7 +7,6 @@ use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
@@ -191,14 +190,12 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
      *
      * @param string $scoped_id
      * @param array $attrs
-     * @param array $protected_names
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
-     * @throws ForbiddenException
      * @throws NotFoundException
      */
-    public function create(string $scoped_id, array $attrs, array $protected_names = []): string
+    public function create(string $scoped_id, array $attrs): string
     {
 
         // Scoped exists
@@ -262,22 +259,6 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Check protected names
-
-        if (in_array($attrs['name'], $protected_names)) {
-
-            $msg = 'Unable to create tenant role';
-            $reason = 'Name (' . $attrs['name'] . ') is protected';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'tenant_id' => $scoped_id
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
 
         }
 
@@ -500,15 +481,12 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @param array $attrs
-     * @param array $protected_names
      * @return void
      * @throws BadRequestException
      * @throws ConflictException
-     * @throws ForbiddenException
      * @throws NotFoundException
-     * @throws UnexpectedApiException
      */
-    public function update(string $scoped_id, string $id, array $attrs, array $protected_names = []): void
+    public function update(string $scoped_id, string $id, array $attrs): void
     {
 
         if (empty($attrs)) { // Nothing to update
@@ -517,14 +495,7 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Exists
 
-        try {
-
-            $existing = $this->get($scoped_id, $id, [
-                'id',
-                'name'
-            ]);
-
-        } catch (NotFoundException) {
+        if (!$this->idExists($scoped_id, $id)) {
 
             $msg = 'Unable to update tenant role';
             $reason = 'Tenant and / or role ID does not exist';
@@ -570,24 +541,6 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
             ]);
 
             throw new BadRequestException($msg . ': ' . $reason);
-
-        }
-
-        // Check protected names
-
-        if (in_array($existing['name'], $protected_names)
-            || (isset($attrs['name']) && in_array($attrs['name'], $protected_names))) {
-
-            $msg = 'Unable to update tenant role';
-            $reason = 'Role is protected';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'tenant_id' => $scoped_id,
-                'role_id' => $id
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
 
         }
 
@@ -647,29 +600,15 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
      *
      * @param string $scoped_id
      * @param string $id
-     * @param array $protected_names
      * @return void
-     * @throws ForbiddenException
      * @throws NotFoundException
-     * @throws UnexpectedApiException
      */
-    public function delete(string $scoped_id, string $id, array $protected_names = []): void
+    public function delete(string $scoped_id, string $id): void
     {
 
         // Exists
 
-        try {
-
-            $existing = $this->get($scoped_id, $id, [
-                'id',
-                'name'
-            ]);
-
-        } catch (BadRequestException $e) {
-
-            throw new UnexpectedApiException($e->getMessage());
-
-        } catch (NotFoundException) {
+        if (!$this->idExists($scoped_id, $id)) {
 
             $msg = 'Unable to delete tenant role';
             $reason = 'Tenant and / or role ID does not exist';
@@ -681,23 +620,6 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
             ]);
 
             throw new NotFoundException($msg . ': ' . $reason);
-
-        }
-
-        // Check protected names
-
-        if (in_array($existing['name'], $protected_names)) {
-
-            $msg = 'Unable to delete tenant role';
-            $reason = 'Role is protected';
-
-            $this->log->notice($msg, [
-                'reason' => $reason,
-                'tenant_id' => $scoped_id,
-                'role_id' => $id
-            ]);
-
-            throw new ForbiddenException($msg . ': ' . $reason);
 
         }
 

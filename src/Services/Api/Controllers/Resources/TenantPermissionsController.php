@@ -11,13 +11,11 @@ use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsResource;
-use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -51,31 +49,20 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.create',
-            'tenant.permissions.create'
-        ], $args['tenant_id']);
+            'tenants.permissions.create'
+        ]);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', $this->tenantPermissionsModel->getRequiredAttrs(), $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.permissions.create'
-            ])) {
-                $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs);
-            } else {
-                $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs, $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
-            }
-
+            $id = $this->tenantPermissionsModel->create($args['tenant_id'], $attrs);
             $created = $this->tenantPermissionsModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -188,31 +175,20 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.update',
-            'tenant.permissions.update'
-        ], $args['tenant_id']);
+            'tenants.permissions.update'
+        ]);
 
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', [], $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.permissions.update'
-            ])) {
-                $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
-            } else {
-                $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs, $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
-            }
-
+            $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
             $updated = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id']);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -233,32 +209,21 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws UnexpectedApiException
      */
     public function delete(array $args): void
     {
 
         $this->canDoAnyOrAbort([
             'global.admin',
-            'tenants.permissions.delete',
-            'tenant.permissions.delete'
-        ], $args['tenant_id']);
+            'tenants.permissions.delete'
+        ]);
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.permissions.delete'
-            ])) {
-                $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
-            } else {
-                $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id'], $this->filters->doFilter('api.protected.permissions', Api::DEFAULT_PERMISSIONS));
-            }
+            $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
 
             $this->response->setStatusCode(204)->send();
 
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }

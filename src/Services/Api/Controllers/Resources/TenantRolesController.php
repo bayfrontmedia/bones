@@ -11,7 +11,6 @@ use Bayfront\Bones\Services\Api\Controllers\Abstracts\PrivateApiController;
 use Bayfront\Bones\Services\Api\Controllers\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
-use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantRolesModel;
@@ -58,23 +57,13 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.roles.create'
-            ])) {
-                $id = $this->tenantRolesModel->create($args['tenant_id'], $attrs);
-            } else {
-                $id = $this->tenantRolesModel->create($args['tenant_id'], $attrs, $this->filters->doFilter('api.protected.roles', []));
-            }
-
+            $id = $this->tenantRolesModel->create($args['tenant_id'], $attrs);
             $created = $this->tenantRolesModel->get($args['tenant_id'], $id);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -195,23 +184,13 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.roles.update'
-            ])) {
-                $this->tenantRolesModel->update($args['tenant_id'], $args['role_id'], $attrs);
-            } else {
-                $this->tenantRolesModel->update($args['tenant_id'], $args['role_id'], $attrs, $this->filters->doFilter('api.protected.roles', []));
-            }
-
+            $this->tenantRolesModel->update($args['tenant_id'], $args['role_id'], $attrs);
             $updated = $this->tenantRolesModel->get($args['tenant_id'], $args['role_id']);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
         } catch (ConflictException $e) {
             App::abort(409, $e->getMessage());
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
@@ -232,7 +211,6 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
      * @throws ContainerNotFoundException
      * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws UnexpectedApiException
      */
     public function delete(array $args): void
     {
@@ -245,19 +223,10 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
 
         try {
 
-            if ($this->user->hasAnyPermissions([
-                'global.admin',
-                'tenants.roles.delete'
-            ])) {
-                $this->tenantRolesModel->delete($args['tenant_id'], $args['role_id']);
-            } else {
-                $this->tenantRolesModel->delete($args['tenant_id'], $args['role_id'], $this->filters->doFilter('api.protected.roles', []));
-            }
+            $this->tenantRolesModel->delete($args['tenant_id'], $args['role_id']);
 
             $this->response->setStatusCode(204)->send();
 
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage());
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage());
         }
