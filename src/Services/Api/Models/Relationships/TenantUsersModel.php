@@ -116,10 +116,10 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     public function getTotalAllowed(string $tenant_id): int
     {
 
-        $max_users = $this->tenantMetaModel->getValue($tenant_id, '00-max-users', true);
+        $plan = $this->tenantMetaModel->getValue($tenant_id, '00-plan', true);
 
-        if ($max_users) {
-            return (int)$max_users;
+        if ($plan) {
+            return Arr::get(json_decode($plan, true), 'max_users', App::getConfig('api.tenants.max_users'));
         }
 
         return App::getConfig('api.tenants.max_users');
