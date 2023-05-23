@@ -245,6 +245,10 @@ class UsersModel extends ApiModel implements ResourceInterface
     public function verifyNewUserVerification(string $user_id, string $id): bool
     {
 
+        if (!Validate::uuid($user_id)) {
+            return false;
+        }
+
         $exists = $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND metaValue = :value", [
             'id' => '00-new-user-verification',
             'user_id' => $user_id,
