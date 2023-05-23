@@ -11,6 +11,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
 use Bayfront\Bones\Services\Api\Models\UserModel;
+use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -48,6 +49,11 @@ abstract class PrivateApiController extends ApiController
      * once the user is authenticated.
      */
     protected int $user_rate_limit = 0;
+
+    /*
+     * Method used to authenticate user.
+     */
+    public string $authenticate_method;
 
     /**
      * Authenticate user credentials or abort with 401 or 403 status.
@@ -116,6 +122,8 @@ abstract class PrivateApiController extends ApiController
 
         $this->user_rate_limit = $valid['rate_limit'];
 
+        $this->authenticate_method = Api::AUTH_ACCESS_TOKEN;
+
         return $valid['user_model'];
 
     }
@@ -159,6 +167,8 @@ abstract class PrivateApiController extends ApiController
         }
 
         $this->user_rate_limit = $valid['rate_limit'];
+
+        $this->authenticate_method = Api::AUTH_KEY;
 
         return $valid['user_model'];
 
