@@ -86,7 +86,7 @@ interface ScopedResourceInterface
      * @param array $cols
      * @return array
      */
-    public function get(string $scoped_id, string $id, array $cols = ['*']): array;
+    public function get(string $scoped_id, string $id, array $cols = []): array;
 
     /**
      * Update resource.

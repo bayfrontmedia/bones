@@ -472,7 +472,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function get(string $scoped_id, string $id, array $cols = ['*']): array
+    public function get(string $scoped_id, string $id, array $cols = []): array
     {
 
         if (empty($cols)) {

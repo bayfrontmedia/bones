@@ -81,7 +81,7 @@ interface ResourceInterface
      * @param array $cols
      * @return array
      */
-    public function get(string $id, array $cols = ['*']): array;
+    public function get(string $id, array $cols = []): array;
 
     /**
      * Update resource.

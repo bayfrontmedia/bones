@@ -71,7 +71,7 @@ class TenantUserMetaController extends PrivateApiController implements ScopedRes
 
             $id = $this->tenantUserMetaModel->create($args['tenant_id'], $args['user_id'], $attrs, $allow_protected);
 
-            $created = $this->tenantUserMetaModel->get($args['tenant_id'], $args['user_id'], $id, ['*'], $allow_protected);
+            $created = $this->tenantUserMetaModel->get($args['tenant_id'], $args['user_id'], $id, [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());
@@ -241,7 +241,7 @@ class TenantUserMetaController extends PrivateApiController implements ScopedRes
 
             $this->tenantUserMetaModel->update($args['tenant_id'], $args['user_id'], $args['meta_id'], $attrs, $allow_protected);
 
-            $updated = $this->tenantUserMetaModel->get($args['tenant_id'], $args['user_id'], $args['meta_id'], ['*'], $allow_protected);
+            $updated = $this->tenantUserMetaModel->get($args['tenant_id'], $args['user_id'], $args['meta_id'], [], $allow_protected);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage());

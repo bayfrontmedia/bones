@@ -433,7 +433,7 @@ class TenantUserMetaModel extends ApiModel
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function get(string $scoped_id, string $user_id, string $id, array $cols = ['*'], bool $allow_protected = false): array
+    public function get(string $scoped_id, string $user_id, string $id, array $cols = [], bool $allow_protected = false): array
     {
 
         if (empty($cols)) {
