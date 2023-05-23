@@ -602,7 +602,8 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
             $this->log->notice($msg, [
                 'reason' => $reason,
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'permission_id' => $id
             ]);
 
             throw new ForbiddenException($msg . ': ' . $reason);
@@ -673,6 +674,8 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
      */
     public function delete(string $scoped_id, string $id, array $protected_names = []): void
     {
+
+        // Exists
 
         try {
 

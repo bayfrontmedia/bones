@@ -198,7 +198,7 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 
             if ($this->user->hasAnyPermissions([
                 'global.admin',
-                'tenants.permissions.create'
+                'tenants.permissions.update'
             ])) {
                 $this->tenantPermissionsModel->update($args['tenant_id'], $args['permission_id'], $attrs);
             } else {
