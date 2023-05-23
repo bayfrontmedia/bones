@@ -59,7 +59,7 @@ class TenantsController extends PrivateApiController implements ResourceInterfac
                     'global.admin',
                     'tenants.create'
                 ]) && $this->user->getId() !== $attrs['owner']) {
-                App::abort(400, 'Tenant must be owned by self');
+                App::abort(403);
             }
 
             $attrs['enabled'] = true;

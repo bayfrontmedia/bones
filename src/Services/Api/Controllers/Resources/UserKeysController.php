@@ -47,6 +47,20 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
     public function create(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'users.keys.create'
+        ]) && App::getConfig('api.keys.enabled') === false) {
+            App::abort(403);
+        }
+
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'users.keys.create'
+        ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('userKeys', $this->userKeysModel->getRequiredAttrs(), $this->userKeysModel->getAllowedAttrs());
 
         try {
@@ -91,6 +105,21 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
      */
     public function getCollection(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.read'
+            ]) && App::getConfig('api.keys.enabled') === false) {
+            App::abort(403);
+        }
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.create'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $query = $this->parseCollectionQueryOrAbort(Request::getQuery(), 'userKeys');
 
         try {
@@ -127,6 +156,20 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
     public function get(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.read'
+            ]) && App::getConfig('api.keys.enabled') === false) {
+            App::abort(403);
+        }
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.create'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $fields = $this->parseFieldsQueryOrAbort(Request::getQuery(), 'userKeys', array_keys($this->userKeysModel->getSelectableCols()));
 
         try {
@@ -161,6 +204,20 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
     public function update(array $args): void
     {
 
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.update'
+            ]) && App::getConfig('api.keys.enabled') === false) {
+            App::abort(403);
+        }
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.update'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('userKeys', [], $this->userKeysModel->getAllowedAttrs());
 
         try {
@@ -194,6 +251,20 @@ class UserKeysController extends PrivateApiController implements ScopedResourceI
      */
     public function delete(array $args): void
     {
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.delete'
+            ]) && App::getConfig('api.keys.enabled') === false) {
+            App::abort(403);
+        }
+
+        if (!$this->user->hasAnyPermissions([
+                'global.admin',
+                'users.keys.delete'
+            ]) && $this->user->getId() !== $args['user_id']) {
+            App::abort(403);
+        }
 
         try {
 
