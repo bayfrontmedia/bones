@@ -12,6 +12,7 @@ use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
+use Bayfront\Bones\Services\Api\Models\Relationships\TenantUserRolesModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\PDO\Db;
@@ -26,12 +27,14 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
     protected TenantRolesModel $tenantRolesModel;
     protected TenantUsersModel $tenantUsersModel;
     protected UsersModel $usersModel;
+    protected TenantUserRolesModel $tenantUserRolesModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel, UsersModel $usersModel, TenantUserRolesModel $tenantUserRolesModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->tenantRolesModel = $tenantRolesModel;
         $this->tenantUsersModel = $tenantUsersModel;
+        $this->tenantUserRolesModel = $tenantUserRolesModel;
         $this->usersModel = $usersModel;
 
         parent::__construct($events, $db, $log);
@@ -138,14 +141,14 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
      *
      * @param string $tenant_id
      * @param string $email
-     * @return bool
+     * @return void
      * @throws BadRequestException
      * @throws ConflictException
      * @throws ForbiddenException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function verifyTenantInvitation(string $tenant_id, string $email): bool
+    public function verifyTenantInvitation(string $tenant_id, string $email): void
     {
 
         // Get invitation
@@ -213,12 +216,34 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-        /*
-         * TODO:
-         * Finish this once TenantUserRolesModel is completed
-         */
+        // Check role exists
 
-        return false;
+        if (!$this->tenantRolesModel->idExists($tenant_id, $invitation['roleId'])) {
+
+            // Valid invitation, but role does not exist
+
+            $msg = 'Unable to verify tenant invitation';
+            $reason = 'Role does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $tenant_id,
+                'invitation_id' => $email
+            ]);
+
+            throw new ConflictException($msg . ': ' . $reason);
+
+        }
+
+        // Add user to tenant
+
+        $this->tenantUsersModel->add($tenant_id, $user['id']);
+
+        // Assign user role
+
+        $this->tenantUserRolesModel->add($tenant_id, $user['id'], [
+            $invitation['roleId']
+        ]);
 
     }
 
