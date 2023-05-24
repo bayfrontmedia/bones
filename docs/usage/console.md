@@ -28,6 +28,9 @@ php bones alias:list --sort=class
 # Return as JSON
 php bones alias:list --json
 
+# Manage API service tenant (scheduler, db, and router must exist)
+php bones api:manage:tenant
+
 # List contents of the service container
 php bones container:list
 # Return as JSON

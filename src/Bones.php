@@ -498,6 +498,15 @@ class Bones
 
         }
 
+        if (isset($this->interface_services['scheduler'])
+            && isset($this->interface_services['db'])
+            && isset($this->interface_services['router'])) {
+
+            $command = self::$container->make('Bayfront\Bones\Application\Kernel\Console\Commands\ApiManageTenant');
+            $console->add($command);
+
+        }
+
         // ------------------------- Load app commands -------------------------
 
         $this->loadAppCommands($console);
