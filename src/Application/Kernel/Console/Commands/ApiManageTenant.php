@@ -57,6 +57,13 @@ class ApiManageTenant extends Command
 
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
@@ -100,6 +107,14 @@ class ApiManageTenant extends Command
 
     }
 
+    /**
+     * Create new tenant.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
     private function createTenant(InputInterface $input, OutputInterface $output): int
     {
 
@@ -233,7 +248,7 @@ class ApiManageTenant extends Command
         }
 
         /*
-         * Save tenant meta based on plan
+         * Save plan-defined tenant meta
          */
 
         foreach (Arr::get($plan, 'tenant_meta', []) as $meta_id => $meta_value) {
@@ -251,6 +266,29 @@ class ApiManageTenant extends Command
                 return Command::FAILURE;
 
             }
+
+        }
+
+        /*
+         * Save plan permission and role ID's
+         */
+
+        try {
+
+            $this->tenantMetaModel->create($tenant_id, [
+                'id' => '00-plan-permissions',
+                'metaValue' => json_encode($permission_ids)
+            ], true);
+
+            $this->tenantMetaModel->create($tenant_id, [
+                'id' => '00-plan-roles',
+                'metaValue' => json_encode($role_ids)
+            ], true);
+
+        } catch (Exception $e) {
+
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
 
         }
 
