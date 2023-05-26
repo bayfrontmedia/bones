@@ -84,7 +84,6 @@ Bones will automatically place the following services into the container:
 
 Depending on your installation configuration, Bones may use these place additional services into the container:
 
-- [API](services/api/README.md)
 - [Db](services/db.md)
 - [Router](services/router.md)
 - [Scheduler](services/scheduler.md)
@@ -94,6 +93,10 @@ Other commonly used helpful services you may wish to bootstrap into your app inc
 
 - [Flysystem](https://flysystem.thephpleague.com/docs/)
 - [Monolog](https://seldaek.github.io/monolog/)
+
+The following services are included with Bones:
+
+- [API](services/api/README.md)
 
 ### Utilities
 
