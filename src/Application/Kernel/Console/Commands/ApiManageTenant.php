@@ -41,9 +41,9 @@ class ApiManageTenant extends Command
      * Options
      */
     private const OPTION_CREATE = 'Create a new tenant';
-    private const OPTION_DISABLE = 'Disable tenant';
-    private const OPTION_ENABLE = 'Enable tenant';
     private const OPTION_CHANGE_PLAN = 'Change tenant plan';
+    private const OPTION_ENABLE = 'Enable tenant';
+    private const OPTION_DISABLE = 'Disable tenant';
     private const OPTION_DELETE = 'Delete tenant';
 
     /**
@@ -78,11 +78,11 @@ class ApiManageTenant extends Command
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
             'Choose an option: ', [
-                self::OPTION_CREATE,
-                self::OPTION_DISABLE,
-                self::OPTION_ENABLE,
-                self::OPTION_CHANGE_PLAN,
-                self::OPTION_DELETE
+            self::OPTION_CREATE,
+            self::OPTION_CHANGE_PLAN,
+            self::OPTION_ENABLE,
+            self::OPTION_DISABLE,
+            self::OPTION_DELETE
         ],
             0
         );
@@ -92,12 +92,12 @@ class ApiManageTenant extends Command
 
         if ($option == self::OPTION_CREATE) {
             return $this->createTenant($input, $output);
-        } else if ($option == self::OPTION_DISABLE) {
-            return $this->disableTenant($input, $output);
-        } else if ($option == self::OPTION_ENABLE) {
-            return $this->enableTenant($input, $output);
         } else if ($option == self::OPTION_CHANGE_PLAN) {
             return $this->changeTenantPlan($input, $output);
+        } else if ($option == self::OPTION_ENABLE) {
+            return $this->enableTenant($input, $output);
+        } else if ($option == self::OPTION_DISABLE) {
+            return $this->disableTenant($input, $output);
         } else if ($option == self::OPTION_DELETE) {
             return $this->deleteTenant($input, $output);
         } else {
@@ -202,105 +202,6 @@ class ApiManageTenant extends Command
             return Command::FAILURE;
         }
 
-        /*
-         * Create permissions and roles based on plan
-         */
-
-        /*
-
-        $permission_ids = [];
-
-        $plan = App::getConfig('api-plans.' . $plan, []);
-
-        foreach (Arr::get($plan, 'permissions', []) as $permission => $description) {
-
-            try {
-
-                $permission_ids[$permission] = $this->tenantPermissionsModel->create($tenant_id, [
-                    'name' => $permission,
-                    'description' => $description
-                ]);
-
-            } catch (Exception $e) {
-
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-                return Command::FAILURE;
-
-            }
-
-        }
-
-        $role_ids = [];
-
-        foreach (Arr::get($plan, 'roles', []) as $role) {
-
-            try {
-
-                $id = $this->tenantRolesModel->create($tenant_id, [
-                    'name' => $role['name'],
-                    'description' => $role['description']
-                ]);
-
-                $role_ids[$role['name']] = $id;
-
-                $this->tenantRolePermissionsModel->add($tenant_id, $id, Arr::only($permission_ids, array_keys($role['permissions'])));
-
-            } catch (Exception $e) {
-
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-                return Command::FAILURE;
-
-            }
-
-        }
-
-        /*
-         * Save plan-defined tenant meta
-         * /
-
-        foreach (Arr::get($plan, 'tenant_meta', []) as $meta_id => $meta_value) {
-
-            try {
-
-                $this->tenantMetaModel->create($tenant_id, [
-                    'id' => $meta_id,
-                    'metaValue' => $meta_value
-                ], true);
-
-            } catch (Exception $e) {
-
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-                return Command::FAILURE;
-
-            }
-
-        }
-
-        /*
-         * Save plan permission and role ID's
-         * /
-
-        try {
-
-            $this->tenantMetaModel->create($tenant_id, [
-                'id' => '00-plan-permissions',
-                'metaValue' => json_encode($permission_ids)
-            ], true);
-
-            $this->tenantMetaModel->create($tenant_id, [
-                'id' => '00-plan-roles',
-                'metaValue' => json_encode($role_ids)
-            ], true);
-
-        } catch (Exception $e) {
-
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
-
-        }
-
-        */
-
         $output->writeLn('<info>Tenant successfully created!</info>');
         $output->writeLn('<info>ID: ' . $tenant_id . '</info>');
 
@@ -308,15 +209,16 @@ class ApiManageTenant extends Command
 
     }
 
+
     /**
-     * Disable tenant.
+     * Change tenant plan.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
      * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
-    private function disableTenant(InputInterface $input, OutputInterface $output): int
+    private function changeTenantPlan(InputInterface $input, OutputInterface $output): int
     {
 
         $helper = $this->getHelper('question');
@@ -337,26 +239,41 @@ class ApiManageTenant extends Command
 
         }
 
-        $question = new ConfirmationQuestion('Are you sure you want to disable this tenant (' . $tenant['name'] . ')? [y/n] ', false);
+        $question = new ChoiceQuestion(
+            'Choose a plan: ', array_keys(App::getConfig('api-plans')),
+            0
+        );
+
+        $question->setErrorMessage('Plan %s is invalid.');
+        $plan = $helper->ask($input, $output, $question);
+
+        $plan_meta = $this->tenantMetaModel->getValue($tenant_id, '00-plan', true);
+
+        if ($plan_meta) {
+            $current_plan = Arr::get(json_decode($plan_meta, true), 'name', 'UNKNOWN');
+        } else {
+            $current_plan = 'UNKNOWN';
+        }
+
+        $output->writeLn('<info>Ready to change tenant plan:</info>');
+        $output->writeLn('<question>Tenant ID:</question> ' . $tenant_id);
+        $output->writeLn('<question>Tenant name:</question> ' . $tenant['name']);
+        $output->writeLn('<question>Current plan:</question> ' . $current_plan);
+        $output->writeLn('<question>New plan:</question> ' . $plan);
+
+        $question = new ConfirmationQuestion('Are you sure you want to proceed? [y/n] ', false);
 
         if (!$helper->ask($input, $output, $question)) {
             return Command::SUCCESS;
         }
 
-        try {
+        $set_plan = $this->setTenantPlan($output, $tenant_id, $plan);
 
-            $this->tenantsModel->update($tenant_id, [
-                'enabled' => false
-            ]);
-
-        } catch (Exception $e) {
-
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+        if ($set_plan === Command::FAILURE) {
             return Command::FAILURE;
-
         }
 
-        $output->writeLn('<info>Tenant (' . $tenant['name'] . ') successfully disabled</info>');
+        $output->writeLn('<info>Tenant plan successfully changed!</info>');
         return Command::SUCCESS;
 
     }
@@ -414,7 +331,15 @@ class ApiManageTenant extends Command
 
     }
 
-    private function changeTenantPlan(InputInterface $input, OutputInterface $output): int
+    /**
+     * Disable tenant.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
+     */
+    private function disableTenant(InputInterface $input, OutputInterface $output): int
     {
 
         $helper = $this->getHelper('question');
@@ -435,27 +360,27 @@ class ApiManageTenant extends Command
 
         }
 
-        $question = new ConfirmationQuestion('Are you sure you want to change the plan of this tenant (' . $tenant['name'] . ')? [y/n] ', false);
+        $question = new ConfirmationQuestion('Are you sure you want to disable this tenant (' . $tenant['name'] . ')? [y/n] ', false);
 
         if (!$helper->ask($input, $output, $question)) {
             return Command::SUCCESS;
         }
 
-        $question = new ChoiceQuestion(
-            'Choose a plan: ', array_keys(App::getConfig('api-plans')),
-            0
-        );
+        try {
 
-        $question->setErrorMessage('Plan %s is invalid.');
-        $plan = $helper->ask($input, $output, $question);
+            $this->tenantsModel->update($tenant_id, [
+                'enabled' => false
+            ]);
 
-        $output->writeLn('<info>Ready to change tenant plan:</info>');
-        $output->writeLn('<question>Tenant ID:</question> ' . $tenant_id);
-        $output->writeLn('<question>Tenant name:</question> ' . $tenant['name']);
+        } catch (Exception $e) {
 
-        // Current plan
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
 
-        // New plan
+        }
+
+        $output->writeLn('<info>Tenant (' . $tenant['name'] . ') successfully disabled</info>');
+        return Command::SUCCESS;
 
     }
 
@@ -521,68 +446,246 @@ class ApiManageTenant extends Command
     private function setTenantPlan(OutputInterface $output, string $tenant_id, string $plan): int
     {
 
-        // TODO: Get current permissions/roles and update as necessary
-
         /*
-         * Create permissions and roles based on plan
+         * Get plan details from config file
          */
 
-        $permission_ids = [];
+        $plan_name = $plan;
 
         $plan = App::getConfig('api-plans.' . $plan, []);
 
-        foreach (Arr::get($plan, 'permissions', []) as $permission => $description) {
+        $plan_details = array_merge(Arr::get($plan, 'plan', []), ['name' => $plan_name]); // Add name
 
-            try {
+        $plan_permissions = Arr::get($plan, 'permissions', []);
 
-                $permission_ids[$permission] = $this->tenantPermissionsModel->create($tenant_id, [
-                    'name' => $permission,
-                    'description' => $description
-                ]);
+        $plan_roles = Arr::get($plan, 'roles', []);
 
-            } catch (Exception $e) {
+        $plan_meta = Arr::get($plan, 'meta', []);
 
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-                return Command::FAILURE;
+        /*
+         * Remove tenant permissions which do not exist in current plan
+         */
 
-            }
+        $current_permissions = $this->tenantPermissionsModel->getAllIdsAndNames($tenant_id);
 
-        }
+        foreach ($current_permissions as $k => $permission) {
 
-        $role_ids = [];
+            if (!array_key_exists($permission['name'], $plan_permissions)) {
 
-        foreach (Arr::get($plan, 'roles', []) as $role) {
+                try {
 
-            try {
+                    $this->tenantPermissionsModel->delete($tenant_id, $permission['id']);
 
-                $id = $this->tenantRolesModel->create($tenant_id, [
-                    'name' => $role['name'],
-                    'description' => $role['description']
-                ]);
+                } catch (Exception $e) {
 
-                $role_ids[$role['name']] = $id;
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                    return Command::FAILURE;
 
-                $this->tenantRolePermissionsModel->add($tenant_id, $id, Arr::only($permission_ids, array_keys($role['permissions'])));
+                }
 
-            } catch (Exception $e) {
+                /*
+                 * Update $current_permissions array
+                 */
 
-                $output->writeln('<error>' . $e->getMessage() . '</error>');
-                return Command::FAILURE;
+                unset($current_permissions[$k]);
 
             }
 
         }
 
         /*
-         * Save plan-defined tenant meta
+         * Remove tenant roles which do not exist in current plan
          */
 
-        foreach (Arr::get($plan, 'tenant_meta', []) as $meta_id => $meta_value) {
+        $current_roles = $this->tenantRolesModel->getAllIdsAndNames($tenant_id);
+
+        foreach ($current_roles as $k => $role) {
+
+            if (!array_key_exists($role['name'], $plan_roles)) {
+
+                try {
+
+                    $this->tenantRolesModel->delete($tenant_id, $role['id']);
+
+                } catch (Exception $e) {
+
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                    return Command::FAILURE;
+
+                }
+
+                /*
+                 * Update $current_roles array
+                 */
+
+                unset($current_roles[$k]);
+
+            }
+
+        }
+
+        /*
+         * Create plan permissions which do not already exist
+         */
+
+        foreach ($plan_permissions as $name => $description) {
+
+            if (!in_array($name, Arr::pluck($current_permissions, 'name'))) { // Permission does not exist
+
+                try {
+
+                    $id = $this->tenantPermissionsModel->create($tenant_id, [
+                        'name' => $name,
+                        'description' => $description
+                    ]);
+
+                } catch (Exception $e) {
+
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                    return Command::FAILURE;
+
+                }
+
+                /*
+                 * Update $current_permissions array
+                 */
+
+                $current_permissions[] = [
+                    'id' => $id,
+                    'name' => $name
+                ];
+
+            }
+
+        }
+
+        /*
+         * Roles
+         */
+
+        $current_role_names = array_column($current_roles, 'name');
+
+        foreach ($plan_roles as $name => $role) {
+
+            if (in_array($name, $current_role_names)) { // Role already exists
+
+                // Remove all permissions from role
+
+                $current_role_key = array_search($name, $current_role_names);
+
+                try {
+
+                    $this->tenantRolePermissionsModel->removeAll($tenant_id, $current_roles[$current_role_key]['id']);
+
+                    // Add permissions based on new plan
+
+                    $role_permissions = [];
+
+                    foreach ($current_permissions as $permission) {
+
+                        if (in_array($permission['name'], array_keys($role['permissions']))) {
+                            $role_permissions[] = $permission['id'];
+                        }
+
+                    }
+
+                    $this->tenantRolePermissionsModel->add($tenant_id, $current_roles[$current_role_key]['id'], $role_permissions);
+
+                } catch (Exception $e) {
+
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                    return Command::FAILURE;
+
+                }
+
+            } else { // Role does not exist
+
+                // Create
+
+                try {
+
+                    $id = $this->tenantRolesModel->create($tenant_id, [
+                        'name' => $name,
+                        'description' => $role['description']
+                    ]);
+
+                    /*
+                     * Update $current_roles array
+                     */
+
+                    $current_roles[] = [
+                        'id' => $id,
+                        'name' => $name
+                    ];
+
+                    // Add permissions based on plan
+
+                    $role_permissions = [];
+
+                    foreach ($current_permissions as $permission) {
+
+                        if (in_array($permission['name'], array_keys($role['permissions']))) {
+                            $role_permissions[] = $permission['id'];
+                        }
+
+                    }
+
+                    $this->tenantRolePermissionsModel->add($tenant_id, $id, $role_permissions);
+
+                } catch (Exception $e) {
+
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                    return Command::FAILURE;
+
+                }
+
+            }
+
+        }
+
+        /*
+         * Remove meta from previous plan
+         */
+
+        $previous_plan = $this->tenantMetaModel->getValue($tenant_id, '00-plan', true);
+
+        if ($previous_plan) {
+
+            $previous_plan_name = Arr::get(json_decode($previous_plan, true), 'name');
+
+            if ($previous_plan_name) {
+
+                $previous_plan_meta = App::getConfig('api-plans.' . $previous_plan_name . '.meta', []);
+
+                foreach ($previous_plan_meta as $key => $value) {
+
+                    try {
+
+                        $this->tenantMetaModel->delete($tenant_id, $key, true);
+
+                    } catch (Exception $e) {
+
+                        $output->writeln('<error>' . $e->getMessage() . '</error>');
+                        return Command::FAILURE;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        /*
+         * Add meta for current plan
+         */
+
+        foreach ($plan_meta as $id => $meta_value) {
 
             try {
 
                 $this->tenantMetaModel->create($tenant_id, [
-                    'id' => $meta_id,
+                    'id' => $id,
                     'metaValue' => $meta_value
                 ], true, true);
 
@@ -596,19 +699,24 @@ class ApiManageTenant extends Command
         }
 
         /*
-         * Save plan permission and role ID's
+         * Save plan details, permission ID's and role ID's
          */
 
         try {
 
             $this->tenantMetaModel->create($tenant_id, [
+                'id' => '00-plan',
+                'metaValue' => json_encode($plan_details)
+            ], true, true);
+
+            $this->tenantMetaModel->create($tenant_id, [
                 'id' => '00-plan-permissions',
-                'metaValue' => json_encode($permission_ids)
+                'metaValue' => json_encode($current_permissions)
             ], true, true);
 
             $this->tenantMetaModel->create($tenant_id, [
                 'id' => '00-plan-roles',
-                'metaValue' => json_encode($role_ids)
+                'metaValue' => json_encode($current_roles)
             ], true, true);
 
         } catch (Exception $e) {

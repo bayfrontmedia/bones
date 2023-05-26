@@ -72,6 +72,26 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
     }
 
     /**
+     * Get all permission ID's for tenant role.
+     *
+     * @param string $scoped_id
+     * @param string $resource_id
+     * @return array
+     */
+    public function getAllIds(string $scoped_id, string $resource_id): array
+    {
+
+        if (!Validate::uuid($scoped_id) || !Validate::uuid($resource_id)) {
+            return [];
+        }
+
+        return Arr::pluck($this->db->select("SELECT BIN_TO_UUID(id, 1) as id FROM api_tenant_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $scoped_id
+        ]), 'name');
+
+    }
+
+    /**
      * Get all permission names for tenant role.
      *
      * @param string $scoped_id
@@ -391,6 +411,63 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
         // Event
 
         $this->events->doEvent('api.tenant.role.permissions.remove', $scoped_id, $resource_id, $relationship_ids);
+
+    }
+
+    /**
+     * Remove all permissions from tenant role.
+     *
+     * @param string $scoped_id
+     * @param string $resource_id
+     * @return void
+     * @throws NotFoundException
+     */
+    public function removeAll(string $scoped_id, string $resource_id): void
+    {
+
+        // Tenant role exists
+
+        if (!$this->tenantRolesModel->idExists($scoped_id, $resource_id)) {
+
+            $msg = 'Unable to remove permissions from tenant role';
+            $reason = 'Role ID (' . $resource_id . ') does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'tenant_id' => $scoped_id,
+                'role_id' => $resource_id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Get all ID's for log and event
+
+        $ids = $this->getAllIds($scoped_id, $resource_id);
+
+        // Delete
+
+        $this->db->query("DELETE FROM api_tenant_role_permissions WHERE tenantId = UUID_TO_BIN(:tenant_id, 1) AND roleId = UUID_TO_BIN(:role_id, 1)", [
+           'tenant_id' => $scoped_id,
+           'role_id' => $resource_id
+        ]);
+
+        // Log
+
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+
+            $this->log->info('Permissions removed from tenant role', [
+                'tenant_id' => $scoped_id,
+                'role_id' => $resource_id,
+                'permission_ids' => $ids
+            ]);
+
+        }
+
+        // Event
+
+        $this->events->doEvent('api.tenant.role.permissions.remove', $scoped_id, $resource_id, $ids);
 
     }
 

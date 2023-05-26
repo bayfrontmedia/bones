@@ -186,6 +186,25 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
+     * Get all role ID's and names for tenant.
+     *
+     * @param string $scoped_id
+     * @return array
+     */
+    public function getAllIdsAndNames(string $scoped_id): array
+    {
+
+        if (!Validate::uuid($scoped_id)) {
+            return [];
+        }
+
+        return $this->db->select("SELECT BIN_TO_UUID(id, 1) as id, name from api_tenant_roles WHERE tenantId = UUID_TO_BIN(:tenant_id, 1)", [
+            'tenant_id' => $scoped_id
+        ]);
+
+    }
+
+    /**
      * Create tenant role.
      *
      * @param string $scoped_id
