@@ -37,7 +37,7 @@ The scheduler service can be installed with the `php bones install:service --sch
 
 Installing the scheduler service will perform the following actions:
 
-## Add config file
+### Add config file
 
 A config file will be added to `/config/scheduler.php` (See above example)
 

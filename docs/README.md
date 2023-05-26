@@ -84,6 +84,7 @@ Bones will automatically place the following services into the container:
 
 Depending on your installation configuration, Bones may use these place additional services into the container:
 
+- [API](services/api/README.md)
 - [Db](services/db.md)
 - [Router](services/router.md)
 - [Scheduler](services/scheduler.md)

@@ -26,6 +26,7 @@ class InstallService extends Command
 
         $this->setName('install:service')
             ->setDescription('Install an optional service')
+            ->addOption('api', null, InputOption::VALUE_NONE, 'Install API service')
             ->addOption('db', null, InputOption::VALUE_NONE, 'Install database')
             ->addOption('router', null, InputOption::VALUE_NONE, 'Install router')
             ->addOption('scheduler', null, InputOption::VALUE_NONE, 'Install scheduler')
@@ -42,6 +43,184 @@ class InstallService extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        // ------------------------- API (optional) -------------------------
+
+        if ($input->getOption('api')) {
+
+            ConsoleUtilities::msgInstalling('API service', $output);
+
+            if (!App::has('db')
+                || !App::has('router')
+                || !App::has('scheduler')
+                || !App::has('Monolog\Logger')) {
+
+                $output->writeln('<error>Unable to install API service: Dependant services are missing</error>');
+
+                return Command::FAILURE;
+
+            }
+
+            // API config
+
+            try {
+
+                $name = 'API config';
+
+                ConsoleUtilities::msgInstalling($name, $output);
+
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/config/api.php';
+
+                $dest_file = App::configPath('/api.php');
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            }
+
+            // API docs
+
+            try {
+
+                $name = 'API docs config';
+
+                ConsoleUtilities::msgInstalling($name, $output);
+
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/config/api-docs.php';
+
+                $dest_file = App::configPath('/api-docs.php');
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            }
+
+            // API plans
+
+            try {
+
+                $name = 'API plans config';
+
+                ConsoleUtilities::msgInstalling($name, $output);
+
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/config/api-plans.php';
+
+                $dest_file = App::configPath('/api-plans.php');
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            }
+
+            // Database migrations
+
+            try {
+
+                $name = 'Database migrations';
+
+                ConsoleUtilities::msgInstalling($name, $output);
+
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/resources/database/migrations/2023-05-26-203030_create_api_tables.php';
+
+                $dest_file = App::resourcesPath('/database/migrations/2023-05-26-203030_create_api_tables.php');
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            }
+
+            // API events
+
+            $name = 'API events';
+
+            ConsoleUtilities::msgInstalling($name, $output);
+
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/app/Events/ApiEvents.php';
+
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Events/ApiEvents.php');
+
+            try {
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::replaceFileContents($dest_file, [
+                    '_namespace_' => rtrim(App::getConfig('app.namespace'), '\\'),
+                    '_bones_version_' => App::getBonesVersion()
+                ]);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            } catch (ConsoleException) {
+                ConsoleUtilities::msgFailedToWrite($name, $output);
+            }
+
+            // API filters
+
+            $name = 'API filters';
+
+            ConsoleUtilities::msgInstalling($name, $output);
+
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/api/app/Filters/ApiFilters.php';
+
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Filters/ApiFilters.php');
+
+            try {
+
+                ConsoleUtilities::copyFile($src_file, $dest_file);
+
+                ConsoleUtilities::replaceFileContents($dest_file, [
+                    '_namespace_' => rtrim(App::getConfig('app.namespace'), '\\'),
+                    '_bones_version_' => App::getBonesVersion()
+                ]);
+
+                ConsoleUtilities::msgInstalled($name, $output);
+
+            } catch (FileAlreadyExistsException) {
+                ConsoleUtilities::msgFileExists($name, $output);
+            } catch (UnableToCopyException) {
+                ConsoleUtilities::msgUnableToCopy($name, $output);
+            } catch (ConsoleException) {
+                ConsoleUtilities::msgFailedToWrite($name, $output);
+            }
+
+            // Run migrations
+
+            $output->writeln('Running database migrations...');
+
+            shell_exec('php bones migrate:up');
+
+            ConsoleUtilities::msgInstallComplete('API service', $output);
+
+            $output->writeln('<info>*** NOTE: Additional steps are required to complete the API service installation! ***</info>');
+            $output->writeln('<info>- If using Bones controllers, ensure the class_namespace router config key is blank</info>');
+            $output->writeln('<info>- Ensure the exception handler class extends ApiExceptionHandler</info>');
+            $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/services/api/README.md</info>');
+
+        }
 
         // ------------------------- Db (optional) -------------------------
 
