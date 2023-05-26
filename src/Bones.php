@@ -505,6 +505,9 @@ class Bones
             $command = self::$container->make('Bayfront\Bones\Application\Kernel\Console\Commands\ApiManageTenant');
             $console->add($command);
 
+            $command = self::$container->make('Bayfront\Bones\Application\Kernel\Console\Commands\ApiManageUser');
+            $console->add($command);
+
         }
 
         // ------------------------- Load app commands -------------------------
