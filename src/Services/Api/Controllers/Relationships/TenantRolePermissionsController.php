@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers\Relationships;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -13,6 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantRolePermissionsModel;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantMetaModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
@@ -23,10 +25,12 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
 {
 
     protected TenantRolePermissionsModel $tenantRolePermissionsModel;
+    protected TenantMetaModel $tenantMetaModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantRolePermissionsModel $tenantRolePermissionsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantRolePermissionsModel $tenantRolePermissionsModel, TenantMetaModel $tenantMetaModel)
     {
         $this->tenantRolePermissionsModel = $tenantRolePermissionsModel;
+        $this->tenantMetaModel = $tenantMetaModel;
 
         parent::__construct($events, $filters, $response);
     }
@@ -50,6 +54,25 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
             'tenant.role.permissions.add'
         ], $args['tenant_id']);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.role.permissions.add'
+        ])) {
+
+            $plan_roles = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-roles', true);
+
+            if ($plan_roles) {
+
+                $plan_roles = json_decode($plan_roles, true);
+
+                if (in_array($args['role_id'], Arr::pluck($plan_roles, 'id'))) {
+                    App::abort(403, 'Unable to add permissions to tenant role: Role is protected', [], 10240);
+                }
+
+            }
+
+        }
+
         $ids = $this->getToManyRelationshipIdsOrAbort('tenantPermissions');
 
         try {
@@ -57,9 +80,9 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
             $this->tenantRolePermissionsModel->add($args['tenant_id'], $args['role_id'], $ids);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage(), [], 10240);
+            App::abort(400, $e->getMessage(), [], 10241);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10241);
+            App::abort(404, $e->getMessage(), [], 10242);
         }
 
         $this->response->setStatusCode(204)->send();
@@ -93,9 +116,9 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
             $results = $this->tenantRolePermissionsModel->getCollection($args['tenant_id'], $args['role_id'], $query);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage(), [], 10242);
+            App::abort(400, $e->getMessage(), [], 10243);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10243);
+            App::abort(404, $e->getMessage(), [], 10244);
         }
 
         $schema = TenantPermissionsCollection::create($results, [
@@ -127,6 +150,25 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
             'tenant.role.permissions.remove'
         ], $args['tenant_id']);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.role.permissions.remove'
+        ])) {
+
+            $plan_roles = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-roles', true);
+
+            if ($plan_roles) {
+
+                $plan_roles = json_decode($plan_roles, true);
+
+                if (in_array($args['role_id'], Arr::pluck($plan_roles, 'id'))) {
+                    App::abort(403, 'Unable to remove permissions from tenant role: Role is protected', [], 10245);
+                }
+
+            }
+
+        }
+
         $ids = $this->getToManyRelationshipIdsOrAbort('tenantPermissions');
 
         try {
@@ -134,7 +176,7 @@ class TenantRolePermissionsController extends PrivateApiController implements Re
             $this->tenantRolePermissionsModel->remove($args['tenant_id'], $args['role_id'], $ids);
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10244);
+            App::abort(404, $e->getMessage(), [], 10246);
         }
 
         $this->response->setStatusCode(204)->send();

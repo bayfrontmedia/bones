@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers\Resources;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -13,6 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantRolesModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantRolesCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantRolesResource;
@@ -25,10 +27,12 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
 {
 
     protected TenantRolesModel $tenantRolesModel;
+    protected TenantMetaModel $tenantMetaModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantRolesModel $tenantRolesModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantRolesModel $tenantRolesModel, TenantMetaModel $tenantMetaModel)
     {
         $this->tenantRolesModel = $tenantRolesModel;
+        $this->tenantMetaModel = $tenantMetaModel;
 
         parent::__construct($events, $filters, $response);
     }
@@ -180,6 +184,25 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             'tenant.roles.update'
         ], $args['tenant_id']);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.roles.update'
+        ])) {
+
+            $plan_roles = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-roles', true);
+
+            if ($plan_roles) {
+
+                $plan_roles = json_decode($plan_roles, true);
+
+                if (in_array($args['role_id'], Arr::pluck($plan_roles, 'id'))) {
+                    App::abort(403, 'Unable to update tenant role: Role is protected', [], 10487);
+                }
+
+            }
+
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('tenantRoles', [], $this->tenantRolesModel->getAllowedAttrs());
 
         try {
@@ -188,11 +211,11 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $updated = $this->tenantRolesModel->get($args['tenant_id'], $args['role_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage(), [], 10487);
+            App::abort(400, $e->getMessage(), [], 10488);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage(), [], 10488);
+            App::abort(409, $e->getMessage(), [], 10489);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10489);
+            App::abort(404, $e->getMessage(), [], 10490);
         }
 
         $schema = TenantRolesResource::create($updated, [
@@ -221,6 +244,25 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             'tenant.roles.delete'
         ], $args['tenant_id']);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.roles.delete'
+        ])) {
+
+            $plan_roles = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-roles', true);
+
+            if ($plan_roles) {
+
+                $plan_roles = json_decode($plan_roles, true);
+
+                if (in_array($args['role_id'], Arr::pluck($plan_roles, 'id'))) {
+                    App::abort(403, 'Unable to delete tenant role: Role is protected', [], 10491);
+                }
+
+            }
+
+        }
+
         try {
 
             $this->tenantRolesModel->delete($args['tenant_id'], $args['role_id']);
@@ -228,7 +270,7 @@ class TenantRolesController extends PrivateApiController implements ScopedResour
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10490);
+            App::abort(404, $e->getMessage(), [], 10492);
         }
 
     }

@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Services\Api\Controllers\Resources;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\ArraySchema\InvalidSchemaException;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
@@ -13,6 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsCollection;
 use Bayfront\Bones\Services\Api\Schemas\Resources\TenantPermissionsResource;
@@ -25,10 +27,12 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
 {
 
     protected TenantPermissionsModel $tenantPermissionsModel;
+    protected TenantMetaModel $tenantMetaModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, TenantPermissionsModel $tenantPermissionsModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, TenantPermissionsModel $tenantPermissionsModel, TenantMetaModel $tenantMetaModel)
     {
         $this->tenantPermissionsModel = $tenantPermissionsModel;
+        $this->tenantMetaModel = $tenantMetaModel;
 
         parent::__construct($events, $filters, $response);
     }
@@ -180,6 +184,25 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             'tenant.permissions.update'
         ]);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.permissions.update'
+        ])) {
+
+            $plan_permissions = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-permissions', true);
+
+            if ($plan_permissions) {
+
+                $plan_permissions = json_decode($plan_permissions, true);
+
+                if (in_array($args['permission_id'], Arr::pluck($plan_permissions, 'id'))) {
+                    App::abort(403, 'Unable to update tenant permission: Permission is protected', [], 10467);
+                }
+
+            }
+
+        }
+
         $attrs = $this->getResourceAttributesOrAbort('tenantPermissions', [], $this->tenantPermissionsModel->getAllowedAttrs());
 
         try {
@@ -188,11 +211,11 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $updated = $this->tenantPermissionsModel->get($args['tenant_id'], $args['permission_id']);
 
         } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage(), [], 10467);
+            App::abort(400, $e->getMessage(), [], 10468);
         } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage(), [], 10468);
+            App::abort(409, $e->getMessage(), [], 10469);
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10469);
+            App::abort(404, $e->getMessage(), [], 10470);
         }
 
         $schema = TenantPermissionsResource::create($updated, [
@@ -221,6 +244,25 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             'tenant.permissions.delete'
         ]);
 
+        if (!$this->user->hasAnyPermissions([
+            'global.admin',
+            'tenants.permissions.delete'
+        ])) {
+
+            $plan_permissions = $this->tenantMetaModel->getValue($args['tenant_id'], '00-plan-permissions', true);
+
+            if ($plan_permissions) {
+
+                $plan_permissions = json_decode($plan_permissions, true);
+
+                if (in_array($args['permission_id'], Arr::pluck($plan_permissions, 'id'))) {
+                    App::abort(403, 'Unable to delete tenant permission: Permission is protected', [], 10471);
+                }
+
+            }
+
+        }
+
         try {
 
             $this->tenantPermissionsModel->delete($args['tenant_id'], $args['permission_id']);
@@ -228,7 +270,7 @@ class TenantPermissionsController extends PrivateApiController implements Scoped
             $this->response->setStatusCode(204)->send();
 
         } catch (NotFoundException $e) {
-            App::abort(404, $e->getMessage(), [], 10470);
+            App::abort(404, $e->getMessage(), [], 10472);
         }
 
     }
