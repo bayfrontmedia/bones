@@ -211,6 +211,7 @@ class InstallService extends Command
 
             $output->writeln('Running database migrations...');
 
+            shell_exec('composer update');
             shell_exec('php bones migrate:up');
 
             ConsoleUtilities::msgInstallComplete('API service', $output);
