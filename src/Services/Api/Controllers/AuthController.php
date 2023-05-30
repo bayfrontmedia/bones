@@ -56,6 +56,7 @@ class AuthController extends AuthApiController
         try {
 
             $schema = AuthResource::create([
+                'user_id' => $user_id,
                 'access_token' => $jwt['token'],
                 'refresh_token' => $this->authModel->createRefreshToken($user_id),
                 'expires_in' => $jwt['expires_in'],

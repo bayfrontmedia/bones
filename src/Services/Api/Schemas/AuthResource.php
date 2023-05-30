@@ -16,6 +16,7 @@ class AuthResource implements SchemaInterface
     {
 
         if (Arr::isMissing($array, [
+            'user_id',
             'access_token',
             'refresh_token',
             'expires_in',
@@ -29,6 +30,7 @@ class AuthResource implements SchemaInterface
                 'type' => 'token',
                 'id' => date('c'),
                 'attributes' => [
+                    'userId' => $array['user_id'],
                     'accessToken' => $array['access_token'],
                     'refreshToken' => $array['refresh_token'],
                     'type' => 'Bearer',
