@@ -183,7 +183,7 @@ class TenantUsersController extends PrivateApiController implements Relationship
 
         $schema = TenantPermissionsCollection::create($results, [
             'tenant_id' => $args['tenant_id'],
-            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/users/' . $args['user_id'] .' /permissions',
+            'collection_prefix' => '/tenants/' . $args['tenant_id'] . '/users/' . $args['user_id'] . '/permissions',
             'query_string' => Request::getQuery()
         ]);
 
