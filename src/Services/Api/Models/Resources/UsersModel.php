@@ -269,7 +269,7 @@ class UsersModel extends ApiModel implements ResourceInterface
                 'enabled' => true
             ]);
 
-            $this->events->doEvent('api.user.verification.create', $user_id);
+            $this->events->doEvent('api.user.verification.success', $user_id);
 
             return true;
 

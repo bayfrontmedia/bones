@@ -245,6 +245,12 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
             $invitation['roleId']
         ]);
 
+        $this->delete($tenant_id, $email);
+
+        // Event
+
+        $this->events->doEvent('api.tenant.invitation.verified', $tenant_id, $email);
+
     }
 
     /**

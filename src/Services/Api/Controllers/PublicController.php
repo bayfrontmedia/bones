@@ -114,7 +114,7 @@ class PublicController extends PublicApiController
 
                 $attrs['enabled'] = false;
                 $id = $this->usersModel->create($attrs, true);
-                $created = $this->usersModel->get($id, []);
+                $created = $this->usersModel->get($id);
 
             }
 
