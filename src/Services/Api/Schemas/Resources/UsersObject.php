@@ -32,7 +32,6 @@ class UsersObject implements SchemaInterface
             'email',
             'meta',
             'enabled',
-            'verificationId',
             'createdAt',
             'updatedAt'
         ];
@@ -61,18 +60,9 @@ class UsersObject implements SchemaInterface
 
         $return['links']['self'] = '/users/' . $array['id'] . $query;
 
-        if (isset($attributes['verificationId'])) {
-            $return['links']['related'] = '/users/' . $array['id'] . '/verify/' . $attributes['verificationId'] . $query;
-        }
-
         if (App::getConfig('api.response.absolute_uri')) {
 
             $return['links']['self'] = App::getConfig('api.response.base_url') . $return['links']['self'];
-
-            if (isset($return['links']['related'])) {
-                $return['links']['related'] = App::getConfig('api.response.base_url') . $return['links']['related'];
-
-            }
 
         }
 

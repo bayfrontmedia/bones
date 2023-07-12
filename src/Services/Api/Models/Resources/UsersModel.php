@@ -212,6 +212,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             'user_id' => $user_id
         ]);
 
+        $this->events->doEvent('api.user.verification.create', $user_id, $id);
+
         return $id;
 
     }
@@ -266,6 +268,8 @@ class UsersModel extends ApiModel implements ResourceInterface
             $this->update($user_id, [
                 'enabled' => true
             ]);
+
+            $this->events->doEvent('api.user.verification.create', $user_id);
 
             return true;
 
@@ -505,13 +509,12 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @param array $cols
-     * @param bool $include_verification
      * @return array
      * @throws BadRequestException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function get(string $id, array $cols = [], bool $include_verification = false): array
+    public function get(string $id, array $cols = []): array
     {
 
         if (empty($cols)) {
@@ -563,10 +566,6 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             throw $e;
 
-        }
-
-        if ($include_verification) {
-            $result['verificationId'] = $this->getNewUserVerification($id);
         }
 
         // Log
