@@ -15,20 +15,25 @@ use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnauthorizedException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\AuthModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\AuthResource;
+use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
+use Exception;
 
 class AuthController extends AuthApiController
 {
 
     protected AuthModel $authModel;
+    protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, FilterService $filters, Response $response, AuthModel $authModel)
+    public function __construct(EventService $events, FilterService $filters, Response $response, AuthModel $authModel, UsersModel $usersModel)
     {
         $this->authModel = $authModel;
+        $this->usersModel = $usersModel;
 
         parent::__construct($events, $filters, $response);
     }
@@ -142,6 +147,89 @@ class AuthController extends AuthApiController
         }
 
         $this->returnAuthResource($user['id']);
+
+    }
+
+    /**
+     * Create and save password reset token for user.
+     *
+     * @param array $args
+     * @return void
+     * @throws InvalidStatusCodeException
+     */
+    public function createPasswordToken(array $args): void
+    {
+
+        try {
+
+            $this->authModel->createPasswordToken($args['email']);
+
+        } catch (Exception) {
+            $this->response->setStatusCode(202)->send();
+            exit;
+        }
+
+        $this->response->setStatusCode(202)->send();
+
+    }
+
+    /**
+     * Does a valid token exist?
+     *
+     * @return void
+     * @throws ContainerNotFoundException
+     * @throws ForbiddenException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     */
+    public function passwordTokenExists(): void
+    {
+
+        if (!$this->authModel->passwordTokenExists(Request::getQuery('userId', ''), Request::getQuery('token', ''))) {
+            App::abort(404, '', [], 10608);
+        }
+
+        $this->response->setStatusCode(204)->send();
+
+    }
+
+    /**
+     * Update password using token.
+     *
+     * @param array $args
+     * @return void
+     * @throws ContainerNotFoundException
+     * @throws HttpException
+     * @throws InvalidSchemaException
+     * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
+     */
+    public function updatePassword(array $args): void
+    {
+
+        $attrs = $this->getResourceAttributesOrAbort('users', ['password'], ['password']);
+
+        try {
+
+            $this->authModel->updatePassword($args['user_id'], Request::getQuery('token', ''), $attrs['password']);
+            $user = $this->usersModel->get($args['user_id']);
+
+        } catch (BadRequestException $e) {
+            App::abort(400, $e->getMessage(), [], 10609);
+        } catch (ConflictException $e) {
+            App::abort(409, $e->getMessage(), [], 10610);
+        } catch (ForbiddenException $e) {
+            App::abort(403, $e->getMessage(), [], 10611);
+        } catch (NotFoundException $e) {
+            App::abort(404, $e->getMessage(), [], 10612);
+        }
+
+        $schema = UsersResource::create($user, [
+            'user_id' => $args['user_id']
+        ]);
+
+        $this->response->setStatusCode(200)->sendJson($this->filters->doFilter('api.response', $schema));
 
     }
 

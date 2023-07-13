@@ -21,6 +21,7 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\JWT\Jwt;
 use Bayfront\JWT\TokenException;
 use Bayfront\PDO\Db;
+use Bayfront\Validator\Validate;
 use Exception;
 use Monolog\Logger;
 
@@ -706,6 +707,175 @@ class AuthModel extends ApiModel
         ]);
 
         throw new UnauthorizedException($msg . ': ' . $reason);
+
+    }
+
+    /**
+     * Create and save password token for user.
+     *
+     * @param string $email
+     * @return void
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function createPasswordToken(string $email): void
+    {
+
+        if (!Validate::email($email)) {
+
+            $msg = 'Unable to create password reset token';
+            $reason = 'Invalid email address';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'email' => $email
+            ]);
+
+            throw new BadRequestException($msg . ': ' . $reason);
+
+        }
+
+        $user = $this->usersModel->getEntireFromEmail($email);
+
+        // TODO: Query a token where updatedAt < time() - 15min (make config setting)
+
+        try {
+
+            $token = App::createKey(16);
+
+        } catch (Exception $e) {
+            throw new UnexpectedApiException($e->getMessage());
+        }
+
+        $this->userMetaModel->create($user['id'], [
+            'id' => '00-password-token',
+            'metaValue' => json_encode([
+                'token' => $this->hashPassword($token, $user['salt']),
+                'expiresAt' => time() + (App::getConfig('api.duration.password_token') * 60)
+            ])
+        ], true, true);
+
+        // Event
+
+        $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Drop sensitive columns
+
+        $this->events->doEvent('api.password.token.create', $user, $token);
+
+    }
+
+    /**
+     * Does a valid password token exist?
+     *
+     * @param string $user_id
+     * @param string $token_value
+     * @return bool
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+
+    public function passwordTokenExists(string $user_id, string $token_value): bool
+    {
+
+        try {
+            $user = $this->usersModel->getEntire($user_id, true);
+        } catch (NotFoundException) {
+            return false;
+        }
+
+        // Attempt to fetch token
+
+        $token = $this->userMetaModel->getValue($user_id, '00-password-token', true);
+
+        if (!$token) {
+            return false;
+        }
+
+        // Validate token format
+
+        $token = json_decode($token, true);
+
+        if (Arr::isMissing($token, [
+            'token',
+            'expiresAt'
+        ])) {
+
+            // Delete invalid token
+
+            $this->userMetaModel->delete($user_id, '00-password-token', true);
+
+            return false;
+
+        }
+
+        // Validate token time
+
+        if ($token['expiresAt'] <= time()) {
+
+            // Delete invalid token
+
+            $this->userMetaModel->delete($user_id, '00-password-token', true);
+
+            return false;
+
+        }
+
+        // Validate token value
+
+        return $this->verifyPassword($token_value, $user['salt'], $token['token']);
+
+    }
+
+    /**
+     * Update user password and delete token.
+     *
+     * @param string $user_id
+     * @param string $token_value
+     * @param string $password
+     * @return void
+     * @throws BadRequestException
+     * @throws ConflictException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     */
+    public function updatePassword(string $user_id, string $token_value, string $password): void
+    {
+
+        if (!$this->passwordTokenExists($user_id, $token_value)) {
+
+            $msg = 'Unable to update password using token';
+            $reason = 'Invalid token';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $user_id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        $this->usersModel->update($user_id, [
+            'password' => $password
+        ]);
+
+        $this->userMetaModel->delete($user_id, '00-password-token', true);
+
+        // Event
+
+        /*
+         * NOTE:
+         * The user was already queried in the passwordTokenExists method,
+         * but since it is not returned, it must be queried again.
+         */
+
+        $user = $this->usersModel->getEntire($user_id, true);
+
+        $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Drop sensitive columns
+
+        $this->events->doEvent('api.password.token.updated', $user);
 
     }
 

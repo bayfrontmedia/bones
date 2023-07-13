@@ -15,9 +15,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
-use Bayfront\Bones\Services\Api\Models\PasswordTokenModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
-use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Schemas\Resources\UsersResource;
 use Bayfront\Container\ContainerException;
@@ -25,8 +23,6 @@ use Bayfront\Container\NotFoundException as ContainerNotFoundException;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-use Bayfront\Validator\Validate;
-use Exception;
 
 class PublicController extends PublicApiController
 {
@@ -202,61 +198,5 @@ class PublicController extends PublicApiController
         $this->response->setStatusCode(204)->send();
 
     }
-
-    /**
-     * Create and save password reset token for user.
-     *
-     * @param array $args
-     * @return void
-     * @throws InvalidStatusCodeException
-     */
-    public function passwordTokenCreate(array $args): void
-    {
-
-        try {
-
-            /** @var PasswordTokenModel $passwordTokenModel */
-            $passwordTokenModel = App::make('Bayfront\Bones\Services\Api\Models\PasswordTokenModel');
-            $passwordTokenModel->create($args['email']);
-
-        } catch (Exception) {
-            $this->response->setStatusCode(202)->send();
-            exit;
-        }
-
-        $this->response->setStatusCode(202)->send();
-
-    }
-
-    /**
-     * Does a valid token exist?
-     *
-     * @return void
-     * @throws ContainerException
-     * @throws ContainerNotFoundException
-     * @throws ForbiddenException
-     * @throws HttpException
-     * @throws InvalidStatusCodeException
-     * @throws NotFoundException
-     */
-    public function passwordTokenHas(): void
-    {
-
-        /** @var PasswordTokenModel $passwordTokenModel */
-        $passwordTokenModel = App::make('Bayfront\Bones\Services\Api\Models\PasswordTokenModel');
-
-        if (!$passwordTokenModel->has(Request::getQuery('userId', ''), Request::getQuery('token', ''))) {
-            App::abort(404);
-        }
-
-        $this->response->setStatusCode(204)->send();
-
-    }
-
-    public function updatePassword(): void
-    {
-
-    }
-
 
 }
