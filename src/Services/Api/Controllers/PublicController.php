@@ -15,6 +15,7 @@ use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\PasswordTokenModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantInvitationsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
@@ -25,6 +26,7 @@ use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\Validator\Validate;
+use Exception;
 
 class PublicController extends PublicApiController
 {
@@ -201,50 +203,28 @@ class PublicController extends PublicApiController
 
     }
 
+    /**
+     * Create and save password reset token for user.
+     *
+     * @param array $args
+     * @return void
+     * @throws InvalidStatusCodeException
+     */
     public function passwordTokenCreate(array $args): void
     {
 
-        if (!Validate::email($args['email'])) {
-            App::abort(400, 'Unable to create password reset token: Invalid attribute type(s)');
-        }
-
         try {
 
-            $user = $this->usersModel->getEntireFromEmail($args['email']);
+            /** @var PasswordTokenModel $passwordTokenModel */
+            $passwordTokenModel = App::make('Bayfront\Bones\Services\Api\Models\PasswordTokenModel');
+            $passwordTokenModel->create($args['email']);
 
-        } catch (NotFoundException) {
+        } catch (Exception) {
             $this->response->setStatusCode(202)->send();
             exit;
         }
 
-        $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Drop sensitive columns
-
-        $token = App::createKey(8);
-
-        try {
-
-            /** @var UserMetaModel $userMetaModel */
-            $userMetaModel = App::make('Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel');
-            $userMetaModel->create($user['id'], [
-                'id' => '00-password-reset-token',
-                'metaValue' => json_encode([
-                    'token' => $token,
-                    'expiresAt' => time() + (App::getConfig('api.duration.reset_token', 0) * 60)
-                ])
-            ], true, true);
-
-        } catch (BadRequestException $e) {
-            App::abort(400, $e->getMessage(), [], 10626);
-        } catch (ConflictException $e) {
-            App::abort(409, $e->getMessage(), [], 10627);
-        } catch (ForbiddenException $e) {
-            App::abort(403, $e->getMessage(), [], 10628);
-        } catch (NotFoundException) {
-            $this->response->setStatusCode(202)->send();
-            exit;
-        }
-
-        $this->events->doEvent('api.password.token.create', $user, $token);
+        $this->response->setStatusCode(202)->send();
 
     }
 
