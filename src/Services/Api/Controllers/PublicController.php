@@ -228,8 +228,28 @@ class PublicController extends PublicApiController
 
     }
 
-    public function passwordTokenGet(): void
+    /**
+     * Does a valid token exist?
+     *
+     * @return void
+     * @throws ContainerException
+     * @throws ContainerNotFoundException
+     * @throws ForbiddenException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws NotFoundException
+     */
+    public function passwordTokenHas(): void
     {
+
+        /** @var PasswordTokenModel $passwordTokenModel */
+        $passwordTokenModel = App::make('Bayfront\Bones\Services\Api\Models\PasswordTokenModel');
+
+        if (!$passwordTokenModel->has(Request::getQuery('userId', ''), Request::getQuery('token', ''))) {
+            App::abort(404);
+        }
+
+        $this->response->setStatusCode(204)->send();
 
     }
 
