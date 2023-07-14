@@ -232,16 +232,14 @@ class AuthModel extends ApiModel
             $user['meta'] = json_decode($user['meta'], true);
         }
 
-        $user = Arr::except($user, [
-            'password',
-            'salt'
-        ]);
+
+        $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
 
         $this->log->info('Successful authentication with password', [
             'user_id' => $user['id']
         ]);
 
-        $this->events->doEvent('api.authenticate', $user['id'], Api::AUTH_PASSWORD);
+        $this->events->doEvent('api.authenticate', $user, Api::AUTH_PASSWORD);
 
         return $user;
 
@@ -421,17 +419,14 @@ class AuthModel extends ApiModel
 
         }
 
-        $user = Arr::except($user, [
-            'password',
-            'salt'
-        ]);
+        $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
 
         $this->log->info('Successful authentication with refresh token', [
             'user_id' => $user['id']
         ]);
 
 
-        $this->events->doEvent('api.authenticate', $user['id'], Api::AUTH_REFRESH_TOKEN);
+        $this->events->doEvent('api.authenticate', $user, Api::AUTH_REFRESH_TOKEN);
 
         return $user;
 
@@ -519,7 +514,9 @@ class AuthModel extends ApiModel
 
         // Event
 
-        $this->events->doEvent('api.authenticate', $user->getId(), Api::AUTH_ACCESS_TOKEN);
+        $user = Arr::only($user->getUser(), array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
+
+        $this->events->doEvent('api.authenticate', $user, Api::AUTH_ACCESS_TOKEN);
 
         return [
             'user_model' => $user,
@@ -689,7 +686,9 @@ class AuthModel extends ApiModel
              * No log on success as this would be done on each PrivateApiController request.
              */
 
-            $this->events->doEvent('api.authenticate', $user->getId(), Api::AUTH_KEY);
+            $user_arr = Arr::only($user->getUser(), array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
+
+            $this->events->doEvent('api.authenticate', $user_arr, Api::AUTH_KEY);
 
             return [
                 'user_model' => $user,
