@@ -231,7 +231,8 @@ class AuthModel extends ApiModel
         $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
 
         $this->log->info('Successful authentication with password', [
-            'user_id' => $user['id']
+            'user_id' => $user['id'],
+            'name' => Arr::get($user, 'meta.name', '')
         ]);
 
         $this->events->doEvent('api.authenticate', $user, Api::AUTH_PASSWORD);
@@ -417,7 +418,8 @@ class AuthModel extends ApiModel
         $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
 
         $this->log->info('Successful authentication with refresh token', [
-            'user_id' => $user['id']
+            'user_id' => $user['id'],
+            'name' => Arr::get($user, 'meta.name', '')
         ]);
 
 
