@@ -514,9 +514,9 @@ class AuthModel extends ApiModel
 
         // Event
 
-        $user = Arr::only($user->getUser(), array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
+        $user_arr = Arr::only($user->getUser(), array_keys($this->usersModel->getSelectableCols())); // Filter unsafe cols
 
-        $this->events->doEvent('api.authenticate', $user, Api::AUTH_ACCESS_TOKEN);
+        $this->events->doEvent('api.authenticate', $user_arr, Api::AUTH_ACCESS_TOKEN);
 
         return [
             'user_model' => $user,
