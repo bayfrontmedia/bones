@@ -619,6 +619,16 @@ class UsersModel extends ApiModel implements ResourceInterface
             'id' => $id
         ]);
 
+        // json_decode
+
+        foreach ($this->getJsonCols() as $col) {
+
+            if ($result[$col]) { // May be NULL
+                $result[$col] = json_decode($result[$col], true);
+            }
+
+        }
+
         if (!$skip_log) {
 
             // Log
@@ -672,6 +682,16 @@ class UsersModel extends ApiModel implements ResourceInterface
         $result = $this->db->row("SELECT BIN_TO_UUID(id, 1) as id, email, password, salt, meta, enabled, createdAt, updatedAt FROM api_users WHERE email = :email", [
             'email' => strtolower($email)
         ]);
+
+        // json_decode
+
+        foreach ($this->getJsonCols() as $col) {
+
+            if ($result[$col]) { // May be NULL
+                $result[$col] = json_decode($result[$col], true);
+            }
+
+        }
 
         // Log
 
