@@ -713,6 +713,8 @@ class AuthModel extends ApiModel
     /**
      * Create and save password token for user.
      *
+     * 15 minute interval is enforced before requesting a new token when one already exists.
+     *
      * @param string $email
      * @return void
      * @throws BadRequestException
@@ -740,7 +742,26 @@ class AuthModel extends ApiModel
 
         $user = $this->usersModel->getEntireFromEmail($email);
 
-        // TODO: Query a token where updatedAt < time() - 15min (make config setting)
+        // Check request interval
+
+        $existing_token = $this->db->row("SELECT id FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND updatedAt > NOW() - interval 15 minute", [
+            'id' => '00-password-token',
+            'user_id' => $user['id']
+        ]);
+
+        if ($existing_token) {
+
+            $msg = 'Unable to create password reset token';
+            $reason = 'Request interval not yet elapsed';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'email' => $email
+            ]);
+
+            throw new ForbiddenException($msg . ': ' . $reason);
+
+        }
 
         try {
 

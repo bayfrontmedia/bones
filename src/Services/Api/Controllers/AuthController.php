@@ -153,16 +153,23 @@ class AuthController extends AuthApiController
     /**
      * Create and save password reset token for user.
      *
-     * @param array $args
      * @return void
+     * @throws ContainerNotFoundException
+     * @throws HttpException
      * @throws InvalidStatusCodeException
      */
-    public function createPasswordToken(array $args): void
+    public function createPasswordToken(): void
     {
+
+        $body = $this->getBodyOrAbort([
+            'email'
+        ], [
+            'email'
+        ]);
 
         try {
 
-            $this->authModel->createPasswordToken($args['email']);
+            $this->authModel->createPasswordToken($body['email']);
 
         } catch (Exception) {
             $this->response->setStatusCode(202)->send();
@@ -176,6 +183,7 @@ class AuthController extends AuthApiController
     /**
      * Does a valid token exist?
      *
+     * @param array $args
      * @return void
      * @throws ContainerNotFoundException
      * @throws ForbiddenException
@@ -183,10 +191,10 @@ class AuthController extends AuthApiController
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      */
-    public function passwordTokenExists(): void
+    public function passwordTokenExists(array $args): void
     {
 
-        if (!$this->authModel->passwordTokenExists(Request::getQuery('userId', ''), Request::getQuery('token', ''))) {
+        if (!$this->authModel->passwordTokenExists($args['user_id'], Request::getQuery('token', ''))) {
             App::abort(404, '', [], 10608);
         }
 

@@ -62,6 +62,7 @@ return [
         'access_token' => App::environment() == App::ENV_DEV ? 10080 : 20, // (1200 = 20 minutes, 10080 = 7 days)
         'refresh_token' => 10080, // 10080 = 7 days
         'invitation' => 10080, // (10080 = 7 days)
+        'password_token' => 120 // (120 = 2 hours)
     ],
     'auth' => [
         'methods' => [ // Methods by which a user can be authenticated

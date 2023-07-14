@@ -135,4 +135,18 @@ class Api
         return $this->db->rowCount();
     }
 
+    /**
+     * Delete all expired password reset tokens.
+     *
+     * @return int (Number of deleted tokens)
+     */
+    public function deleteExpiredPasswordTokens(): int
+    {
+        $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND updatedAt <= DATE_SUB(NOW(), INTERVAL :max_mins MINUTE)", [
+            'id' => '00-password-token',
+            'max_mins' => (int)max(array_values(App::getConfig('api.duration.password_token')))
+        ]);
+        return $this->db->rowCount();
+    }
+
 }

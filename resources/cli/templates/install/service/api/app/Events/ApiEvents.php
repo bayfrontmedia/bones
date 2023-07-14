@@ -2,8 +2,14 @@
 
 namespace _namespace_\Events;
 
+use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\EventSubscriber;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
+use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
+use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
+use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
+use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
@@ -23,17 +29,21 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
     protected Logger $log;
     protected Router $router;
     protected Api $api;
+    protected UsersModel $usersModel;
+    protected TenantsModel $tenantsModel;
 
     /**
      * The container will resolve any dependencies.
      */
 
-    public function __construct(Cron $scheduler, Logger $log, Router $router, Api $api)
+    public function __construct(Cron $scheduler, Logger $log, Router $router, Api $api, UsersModel $usersModel, TenantsModel $tenantsModel)
     {
         $this->scheduler = $scheduler;
         $this->log = $log;
         $this->router = $router;
         $this->api = $api;
+        $this->usersModel = $usersModel;
+        $this->tenantsModel = $tenantsModel;
     }
 
     /**
@@ -65,11 +75,57 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
                 [
                     'method' => 'deleteExpiredUserKeys',
                     'priority' => 5
+                ],
+                [
+                    'method' => 'deleteExpiredPasswordTokens',
+                    'priority' => 5
                 ]
             ],
             'api.authenticate' => [
                 [
                     'method' => 'addUserIdToLogs',
+                    'priority' => 5
+                ]
+            ],
+            'api.user.verification.create' => [
+                [
+                    'method' => 'sendVerificationCreateEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.user.verification.success' => [
+                [
+                    'method' => 'sendVerificationSuccessEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.tenant.invitation.create' => [
+                [
+                    'method' => 'sendInvitationCreateEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.tenant.users.add' => [
+                [
+                    'method' => 'sendTenantAddEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.tenant.users.remove' => [
+                [
+                    'method' => 'sendTenantRemoveEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.password.token.create' => [
+                [
+                    'method' => 'sendPasswordTokenEmail',
+                    'priority' => 5
+                ]
+            ],
+            'api.password.token.updated' => [
+                [
+                    'method' => 'sendPasswordUpdatedEmail',
                     'priority' => 5
                 ]
             ]
@@ -82,14 +138,30 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 
         $this->router->
 
-        // Public
+        // ---- Public ----
+
+        // Status
 
         get('/v1', 'Bayfront\Bones\Services\Api\Controllers\StatusController:index')
+
+            // Verify new user
+
+            ->get('/v1/users/{*:user_id}/verify/{*:verify_id}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyUser')
+
+            // Verify tenant invitation
+
+            ->get('/v1/tenants/{*:tenant_id}/verify/{*:email}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyTenantInvitation')
 
             // Authentication
 
             ->post('/v1/auth/login', 'Bayfront\Bones\Services\Api\Controllers\AuthController:login')
             ->post('/v1/auth/refresh', 'Bayfront\Bones\Services\Api\Controllers\AuthController:refresh')
+
+            // Password reset token
+
+            ->post('/v1/auth/password-token', 'Bayfront\Bones\Services\Api\Controllers\AuthController:createPasswordToken')
+            ->get('/v1/auth/password-token/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\AuthController:passwordTokenExists')
+            ->post('/v1/auth/password-update/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\AuthController:updatePassword')
 
             // ---- Resources ----
 
@@ -172,7 +244,6 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
             ->get('/v1/users/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\Resources\UsersController:get')
             ->patch('/v1/users/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\Resources\UsersController:update')
             ->delete('/v1/users/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\Resources\UsersController:delete')
-            ->get('/v1/users/{*:user_id}/verify/{*:verify_id}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyUser')
 
             // ---- Relationships
 
@@ -218,7 +289,6 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
             ->get('/v1/tenants/{*:tenant_id}/users', 'Bayfront\Bones\Services\Api\Controllers\Relationships\TenantUsersController:getCollection')
             ->delete('/v1/tenants/{*:tenant_id}/users', 'Bayfront\Bones\Services\Api\Controllers\Relationships\TenantUsersController:remove')
             ->get('/v1/tenants/{*:tenant_id}/users/{*:user_id}/permissions', 'Bayfront\Bones\Services\Api\Controllers\Relationships\TenantUsersController:getPermissionCollection')
-            ->get('/v1/tenants/{*:tenant_id}/verify/{*:email}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyTenantInvitation')
 
             // User tenants
 
@@ -320,6 +390,29 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 
     }
 
+    /**
+     * Delete all expired password reset tokens.
+     *
+     * @return void
+     * @throws LabelExistsException
+     * @throws SyntaxException
+     */
+    public function deleteExpiredPasswordTokens(): void
+    {
+
+        $this->scheduler->call('delete-expired-password-tokens', function () {
+
+            $count = $this->api->deleteExpiredPasswordTokens();
+
+            $this->log->info("Deleted expired password tokens", [
+                'count' => $count,
+                'scheduled_job' => 'delete-expired-password-tokens'
+            ]);
+
+        })->hourly();
+
+    }
+
     private string $user_id;
 
     public function addUserIdToLogs(string $user_id): void
@@ -334,6 +427,179 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
             return $record;
 
         });
+
+    }
+
+    /**
+     * Send email to newly registered users to verify their account.
+     *
+     * @param string $user_id
+     * @param string $verification_id
+     * @return void
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function sendVerificationCreateEmail(string $user_id, string $verification_id): void
+    {
+
+        $user = $this->usersModel->get($user_id);
+
+        $this->log->info('New user verification email sent', [
+            'user_id' => $user_id,
+            'email' => $user['email'],
+            'verification_id' => $verification_id // NOTE: This should never be logged, but is here as a placeholder example
+        ]);
+
+    }
+
+    /**
+     * Send email to successfully verified users.
+     *
+     * @param string $user_id
+     * @return void
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function sendVerificationSuccessEmail(string $user_id): void
+    {
+
+        $user = $this->usersModel->get($user_id);
+
+        $this->log->info('New user verification success email sent', [
+            'user_id' => $user_id,
+            'email' => $user['email']
+        ]);
+
+    }
+
+    /**
+     * Send tenant invitation email to user.
+     *
+     * @param string $tenant_id
+     * @param string $email
+     * @param array $invitation
+     * @return void
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function sendInvitationCreateEmail(string $tenant_id, string $email, array $invitation): void
+    {
+
+        $tenant = $this->tenantsModel->get($tenant_id);
+
+        $user = $this->usersModel->getCollection([
+            'where' => [
+                'email' => [
+                    'eq' => $email
+                ]
+            ],
+            'limit' => 1
+        ]);
+
+        if (Arr::get($user, 'meta.count', 0) == 1) { // User exists with email
+
+            $this->log->info('Tenant invitation email sent- user already exists', [
+                'tenant' => $tenant,
+                'email' => $email,
+                'invitation' => $invitation // NOTE: This should never be logged, but is here as a placeholder example
+            ]);
+
+        } else {
+
+            $this->log->info('Tenant invitation email sent- user does not yet exist', [
+                'tenant' => $tenant,
+                'email' => $email,
+                'invitation' => $invitation // NOTE: This should never be logged, but is here as a placeholder example
+            ]);
+
+        }
+
+    }
+
+    /**
+     * Send email to user when added to tenant.
+     *
+     * @param string $tenant_id
+     * @param array $user_ids
+     * @return void
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function sendTenantAddEmail(string $tenant_id, array $user_ids): void
+    {
+
+        foreach ($user_ids as $user_id) {
+
+            $user = $this->usersModel->get($user_id);
+
+            $this->log->info('Added to tenant email sent', [
+                'tenant' => $tenant_id,
+                'email' => $user['email']
+            ]);
+
+        }
+
+    }
+
+    /**
+     * Send email to user when removed from tenant.
+     *
+     * @param string $tenant_id
+     * @param array $user_ids
+     * @return void
+     * @throws BadRequestException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function sendTenantRemoveEmail(string $tenant_id, array $user_ids): void
+    {
+
+        foreach ($user_ids as $user_id) {
+
+            $user = $this->usersModel->get($user_id);
+
+            $this->log->info('Removed from tenant email sent', [
+                'tenant' => $tenant_id,
+                'email' => $user['email']
+            ]);
+
+        }
+
+    }
+
+    /**
+     * Send password reset token email to user.
+     *
+     * @param array $user
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordTokenEmail(array $user, string $token): void
+    {
+
+        $this->log->info('Password reset token email sent', [
+            'user' => $user,
+            'token' => $token // NOTE: This should never be logged, but is here as a placeholder example
+        ]);
+
+    }
+
+    /**
+     * Send password reset token email to user.
+     *
+     * @param array $user
+     * @return void
+     */
+    public function sendPasswordUpdatedEmail(array $user): void
+    {
+
+        $this->log->info('Password updated email sent', [
+            'user' => $user
+        ]);
 
     }
 
