@@ -35,21 +35,6 @@ abstract class ApiModel extends Model
     }
 
     /**
-     * Get elapsed time (in seconds) since BONES_START.
-     *
-     * @param int $decimals
-     * @return float
-     */
-    public function getElapsedTime(int $decimals = 3): float
-    {
-        try {
-            return round(microtime(true) - Constants::get('BONES_START'), $decimals);
-        } catch (UndefinedConstantException) {
-            return 0;
-        }
-    }
-
-    /**
      * JSON encode meta array and remove null values.
      *
      * @param array $array
