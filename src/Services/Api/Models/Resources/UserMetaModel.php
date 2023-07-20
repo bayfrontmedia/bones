@@ -376,7 +376,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             $this->log->info('User meta read', [
                 'user_id' => $scoped_id,
-                'meta_id' => Arr::pluck($results['data'], 'id')
+                'meta_id' => Arr::pluck($results['data'], 'id'),
+                'elapsed_secs' => round(microtime(true) - \Bayfront\Bones\Application\Utilities\Constants::get('BONES_START'), 3)
             ]);
 
         }
