@@ -483,7 +483,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
             $this->log->info('User meta read', [
                 'user_id' => $scoped_id,
                 'meta_id' => [$result['id']],
-                'elapsed' => $this->getElapsedTime()
+                'elapsed' => $this->getElapsedTime(5)
             ]);
 
         }
