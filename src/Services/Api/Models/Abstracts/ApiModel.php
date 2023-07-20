@@ -6,6 +6,8 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Model;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Utilities\Constants;
+use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
@@ -30,6 +32,21 @@ abstract class ApiModel extends Model
         $this->log = $log;
 
         parent::__construct($events);
+    }
+
+    /**
+     * Get elapsed time (in seconds) since BONES_START.
+     *
+     * @param int $decimals
+     * @return float
+     */
+    public function getElapsedTime(int $decimals = 3): float
+    {
+        try {
+            return round(microtime(true) - Constants::get('BONES_START'), $decimals);
+        } catch (UndefinedConstantException) {
+            return 0;
+        }
     }
 
     /**
