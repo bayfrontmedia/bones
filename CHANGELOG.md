@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `API` service.
 
+### Fixed
+
+- Fixed bug where the `bones.end` event was not being executed after `bones.exception`.
+
 ## [3.2.0]- 2023.05.11
 
 ### Added
