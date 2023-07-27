@@ -567,8 +567,8 @@ abstract class ApiController extends Controller
             } else {
 
                 if (
-                    ($limit < 1) || $page_number < 1) {
-                    App::abort(400, 'Malformed request: Invalid page value(s)', [], 10023);
+                    ($limit < -1) || $page_number < 1) {
+                    App::abort(400, 'Malformed request: Invalid page value(s)', [], 10026);
                 }
 
             }

@@ -94,7 +94,7 @@ return [
         'collection_size' => [ // Results returned per page
             'default' => 20,
             'max' => 500, // If allow_unlimited = false
-            'allow_unlimited' => true
+            'allow_unlimited' => false
         ]
     ],
 ];
