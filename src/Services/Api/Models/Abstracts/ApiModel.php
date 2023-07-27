@@ -165,21 +165,26 @@ abstract class ApiModel extends Model
         // limit & offset
 
         $limit = ceil(min(Arr::get($args, 'limit', $max_size), $max_size));
-        $offset = ceil(min(Arr::get($args, 'offset', 0), $max_size));
 
         if ($max_size == -1 && $limit == -1) {
 
             $query->select($fields)
-                ->offset($offset)
                 ->orderBy($order_by);
+
+            $offset = ceil(min(Arr::get($args, 'offset', 0), 0));
 
         } else {
 
             $query->select($fields)
                 ->limit($limit)
-                ->offset($offset)
                 ->orderBy($order_by);
 
+            $offset = ceil(min(Arr::get($args, 'offset', 0), $max_size));
+
+        }
+
+        if ($offset != 0) {
+            $query->offset($offset);
         }
 
         // where

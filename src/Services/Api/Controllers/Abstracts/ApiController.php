@@ -562,7 +562,7 @@ abstract class ApiController extends Controller
 
             if ($limit == -1 && $page_number !== 1) { // Unlimited
 
-                App::abort(400, 'Malformed request: Page number (' . $page_number . ') must be "1" when limit is "-1"', [], 10025);
+                App::abort(400, 'Malformed request: Page number (' . $page_number . ') must be 1 when limit is -1', [], 10025);
 
             } else {
 
