@@ -6,8 +6,6 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Abstracts\Model;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
-use Bayfront\Bones\Application\Utilities\Constants;
-use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
@@ -118,10 +116,10 @@ abstract class ApiModel extends Model
      * See: https://github.com/bayfrontmedia/simple-pdo/blob/master/_docs/query-builder.md
      *
      * @param Query $query
-     * @param array $args (Allowed keys: select, where, orderBy, limit, offset)
+     * @param array $args (Allowed keys: select, where, orderBy, limit (-1 for unlimited), offset)
      * @param array $selectable_cols
      * @param string $default_order_by
-     * @param int $max_size
+     * @param int $max_size (-1 for unlimited)
      * @param array $json_cols
      * @return array (Returned keys: data, meta)
      * @throws BadRequestException
@@ -169,10 +167,20 @@ abstract class ApiModel extends Model
         $limit = ceil(min(Arr::get($args, 'limit', $max_size), $max_size));
         $offset = ceil(min(Arr::get($args, 'offset', 0), $max_size));
 
-        $query->select($fields)
-            ->limit($limit)
-            ->offset($offset)
-            ->orderBy($order_by);
+        if ($max_size == -1 && $limit == -1) {
+
+            $query->select($fields)
+                ->offset($offset)
+                ->orderBy($order_by);
+
+        } else {
+
+            $query->select($fields)
+                ->limit($limit)
+                ->offset($offset)
+                ->orderBy($order_by);
+
+        }
 
         // where
 
@@ -235,8 +243,8 @@ abstract class ApiModel extends Model
             'meta' => [
                 'count' => count($results),
                 'total' => $total,
-                'pages' => ceil($total / $limit),
-                'pageSize' => $limit,
+                'pages' => $limit == -1 ? 1 : ceil($total / $limit),
+                'pageSize' => $limit == -1 ? $total : $limit,
                 'pageNumber' => floor(($offset / $limit) + 1)
             ]
         ];

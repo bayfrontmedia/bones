@@ -442,7 +442,7 @@ abstract class ApiController extends Controller
      * - where
      * - include
      * - orderBy (if specified)
-     * - limit
+     * - limit (-1 for unlimited)
      * - offset
      *
      * The resulting array can be used with the queryCollection method of the ApiModel.
@@ -544,10 +544,12 @@ abstract class ApiController extends Controller
                 App::abort(400, 'Malformed request: Invalid sort value(s)', [], 10022);
             }
 
-            $order = explode(',', $sort);
+            $return = [
+                'orderBy' => explode(',', $sort)
+            ];
 
         } else {
-            $order = [];
+            $return = [];
         }
 
         // Page
@@ -556,35 +558,41 @@ abstract class ApiController extends Controller
 
         $page_number = (int)Arr::get($query, 'page.number', 1);
 
-        if (
-            ($limit < 1) || $page_number < 1) {
-            App::abort(400, 'Malformed request: Invalid page value(s)', [], 10023);
+        if (App::getConfig('api.response.collection_size.allow_unlimited', false)) { // Allow unlimited
+
+            if ($limit == -1 && $page_number !== 1) { // Unlimited
+
+                App::abort(400, 'Malformed request: Page number (' . $page_number . ') must be "1" when limit is "-1"', [], 10025);
+
+            } else {
+
+                if (
+                    ($limit < 1) || $page_number < 1) {
+                    App::abort(400, 'Malformed request: Invalid page value(s)', [], 10023);
+                }
+
+            }
+
+        } else { // Max limit
+
+            if (
+                ($limit < 1) || $page_number < 1) {
+                App::abort(400, 'Malformed request: Invalid page value(s)', [], 10023);
+            }
+
+            if ($limit > App::getConfig('api.response.collection_size.max')) {
+                App::abort(400, 'Malformed request: Page size (' . $limit . ') exceeds maximum (' . App::getConfig('api.response.collection_size.max') . ')', [], 10024);
+            }
+
         }
 
-        if ($limit > App::getConfig('api.response.collection_size.max')) {
-            App::abort(400, 'Malformed request: Page size (' . $limit . ') exceeds maximum (' . App::getConfig('api.response.collection_size.max') . ')', [], 10024);
-        }
-
-        if (empty($order)) {
-
-            return [
-                'select' => $fields,
-                'where' => $filters,
-                'include' => $include_arr,
-                'limit' => $limit,
-                'offset' => $limit * ($page_number - 1)
-            ];
-
-        }
-
-        return [
+        return array_merge($return, [
             'select' => $fields,
             'where' => $filters,
             'include' => $include_arr,
-            'orderBy' => $order,
             'limit' => $limit,
             'offset' => $limit * ($page_number - 1)
-        ];
+        ]);
 
     }
 
