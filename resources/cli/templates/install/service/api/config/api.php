@@ -93,7 +93,8 @@ return [
         'absolute_uri' => true, // Absolute vs relative URI's returned in schema
         'collection_size' => [ // Results returned per page
             'default' => 20,
-            'max' => 500
+            'max' => 500, // If allow_unlimited = false
+            'allow_unlimited' => true
         ]
     ],
 ];
