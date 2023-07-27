@@ -244,7 +244,7 @@ abstract class ApiModel extends Model
                 'count' => count($results),
                 'total' => $total,
                 'pages' => $limit == -1 ? 1 : ceil($total / $limit),
-                'pageSize' => $limit == -1 ? $total : $limit,
+                'pageSize' => $limit == -1 ? count($results) : $limit,
                 'pageNumber' => floor(($offset / $limit) + 1)
             ]
         ];
