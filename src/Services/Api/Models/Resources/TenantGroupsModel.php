@@ -570,8 +570,10 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         foreach ($attrs as $k => $v) {
             $placeholders[] = $v;
-            $query .= $k . ' = ? ';
+            $query .= $k . ' = ?, ';
         }
+
+        $query = rtrim($query, ', ');
 
         $query .= "WHERE id = UUID_TO_BIN(?, 1) AND tenantId = UUID_TO_BIN(?, 1)";
         array_push($placeholders, $id, $scoped_id);

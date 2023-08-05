@@ -652,8 +652,10 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         foreach ($attrs as $k => $v) {
             $placeholders[] = $v;
-            $query .= $k . ' = ? ';
+            $query .= $k . ' = ?, ';
         }
+
+        $query = rtrim($query, ', ');
 
         /*
          * Needs manual updatedAt time

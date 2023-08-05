@@ -616,8 +616,10 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         foreach ($attrs as $k => $v) {
             $placeholders[] = $v;
-            $query .= $k . ' = ? ';
+            $query .= $k . ' = ?, ';
         }
+
+        $query = rtrim($query, ', ');
 
         $query .= "WHERE id = ? and tenantId = UUID_TO_BIN(?, 1)";
 
