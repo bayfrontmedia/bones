@@ -44,7 +44,7 @@ php bones down
 # Comma-separated IP's to allow
 php bones down --allow=1.1.1.1,2.2.2.2
 # Message to be returned
-php bones down --message=Message to be returned
+php bones down --message="Message to be returned"
 
 # List all event subscriptions
 php bones event:list
