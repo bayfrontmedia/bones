@@ -38,7 +38,7 @@ class Down extends Command
 
         $json = [];
 
-        $allow = $input->getArgument('allow');
+        $allow = $input->getOption('allow');
 
         if ($allow) {
 
@@ -53,7 +53,7 @@ class Down extends Command
 
         }
 
-        $message = $input->getArgument('message');
+        $message = $input->getOption('message');
 
         if ($message) {
             $json['message'] = $message;
