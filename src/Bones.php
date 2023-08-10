@@ -447,7 +447,8 @@ class Bones
 
             $down = json_decode(file_get_contents(App::storagePath('/bones/down.json')), true);
 
-            if (isset($down['allowed']) && !in_array(Request::getIp(), $down['allowed'])) {
+            if (!isset($down['allowed'])
+                || !in_array(Request::getIp(), $down['allowed'])) {
                 App::abort(503, Arr::get($down, 'message', ''));
             }
 

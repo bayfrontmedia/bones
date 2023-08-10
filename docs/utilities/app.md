@@ -558,6 +558,8 @@ App::abort(403);
 
 Is Bones down?
 
+See: `php bones down` [console command](../usage/console.md)
+
 **Parameters:**
 
 - None
