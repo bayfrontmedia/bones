@@ -40,6 +40,7 @@ The following constants can be used to check against the [interface](#getinterfa
 - [make](#make)
 - [has](#has)
 - [abort](#abort)
+- [isDown](#isdown)
 
 <hr />
 
@@ -548,3 +549,19 @@ If no message is provided, the phrase for the HTTP status code will be used.
 ```php
 App::abort(403);
 ```
+
+<hr />
+
+### isDown
+
+**Description:**
+
+Is Bones down?
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (bool)

@@ -39,6 +39,13 @@ php bones container:list
 # Return as JSON
 php bones container:list --json
 
+# Put Bones into maintenance mode
+php bones down
+# Comma-separated IP's to allow
+php bones down --allow=1.1.1.1,2.2.2.2
+# Message to be returned
+php bones down --message=Message to be returned
+
 # List all event subscriptions
 php bones event:list
 # Subscriptions can be returned for specific events
@@ -132,6 +139,9 @@ php bones schedule:list --json
 
 # Run all scheduled jobs which are due
 php bones schedule:run
+
+# Take Bones out of maintenance mode
+php bones up
 ```
 
 ### Creating a new command

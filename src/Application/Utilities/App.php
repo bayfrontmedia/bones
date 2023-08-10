@@ -399,4 +399,14 @@ class App
 
     }
 
+    /**
+     * Is Bones down?
+     *
+     * @return bool
+     */
+    public static function isDown(): bool
+    {
+        return file_exists(App::storagePath('/bones/down.json'));
+    }
+
 }

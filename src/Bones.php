@@ -7,6 +7,7 @@ use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AboutBones;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\Down;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallKey;
@@ -26,6 +27,7 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\MigrationList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\RouteList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleRun;
+use Bayfront\Bones\Application\Kernel\Console\Commands\Up;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
@@ -43,6 +45,7 @@ use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
 use Bayfront\Hooks\Hooks;
+use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\PDO\DbFactory;
@@ -427,15 +430,30 @@ class Bones
      * @return void
      * @throws ContainerException
      * @throws DispatchException
+     * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws ServiceException
      * @throws NotFoundException
+     * @throws ServiceException
      */
 
     protected function startHttp(Response $response, EventService $events, FilterService $filters): void
     {
 
         $events->doEvent('app.http');
+
+        // Check maintenance mode
+
+        if (App::isDown()) {
+
+            $down = json_decode(file_get_contents(App::storagePath('/bones/down.json')), true);
+
+            if (isset($down['allowed']) && !in_array(Request::getIp(), $down['allowed'])) {
+                App::abort(503, Arr::get($down, 'message', ''));
+            }
+
+        }
+
+        // Dispatch route
 
         if (isset($this->interface_services['router'])) {
 
@@ -470,6 +488,7 @@ class Bones
         $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
+        $console->add(new Down());
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
         $console->add(new InstallKey());
@@ -482,6 +501,7 @@ class Bones
         $console->add(new MakeKey());
         $console->add(new MakeModel());
         $console->add(new MakeService());
+        $console->add(new Up());
 
         // Optional services
 

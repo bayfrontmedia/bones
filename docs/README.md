@@ -30,6 +30,7 @@ The file structure for a Bones application is as follows:
   bootstrap.php
 /storage
   /app
+  /bones
   /public
 .env
 ```
@@ -40,8 +41,8 @@ The file structure for a Bones application is as follows:
 - `/public/storage` - Symlink to `/storage/public`.
 - `/resources` - All of your app's resources reside here. These include the `bootstrap.php` file,
 as well as any resources you wish to add such as views, translations, utilities and [database migrations](services/db.md#migrations).
-- `/storage` - All locally stored files reside here. This includes files written by the app, publicly shared files, 
-and any other files you wish to store.
+- `/storage` - All locally stored files reside here. This includes files written by the app, written by Bones, 
+publicly shared files, and any other files you wish to store.
 - `.env` - All environment variables are saved here. 
 **This file should never be made public or committed to your application's source control.**
 
