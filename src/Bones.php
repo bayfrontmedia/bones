@@ -488,7 +488,7 @@ class Bones
         $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
         $console->add(new ContainerList(self::$container));
-        $console->add(new Down());
+        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
         $console->add(new InstallKey());

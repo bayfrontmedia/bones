@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
+use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -11,6 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Down extends Command
 {
+
+    protected EventService $events;
+
+    public function __construct(EventService $events, string $name = null)
+    {
+        $this->events = $events;
+        parent::__construct($name);
+    }
 
     /**
      * @return void
@@ -73,6 +82,8 @@ class Down extends Command
             $output->writeln('<error>Failed to enter maintenance mode: Unable to create file (' . $dest . ') </error>');
             return Command::FAILURE;
         }
+
+        $this->events->doEvent('bones.down', $json);
 
         $output->writeln('<info>Successfully entered maintenance mode!</info>');
         return Command::SUCCESS;
