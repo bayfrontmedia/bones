@@ -5,8 +5,8 @@ namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Down extends Command
@@ -21,8 +21,8 @@ class Down extends Command
 
         $this->setName('down')
             ->setDescription('Put Bones into maintenance mode')
-            ->addArgument('allow', InputArgument::OPTIONAL, 'Comma-separated IP\'s to allow')
-            ->addArgument('message', InputArgument::OPTIONAL, 'Message to be returned');
+            ->addOption('allow', null, InputOption::VALUE_REQUIRED, 'Comma-separated IP\'s to allow')
+            ->addOption('message', null, InputOption::VALUE_REQUIRED, 'Message to be returned');
 
     }
 
