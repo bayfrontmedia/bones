@@ -457,7 +457,7 @@ class Bones
 
         if (isset($this->interface_services['router'])) {
 
-            $dispatcher = new RouterDispatcher(self::$container, $filters, $response, $this->interface_services['router']->resolve());
+            $dispatcher = new RouterDispatcher(self::$container, $events, $filters, $response, $this->interface_services['router']->resolve());
             $dispatcher->dispatchRoute();
 
         }
@@ -501,7 +501,7 @@ class Bones
         $console->add(new MakeKey());
         $console->add(new MakeModel());
         $console->add(new MakeService());
-        $console->add(new Up());
+        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Up'));
 
         // Optional services
 

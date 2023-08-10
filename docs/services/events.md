@@ -92,6 +92,8 @@ To create an event subscriber, use the `make:event` [console command](#console-c
 
 Bones is set up to use the following events, in a typical order of execution:
 
+- `bones.down`: Executes when bones is put into maintenance mode using the `php bones down` [console command](../usage/console.md). The contents of the `down.json` file is passed as a parameter.
+- `bones.up`: Executes when bones is taken out of maintenance mode using the `php bones up` [console command](../usage/console.md).
 - `bones.start`: Executes just after Bones has initialized, and before the app is bootstrapped. 
 This event is not accessible by the app.
 - `app.bootstrap`: Executes just after the app's `/resources/bootstrap.php` file has been loaded. 
@@ -101,7 +103,8 @@ The [service container](../usage/container.md) is passed as a parameter.
   The scheduler's [class instance](scheduler.md) is passed as a parameter.
 - `app.schedule.end`: Executes after all scheduled jobs are completed from the command line
 using `php bones schedule:run`. The response of the scheduler's [run method](https://github.com/bayfrontmedia/cron-scheduler#run) is passed as a parameter.
-- `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) dispatches the request, if existing.
+- `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) (if existing) resolves the request.
+- `app.dispatch`: Executes after the router (if existing) resolves the request, and just before the request is dispatched. An array containing the keys `type`, `destination`, `params` and `status` is passed as a parameter ([more info](https://github.com/bayfrontmedia/route-it#resolve)).
 - `app.controller`: Executes when a [controller](../usage/controllers.md) is constructed. The controller's class instance is passed as a parameter.
 - `app.model`: Executes when a [model](../usage/models.md) is constructed. The model's class instance is passed as a parameter.
 - `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter.

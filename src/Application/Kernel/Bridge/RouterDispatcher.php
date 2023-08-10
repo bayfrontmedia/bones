@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Bridge;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
@@ -22,12 +23,14 @@ class RouterDispatcher
 
     protected Container $container;
     protected FilterService $filters;
+    protected EventService $events;
     protected Response $response;
     protected array $route;
 
-    public function __construct(Container $container, FilterService $filters, Response $response, array $route)
+    public function __construct(Container $container, EventService $events, FilterService $filters, Response $response, array $route)
     {
         $this->container = $container;
+        $this->events = $events;
         $this->filters = $filters;
         $this->response = $response;
         $this->route = $route;
@@ -68,7 +71,15 @@ class RouterDispatcher
 
         if ($type == 'redirect') {
 
+            $this->events->doEvent('app.dispatch', [
+                'type' => $type,
+                'destination' => $destination,
+                'params' => $params,
+                'status' => $status
+            ]);
+
             $this->response->redirect($destination, $status);
+
             return true;
 
         }
@@ -80,7 +91,16 @@ class RouterDispatcher
             // Callable
 
             if (is_callable($destination)) {
+
+                $this->events->doEvent('app.dispatch', [
+                    'type' => $type,
+                    'destination' => $destination,
+                    'params' => $params,
+                    'status' => $status
+                ]);
+
                 return call_user_func($destination, $params);
+
             }
 
             // File
@@ -91,7 +111,15 @@ class RouterDispatcher
 
                 if (is_file($file)) {
 
+                    $this->events->doEvent('app.dispatch', [
+                        'type' => $type,
+                        'destination' => $destination,
+                        'params' => $params,
+                        'status' => $status
+                    ]);
+
                     $this->safeInclude($file);
+
                     return true;
 
                 }
@@ -116,6 +144,13 @@ class RouterDispatcher
                     $class_name = App::getConfig('router.class_namespace') . '\\' . $loc[0];
 
                 }
+
+                $this->events->doEvent('app.dispatch', [
+                    'type' => $type,
+                    'destination' => $destination,
+                    'params' => $params,
+                    'status' => $status
+                ]);
 
                 $method = $loc[1];
 

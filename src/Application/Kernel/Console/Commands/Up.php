@@ -2,6 +2,7 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
+use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -10,6 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Up extends Command
 {
+
+    protected EventService $events;
+
+    public function __construct(EventService $events, string $name = null)
+    {
+        $this->events = $events;
+        parent::__construct($name);
+    }
 
     /**
      * @return void
@@ -45,6 +54,8 @@ class Up extends Command
             }
 
         }
+
+        $this->events->doEvent('bones.up');
 
         $output->writeln('<info>Successfully exited maintenance mode!</info>');
         return Command::SUCCESS;
