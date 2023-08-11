@@ -431,7 +431,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User created', [
                 'user_id' => $uuid['str']
@@ -488,7 +488,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User read', [
                 'user_id' => Arr::pluck($results['data'], 'id')
@@ -570,7 +570,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User read', [
                 'user_id' => [$result['id']]
@@ -633,7 +633,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             // Log
 
-            if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+            if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
                 $this->log->info('User read', [
                     'user_id' => [$result['id']]
@@ -695,7 +695,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User read', [
                 'user_id' => [$result['id']]
@@ -903,7 +903,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User updated', [
                 'user_id' => $id
@@ -955,7 +955,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User deleted', [
                 'user_id' => $id

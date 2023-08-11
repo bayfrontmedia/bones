@@ -327,7 +327,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant permission created', [
                 'tenant_id' => $scoped_id,
@@ -409,7 +409,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant permission read', [
                 'tenant_id' => $scoped_id,
@@ -496,7 +496,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant permission read', [
                 'tenant_id' => $scoped_id,
@@ -620,7 +620,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant permission updated', [
                 'tenant_id' => $scoped_id,
@@ -672,7 +672,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant permission deleted', [
                 'tenant_id' => $scoped_id,
