@@ -222,7 +222,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Permissions added to tenant role', [
                 'tenant_id' => $scoped_id,
@@ -310,7 +310,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant role permissions read', [
                 'tenant_id' => $scoped_id,
@@ -398,7 +398,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Permissions removed from tenant role', [
                 'tenant_id' => $scoped_id,
@@ -455,7 +455,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Permissions removed from tenant role', [
                 'tenant_id' => $scoped_id,

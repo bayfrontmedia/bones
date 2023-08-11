@@ -202,7 +202,7 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Roles added to tenant user', [
                 'tenant_id' => $scoped_id,
@@ -290,7 +290,7 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant user roles read', [
                 'tenant_id' => $scoped_id,
@@ -378,7 +378,7 @@ class TenantUserRolesModel extends ApiModel implements ScopedRelationshipInterfa
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Roles removed from tenant user', [
                 'tenant_id' => $scoped_id,

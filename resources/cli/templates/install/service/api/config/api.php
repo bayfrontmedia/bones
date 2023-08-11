@@ -37,11 +37,13 @@ return [
         'public' => 25, // Public endpoint (PublicApiController)
         'private' => 250 // Authenticated user (PrivateApiController)
     ],
-    'log_actions' => [ // Actions to log
-        Api::ACTION_CREATE,
-        Api::ACTION_READ,
-        Api::ACTION_UPDATE,
-        Api::ACTION_DELETE
+    'log' => [
+        'actions' => [ // Actions to log
+            Api::ACTION_CREATE,
+            Api::ACTION_READ,
+            Api::ACTION_UPDATE,
+            Api::ACTION_DELETE
+        ]
     ],
     'required_meta' => [ // Validate required meta keys in dot notation. Empty array for none.
         'tenants' => [],
