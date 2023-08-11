@@ -44,38 +44,6 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Check if maintenance mode is enabled and abort with "503 Service Unavailable"
-     * with optional "Retry-After" header.
-     *
-     * @return void
-     * @throws ContainerNotFoundException
-     * @throws HttpException
-     * @throws InvalidStatusCodeException
-     */
-    private function checkMaintenanceMode(): void
-    {
-
-        if (App::getConfig('api.maintenance.enabled')) {
-
-            $until = App::getConfig('api.maintenance.until');
-
-            if ($until instanceof DateTimeInterface && $until->getTimestamp() > time()) {
-
-                App::abort(503, 'API undergoing routine maintenance until ' . $until->format('Y-m-d H:i:s T'), [
-                    'Retry-After' => $until->getTimestamp() - time()
-                ], 10000);
-
-            } else {
-
-                App::abort(503, 'API undergoing routine maintenance', [], 10000);
-
-            }
-
-        }
-
-    }
-
-    /**
      * Check request is made via HTTPS or abort with "406 Not Acceptable".
      *
      * @return void
@@ -136,7 +104,6 @@ abstract class ApiController extends Controller
      */
     protected function initApi(): void
     {
-        $this->checkMaintenanceMode();
         $this->checkHttps();
         $this->checkAcceptsHeader();
         $this->checkContentType();

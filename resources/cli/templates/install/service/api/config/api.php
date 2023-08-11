@@ -16,10 +16,6 @@ $protocol = App::environment() == App::ENV_DEV ? 'http://' : 'https://';
 
 return [
     'version' => '1.0.0', // API version
-    'maintenance' => [
-        'enabled' => false,
-        'until' => new DateTime('2099-01-01 12:00:00') // DateTimeInterface
-    ],
     'https_env' => [ // App environments to force HTTPS
         //App::ENV_DEV,
         App::ENV_STAGING,
