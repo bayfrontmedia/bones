@@ -7,12 +7,12 @@ The API service is dependent on the following:
 - [Db service](../db.md)
 - [Router service](../router.md)
 - [Scheduler service](../scheduler.md)
-- `Monolog\Logger` instance set in the container ([see documentation](https://seldaek.github.io/monolog/))
+- `Bayfront\MultiLogger\MultiLogger` instance set in the container ([see documentation](https://github.com/bayfrontmedia/multi-logger/tree/master))
 
-The `Logger` instance can be added to the container from the `resources/bootstrap.php` file. For example:
+The `MultiLogger` instance can be added to the container from the `resources/bootstrap.php` file. For example:
 
 ```php
-$container->set('Monolog\Logger', function () {
+$container->set('Bayfront\MultiLogger\MultiLogger', function () {
 
     $log = new Logger('App');
 
@@ -27,11 +27,11 @@ $container->set('Monolog\Logger', function () {
 
     $log->pushHandler($file_handler);
 
-    return $log;
+    return new Bayfront\MultiLogger\MultiLogger($log);
 
 });
 
-$container->setAlias('log', 'Monolog\Logger');
+$container->setAlias('log', 'Bayfront\MultiLogger\MultiLogger');
 ```
 
 ## Installation

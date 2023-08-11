@@ -12,27 +12,21 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Monolog\Logger;
 
 class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 {
 
     protected TenantsModel $tenantsModel;
 
-    /**
-     * @param EventService $events
-     * @param Db $db
-     * @param Logger $log
-     * @param TenantsModel $tenantsModel
-     */
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel)
     {
         $this->tenantsModel = $tenantsModel;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**
@@ -408,7 +402,7 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
     }
 
     /**
-     * Get toenant role.
+     * Get tenant role.
      *
      * @param string $scoped_id
      * @param string $id

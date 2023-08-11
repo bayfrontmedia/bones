@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "629cd467794e8cfc254fb6e7a7a2f82f",
+    "content-hash": "a867ed6e708c4140d45295ff82d3540e",
     "packages": [
         {
             "name": "bayfrontmedia/array-schema",
@@ -210,6 +210,55 @@
                 "source": "https://github.com/bayfrontmedia/leaky-bucket/tree/v2.2.0"
             },
             "time": "2023-05-02T16:31:32+00:00"
+        },
+        {
+            "name": "bayfrontmedia/multi-logger",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bayfrontmedia/multi-logger.git",
+                "reference": "21baf643808f58dfd548b21cbacd46910eb4a858"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bayfrontmedia/multi-logger/zipball/21baf643808f58dfd548b21cbacd46910eb4a858",
+                "reference": "21baf643808f58dfd548b21cbacd46910eb4a858",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "^3.4",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bayfront\\MultiLogger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Robinson",
+                    "email": "john@bayfrontmedia.com",
+                    "homepage": "https://www.bayfrontmedia.com"
+                }
+            ],
+            "description": "An easy-to-use library used to manage multiple Monolog channels from a single class.",
+            "homepage": "https://github.com/bayfrontmedia/multi-logger",
+            "keywords": [
+                "log",
+                "logger",
+                "monolog",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/bayfrontmedia/multi-logger/issues",
+                "source": "https://github.com/bayfrontmedia/multi-logger/tree/v1.0.0"
+            },
+            "time": "2023-08-11T05:35:37+00:00"
         },
         {
             "name": "bayfrontmedia/php-array-helpers",

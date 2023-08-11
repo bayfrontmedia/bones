@@ -13,22 +13,22 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
 use Exception;
-use Monolog\Logger;
 
 class UsersModel extends ApiModel implements ResourceInterface
 {
 
     protected FilterService $filters;
 
-    public function __construct(EventService $events, Db $db, Logger $log, FilterService $filters)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, FilterService $filters)
     {
         $this->filters = $filters;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**

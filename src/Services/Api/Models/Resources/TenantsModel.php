@@ -12,22 +12,22 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
 use Exception;
-use Monolog\Logger;
 
 class TenantsModel extends ApiModel implements ResourceInterface
 {
 
     protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, UsersModel $usersModel)
     {
         $this->usersModel = $usersModel;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**

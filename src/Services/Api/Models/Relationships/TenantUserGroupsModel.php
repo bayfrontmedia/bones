@@ -12,11 +12,11 @@ use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedRelationshipInterface;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantGroupsModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Monolog\Logger;
 use PDOException;
 
 class TenantUserGroupsModel extends ApiModel implements ScopedRelationshipInterface
@@ -25,12 +25,12 @@ class TenantUserGroupsModel extends ApiModel implements ScopedRelationshipInterf
     protected TenantGroupsModel $tenantGroupsModel;
     protected TenantUsersModel $tenantUsersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantGroupsModel $tenantGroupsModel, TenantUsersModel $tenantUsersModel)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantGroupsModel $tenantGroupsModel, TenantUsersModel $tenantUsersModel)
     {
         $this->tenantGroupsModel = $tenantGroupsModel;
         $this->tenantUsersModel = $tenantUsersModel;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**

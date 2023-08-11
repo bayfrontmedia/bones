@@ -37,6 +37,7 @@
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
     "bayfrontmedia/leaky-bucket": "^2.2",
+    "bayfrontmedia/multi-logger": "^1.0",
     "bayfrontmedia/php-array-helpers": "^2.0",
     "bayfrontmedia/php-hooks": "^2.0",
     "bayfrontmedia/php-http-request": "^v3.0",
@@ -48,7 +49,6 @@
     "bayfrontmedia/simple-pdo": "^3.0",
     "bayfrontmedia/veil": "^2.1",
     "filp/whoops": "^2.15",
-    "monolog/monolog": "^3.3",
     "symfony/console": "^6.2",
     "vlucas/phpdotenv": "^5.5"
   }

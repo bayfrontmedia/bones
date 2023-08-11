@@ -43,7 +43,8 @@ return [
             Api::ACTION_READ,
             Api::ACTION_UPDATE,
             Api::ACTION_DELETE
-        ]
+        ],
+        'channel' => 'Audit' // Log channel name to use
     ],
     'required_meta' => [ // Validate required meta keys in dot notation. Empty array for none.
         'tenants' => [],

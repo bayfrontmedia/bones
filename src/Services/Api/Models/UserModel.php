@@ -5,12 +5,13 @@ namespace Bayfront\Bones\Services\Api\Models;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
+use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
-use Monolog\Logger;
 
 /**
  * User is verified to exist in constructor.
@@ -28,15 +29,16 @@ class UserModel extends ApiModel
     /**
      * @param EventService $events
      * @param Db $db
-     * @param Logger $log
+     * @param MultiLogger $multiLogger
      * @param UsersModel $usersModel
      * @param UserMetaModel $userMetaModel
      * @param TenantUsersModel $tenantUsersModel
      * @param string $user_id
      * @param bool $skip_log (Skip api.user.read logs and events - used when a user authenticates)
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, Db $db, Logger $log, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel, string $user_id, bool $skip_log = false)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel, string $user_id, bool $skip_log = false)
     {
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
@@ -48,7 +50,7 @@ class UserModel extends ApiModel
             'password'
         ]);
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     // ------------------------- User -------------------------

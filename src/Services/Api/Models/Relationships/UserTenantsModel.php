@@ -14,11 +14,11 @@ use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Monolog\Logger;
 use PDOException;
 
 class UserTenantsModel extends ApiModel implements RelationshipInterface
@@ -27,12 +27,12 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
     protected TenantsModel $tenantsModel;
     protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel, UsersModel $usersModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**

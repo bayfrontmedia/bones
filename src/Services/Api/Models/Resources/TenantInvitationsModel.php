@@ -15,10 +15,10 @@ use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUserRolesModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
-use Monolog\Logger;
 
 class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 {
@@ -29,7 +29,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
     protected UsersModel $usersModel;
     protected TenantUserRolesModel $tenantUserRolesModel;
 
-    public function __construct(EventService $events, Db $db, Logger $log, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel, UsersModel $usersModel, TenantUserRolesModel $tenantUserRolesModel)
+    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel, TenantRolesModel $tenantRolesModel, TenantUsersModel $tenantUsersModel, UsersModel $usersModel, TenantUserRolesModel $tenantUserRolesModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->tenantRolesModel = $tenantRolesModel;
@@ -37,7 +37,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         $this->tenantUserRolesModel = $tenantUserRolesModel;
         $this->usersModel = $usersModel;
 
-        parent::__construct($events, $db, $log);
+        parent::__construct($events, $db, $multiLogger);
     }
 
     /**

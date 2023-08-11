@@ -14,8 +14,9 @@ use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
 use Bayfront\CronScheduler\SyntaxException;
+use Bayfront\MultiLogger\Exceptions\ChannelNotFoundException;
+use Bayfront\MultiLogger\MultiLogger;
 use Bayfront\RouteIt\Router;
-use Monolog\Logger;
 
 /**
  * ApiEvents event subscriber.
@@ -26,7 +27,7 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 {
 
     protected Cron $scheduler;
-    protected Logger $log;
+    protected MultiLogger $log;
     protected Router $router;
     protected Api $api;
     protected UsersModel $usersModel;
@@ -36,10 +37,10 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
      * The container will resolve any dependencies.
      */
 
-    public function __construct(Cron $scheduler, Logger $log, Router $router, Api $api, UsersModel $usersModel, TenantsModel $tenantsModel)
+    public function __construct(Cron $scheduler, MultiLogger $multiLogger, Router $router, Api $api, UsersModel $usersModel, TenantsModel $tenantsModel)
     {
         $this->scheduler = $scheduler;
-        $this->log = $log;
+        $this->log = $multiLogger;
         $this->router = $router;
         $this->api = $api;
         $this->usersModel = $usersModel;
@@ -415,18 +416,30 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 
     private string $user_id;
 
+    /**
+     * Add user ID to all log channels.
+     *
+     * @param string $user_id
+     * @return void
+     * @throws ChannelNotFoundException
+     */
     public function addUserIdToLogs(string $user_id): void
     {
 
         $this->user_id = $user_id;
 
-        $this->log->pushProcessor(function ($record) {
+        $channel_names = $this->log->getChannels();
 
-            $record['extra']['user_id'] = $this->user_id;
+        foreach ($channel_names as $name) {
 
-            return $record;
+            $this->log->getChannel($name)->pushProcessor(function($record) {
 
-        });
+                $record['extra']['user_id'] = $this->user_id;
+                return $record;
+
+            });
+
+        }
 
     }
 
