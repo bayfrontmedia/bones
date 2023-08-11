@@ -90,7 +90,7 @@ class Api
     {
 
         $this->db->query("DELETE FROM api_user_meta WHERE id = '00-refresh-token' AND updatedAt <= DATE_SUB(NOW(), INTERVAL :max_mins MINUTE)", [
-            'max_mins' => (int)max(array_values(App::getConfig('api.duration.refresh_token')))
+            'max_mins' => (int)App::getConfig('api.duration.refresh_token')
         ]);
 
         return $this->db->rowCount();
@@ -106,7 +106,7 @@ class Api
     {
 
         $this->db->query("DELETE FROM api_buckets WHERE updatedAt <= DATE_SUB(NOW(), INTERVAL :max_mins MINUTE)", [
-            'max_mins' => (int)max(array_values(App::getConfig('api.rate_limit')))
+            'max_mins' => (int)App::getConfig('api.rate_limit')
         ]);
 
         return $this->db->rowCount();
@@ -144,7 +144,7 @@ class Api
     {
         $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND updatedAt <= DATE_SUB(NOW(), INTERVAL :max_mins MINUTE)", [
             'id' => '00-password-token',
-            'max_mins' => (int)max(array_values(App::getConfig('api.duration.password_token')))
+            'max_mins' => (int)App::getConfig('api.duration.password_token')
         ]);
         return $this->db->rowCount();
     }
