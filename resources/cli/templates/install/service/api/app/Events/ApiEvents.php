@@ -419,14 +419,14 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
     /**
      * Add user ID to all log channels.
      *
-     * @param string $user_id
+     * @param array $user
      * @return void
      * @throws ChannelNotFoundException
      */
-    public function addUserIdToLogs(string $user_id): void
+    public function addUserIdToLogs(array $user): void
     {
 
-        $this->user_id = $user_id;
+        $this->user_id = Arr::get($user, 'id', '');
 
         $channel_names = $this->log->getChannels();
 
