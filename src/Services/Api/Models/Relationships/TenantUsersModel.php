@@ -230,7 +230,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant user permissions read', [
                 'tenant_id' => $tenant_id,
@@ -448,7 +448,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Users added to tenant', [
                 'tenant_id' => $resource_id,
@@ -532,7 +532,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Tenant users read', [
                 'tenant_id' => $resource_id,
@@ -637,7 +637,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('Users removed from tenant', [
                 'tenant_id' => $resource_id,

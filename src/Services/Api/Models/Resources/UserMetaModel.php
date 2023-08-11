@@ -283,7 +283,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User meta created', [
                 'user_id' => $scoped_id,
@@ -372,7 +372,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User meta read', [
                 'user_id' => $scoped_id,
@@ -478,7 +478,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User meta read', [
                 'user_id' => $scoped_id,
@@ -629,7 +629,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User meta updated', [
                 'user_id' => $scoped_id,
@@ -698,7 +698,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log_actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
 
             $this->log->info('User meta deleted', [
                 'user_id' => $scoped_id,
