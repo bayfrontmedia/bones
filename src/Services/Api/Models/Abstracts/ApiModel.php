@@ -23,7 +23,8 @@ abstract class ApiModel extends Model
 
     protected EventService $events;
     protected Db $db;
-    protected Logger $log;
+    protected Log $log;
+    protected Logger $apiLogChannel;
 
     /**
      * @param EventService $events
@@ -35,9 +36,10 @@ abstract class ApiModel extends Model
     {
         $this->events = $events;
         $this->db = $db;
+        $this->log = $log;
 
         try {
-            $this->log = $log->getChannel(App::getConfig('api.log.channel', ''));
+            $this->apiLogChannel = $log->getChannel(App::getConfig('api.log.channel', ''));
         } catch (ChannelNotFoundException $e) {
             throw new UnexpectedApiException($e->getMessage());
         }

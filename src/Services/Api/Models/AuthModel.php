@@ -28,7 +28,6 @@ use Exception;
 class AuthModel extends ApiModel
 {
 
-    protected Log $log;
     protected FilterService $filters;
     protected UsersModel $usersModel;
     protected UserMetaModel $userMetaModel;
@@ -38,7 +37,6 @@ class AuthModel extends ApiModel
     {
         parent::__construct($events, $db, $log);
 
-        $this->log = $log; // Used in UserModel constructor
         $this->filters = $filters;
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
