@@ -561,9 +561,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (isset($attrs['meta'])) {
 
             if ($pre_update['meta']) {
-                $attrs['meta'] = array_merge(json_decode($pre_update['meta'], true), $attrs['meta']);
+                $attrs['meta'] = array_merge($pre_update['meta'], $attrs['meta']);
             } else {
-                $attrs['meta'] = json_decode($pre_update['meta'], true);
+                $attrs['meta'] = $pre_update['meta'];
             }
 
             // Validate meta
