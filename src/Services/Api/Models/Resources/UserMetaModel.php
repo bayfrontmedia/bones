@@ -294,7 +294,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.create', $scoped_id, $attrs['id'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.user.meta.create', $scoped_id, $attrs['id'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $attrs['id'];
 
@@ -529,6 +529,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $scoped_id, string $id, array $attrs, bool $allow_protected = false): void
     {
@@ -539,7 +540,9 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Exists
 
-        if (!$this->idExists($scoped_id, $id, $allow_protected)) {
+        try {
+            $pre_update = $this->get($scoped_id, $id, [], $allow_protected);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update user meta';
             $reason = 'User and / or meta ID does not exist';
@@ -640,7 +643,11 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.user.meta.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 
     }
 

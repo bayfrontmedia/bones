@@ -243,6 +243,7 @@ class UsersModel extends ApiModel implements ResourceInterface
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function verifyNewUserVerification(string $user_id, string $id): bool
     {
@@ -443,7 +444,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $attrs['password'] = '****'; // Hide password from event
 
-        $this->events->doEvent('api.user.create', $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.user.create', $uuid['str'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $uuid['str'];
 
@@ -739,6 +740,7 @@ class UsersModel extends ApiModel implements ResourceInterface
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $id, array $attrs): void
     {
@@ -765,11 +767,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Exists
 
-        $existing = $this->db->row("SELECT id, salt, meta from api_users WHERE id = UUID_TO_BIN(:id, 1)", [
-            'id' => $id
-        ]);
-
-        if (!$existing) {
+        try {
+            $pre_update = $this->get($id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update user';
             $reason = 'Does not exist';
@@ -819,10 +819,10 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (isset($attrs['meta'])) {
 
-            if ($existing['meta']) {
-                $attrs['meta'] = array_merge(json_decode($existing['meta'], true), $attrs['meta']);
+            if ($pre_update['meta']) {
+                $attrs['meta'] = array_merge(json_decode($pre_update['meta'], true), $attrs['meta']);
             } else {
-                $attrs['meta'] = json_decode($existing['meta'], true);
+                $attrs['meta'] = json_decode($pre_update['meta'], true);
             }
 
             // Validate meta
@@ -863,7 +863,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
-            $attrs['password'] = $this->hashPassword($attrs['password'], $existing['salt']);
+            $attrs['password'] = $this->hashPassword($attrs['password'], $pre_update['salt']);
 
         }
 
@@ -898,7 +898,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         // Update
 
         $this->db->update('api_users', $attrs, [
-            'id' => $existing['id']
+            'id' => $pre_update['id']
         ]);
 
         // Log
@@ -917,7 +917,11 @@ class UsersModel extends ApiModel implements ResourceInterface
             $attrs['password'] = '****';
         }
 
-        $this->events->doEvent('api.user.update', $id, $attrs);
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.user.update', $id, $pre_update, $post_update, $cols_updated);
 
     }
 

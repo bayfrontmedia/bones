@@ -357,7 +357,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.key.create', $scoped_id, $id_short, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.user.key.create', $scoped_id, $id_short, Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $id_full;
 
@@ -557,6 +557,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
      * @return void
      * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $scoped_id, string $id, array $attrs): void
     {
@@ -599,9 +600,11 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         }
 
-        // Check exists
+        // Exists
 
-        if (!$this->idExists($scoped_id, $id)) {
+        try {
+            $pre_update = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update user key';
             $reason = 'Key does not exist';
@@ -680,7 +683,11 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.key.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.user.key.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 
     }
 

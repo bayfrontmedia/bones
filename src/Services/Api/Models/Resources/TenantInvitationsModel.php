@@ -409,7 +409,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.invitation.create', $scoped_id, $attrs['email'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.invitation.create', $scoped_id, $attrs['email'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $attrs['email'];
 
@@ -593,6 +593,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
      * @return void
      * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $scoped_id, string $id, array $attrs): void
     {
@@ -603,7 +604,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Exists
 
-        if (!$this->idExists($scoped_id, $id)) {
+        try {
+            $pre_update = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update tenant invitation';
             $reason = 'Tenant and / or invitation ID does not exist';
@@ -710,7 +713,11 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.invitation.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.tenant.invitation.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 
     }
 

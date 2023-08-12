@@ -319,7 +319,7 @@ class TenantUserMetaModel extends ApiModel
 
         // Event
 
-        $this->events->doEvent('api.tenant.user.meta.create', $scoped_id, $user_id, $attrs['id'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.user.meta.create', $scoped_id, $user_id, $attrs['id'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $attrs['id'];
 
@@ -567,6 +567,7 @@ class TenantUserMetaModel extends ApiModel
      * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $scoped_id, string $user_id, string $id, array $attrs, bool $allow_protected = false): void
     {
@@ -577,7 +578,9 @@ class TenantUserMetaModel extends ApiModel
 
         // Exists
 
-        if (!$this->idExists($scoped_id, $user_id, $id, $allow_protected)) {
+        try {
+            $pre_update = $this->get($scoped_id, $user_id, $id, [], $allow_protected);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update tenant user meta';
             $reason = 'Tenant, user and / or meta ID does not exist';
@@ -683,7 +686,11 @@ class TenantUserMetaModel extends ApiModel
 
         // Event
 
-        $this->events->doEvent('api.tenant.user.meta.update', $scoped_id, $user_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.tenant.user.meta.update', $scoped_id, $user_id, $id, $pre_update, $post_update, $cols_updated);
 
     }
 

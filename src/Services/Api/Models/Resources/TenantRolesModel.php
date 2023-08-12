@@ -313,7 +313,7 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.role.create', $scoped_id, $uuid['str'], Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $this->events->doEvent('api.tenant.role.create', $scoped_id, $uuid['str'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $uuid['str'];
 
@@ -498,6 +498,7 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function update(string $scoped_id, string $id, array $attrs): void
     {
@@ -508,7 +509,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Exists
 
-        if (!$this->idExists($scoped_id, $id)) {
+        try {
+            $pre_update = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to update tenant role';
             $reason = 'Tenant and / or role ID does not exist';
@@ -606,7 +609,11 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.role.update', $scoped_id, $id, Arr::only($attrs, array_keys($this->getSelectableCols())));
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+
+        $this->events->doEvent('api.tenant.role.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 
     }
 
