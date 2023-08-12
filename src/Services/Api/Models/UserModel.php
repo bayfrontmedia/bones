@@ -10,7 +10,7 @@ use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UserMetaModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 
 /**
@@ -29,7 +29,7 @@ class UserModel extends ApiModel
     /**
      * @param EventService $events
      * @param Db $db
-     * @param MultiLogger $multiLogger
+     * @param Log $log
      * @param UsersModel $usersModel
      * @param UserMetaModel $userMetaModel
      * @param TenantUsersModel $tenantUsersModel
@@ -38,7 +38,7 @@ class UserModel extends ApiModel
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel, string $user_id, bool $skip_log = false)
+    public function __construct(EventService $events, Db $db, Log $log, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel, string $user_id, bool $skip_log = false)
     {
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
@@ -50,7 +50,7 @@ class UserModel extends ApiModel
             'password'
         ]);
 
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
     }
 
     // ------------------------- User -------------------------

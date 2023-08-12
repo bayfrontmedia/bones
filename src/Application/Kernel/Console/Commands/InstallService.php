@@ -53,7 +53,7 @@ class InstallService extends Command
             if (!App::has('db')
                 || !App::has('router')
                 || !App::has('scheduler')
-                || !App::has('Bayfront\MultiLogger\MultiLogger')) {
+                || !App::has('Bayfront\MultiLogger\Log')) {
 
                 $output->writeln('<error>Unable to install API service: Dependant services are missing</error>');
 

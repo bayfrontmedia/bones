@@ -14,7 +14,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Relationships\TenantUsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\StringHelpers\Str;
@@ -28,11 +28,11 @@ class TenantUserMetaModel extends ApiModel
 
     protected TenantUsersModel $tenantUsersModel;
 
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantUsersModel $tenantUsersModel)
+    public function __construct(EventService $events, Db $db, Log $log, TenantUsersModel $tenantUsersModel)
     {
         $this->tenantUsersModel = $tenantUsersModel;
 
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
     }
 
     /**

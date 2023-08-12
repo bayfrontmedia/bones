@@ -16,7 +16,7 @@ use Bayfront\Bones\Services\Api\Models\Resources\TenantPermissionsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -31,14 +31,14 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
     protected TenantMetaModel $tenantMetaModel;
     protected TenantPermissionsModel $tenantPermissionsModel;
 
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel, UsersModel $usersModel, TenantMetaModel $tenantMetaModel, TenantPermissionsModel $tenantPermissionsModel)
+    public function __construct(EventService $events, Db $db, Log $log, TenantsModel $tenantsModel, UsersModel $usersModel, TenantMetaModel $tenantMetaModel, TenantPermissionsModel $tenantPermissionsModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;
         $this->tenantMetaModel = $tenantMetaModel;
         $this->tenantPermissionsModel = $tenantPermissionsModel;
 
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
     }
 
     /**

@@ -20,7 +20,7 @@ use Bayfront\Bones\Services\Api\Utilities\Api;
 use Bayfront\HttpRequest\Request;
 use Bayfront\JWT\Jwt;
 use Bayfront\JWT\TokenException;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\Validator\Validate;
 use Exception;
@@ -28,17 +28,17 @@ use Exception;
 class AuthModel extends ApiModel
 {
 
-    protected MultiLogger $multiLogger;
+    protected Log $log;
     protected FilterService $filters;
     protected UsersModel $usersModel;
     protected UserMetaModel $userMetaModel;
     protected TenantUsersModel $tenantUsersModel;
 
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, FilterService $filters, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel)
+    public function __construct(EventService $events, Db $db, Log $log, FilterService $filters, UsersModel $usersModel, UserMetaModel $userMetaModel, TenantUsersModel $tenantUsersModel)
     {
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
 
-        $this->multiLogger = $multiLogger; // Used in UserModel constructor
+        $this->log = $log; // Used in UserModel constructor
         $this->filters = $filters;
         $this->usersModel = $usersModel;
         $this->userMetaModel = $userMetaModel;
@@ -477,7 +477,7 @@ class AuthModel extends ApiModel
         try {
 
             // Skip api.user.read event and logging for self
-            $user = new UserModel($this->events, $this->db, $this->multiLogger, $this->usersModel, $this->userMetaModel, $this->tenantUsersModel, $decoded['payload']['sub'], true);
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $this->tenantUsersModel, $decoded['payload']['sub'], true);
 
         } catch (NotFoundException) {
 
@@ -579,7 +579,7 @@ class AuthModel extends ApiModel
         try {
 
             // Skip api.user.read event and logging for self
-            $user = new UserModel($this->events, $this->db, $this->multiLogger, $this->usersModel, $this->userMetaModel, $this->tenantUsersModel, $valid_key['userId'], true);
+            $user = new UserModel($this->events, $this->db, $this->log, $this->usersModel, $this->userMetaModel, $this->tenantUsersModel, $valid_key['userId'], true);
 
         } catch (NotFoundException) {
 

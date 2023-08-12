@@ -10,7 +10,7 @@ use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\NotFoundException;
 use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\MultiLogger\Exceptions\ChannelNotFoundException;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -28,16 +28,16 @@ abstract class ApiModel extends Model
     /**
      * @param EventService $events
      * @param Db $db
-     * @param MultiLogger $multiLogger
+     * @param Log $log
      * @throws UnexpectedApiException
      */
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger)
+    public function __construct(EventService $events, Db $db, Log $log)
     {
         $this->events = $events;
         $this->db = $db;
 
         try {
-            $this->log = $multiLogger->getChannel(App::getConfig('api.log.channel', ''));
+            $this->log = $log->getChannel(App::getConfig('api.log.channel', ''));
         } catch (ChannelNotFoundException $e) {
             throw new UnexpectedApiException($e->getMessage());
         }

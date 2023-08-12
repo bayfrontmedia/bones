@@ -12,7 +12,7 @@ use Bayfront\Bones\Services\Api\Exceptions\UnexpectedApiException;
 use Bayfront\Bones\Services\Api\Models\Abstracts\ApiModel;
 use Bayfront\Bones\Services\Api\Models\Interfaces\ScopedResourceInterface;
 use Bayfront\Bones\Services\Api\Utilities\Api;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\QueryException;
 use Bayfront\Validator\Validate;
@@ -22,11 +22,11 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
     protected TenantsModel $tenantsModel;
 
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel)
+    public function __construct(EventService $events, Db $db, Log $log, TenantsModel $tenantsModel)
     {
         $this->tenantsModel = $tenantsModel;
 
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
     }
 
     /**

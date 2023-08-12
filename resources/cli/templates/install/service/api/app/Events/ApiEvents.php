@@ -15,7 +15,7 @@ use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\LabelExistsException;
 use Bayfront\CronScheduler\SyntaxException;
 use Bayfront\MultiLogger\Exceptions\ChannelNotFoundException;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\RouteIt\Router;
 
 /**
@@ -27,7 +27,7 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 {
 
     protected Cron $scheduler;
-    protected MultiLogger $log;
+    protected Log $log;
     protected Router $router;
     protected Api $api;
     protected UsersModel $usersModel;
@@ -37,10 +37,10 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
      * The container will resolve any dependencies.
      */
 
-    public function __construct(Cron $scheduler, MultiLogger $multiLogger, Router $router, Api $api, UsersModel $usersModel, TenantsModel $tenantsModel)
+    public function __construct(Cron $scheduler, Log $log, Router $router, Api $api, UsersModel $usersModel, TenantsModel $tenantsModel)
     {
         $this->scheduler = $scheduler;
-        $this->log = $multiLogger;
+        $this->log = $log;
         $this->router = $router;
         $this->api = $api;
         $this->usersModel = $usersModel;

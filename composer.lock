@@ -217,12 +217,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/multi-logger.git",
-                "reference": "21baf643808f58dfd548b21cbacd46910eb4a858"
+                "reference": "4533feb10960b2b12a6007a650db31349e5983b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/multi-logger/zipball/21baf643808f58dfd548b21cbacd46910eb4a858",
-                "reference": "21baf643808f58dfd548b21cbacd46910eb4a858",
+                "url": "https://api.github.com/repos/bayfrontmedia/multi-logger/zipball/4533feb10960b2b12a6007a650db31349e5983b3",
+                "reference": "4533feb10960b2b12a6007a650db31349e5983b3",
                 "shasum": ""
             },
             "require": {
@@ -258,7 +258,7 @@
                 "issues": "https://github.com/bayfrontmedia/multi-logger/issues",
                 "source": "https://github.com/bayfrontmedia/multi-logger/tree/v1.0.0"
             },
-            "time": "2023-08-11T05:35:37+00:00"
+            "time": "2023-08-12T01:37:04+00:00"
         },
         {
             "name": "bayfrontmedia/php-array-helpers",

@@ -7,14 +7,14 @@ The API service is dependent on the following:
 - [Db service](../db.md)
 - [Router service](../router.md)
 - [Scheduler service](../scheduler.md)
-- `Bayfront\MultiLogger\MultiLogger` instance set in the container ([see documentation](https://github.com/bayfrontmedia/multi-logger/tree/master))
+- `Bayfront\MultiLogger\Log` instance set in the container ([see documentation](https://github.com/bayfrontmedia/multi-logger/tree/master))
 
-The `MultiLogger` instance can be added to the container from the `resources/bootstrap.php` file. For example:
+The `Log` instance can be added to the container from the `resources/bootstrap.php` file. For example:
 
 ```php
-$container->set('Bayfront\MultiLogger\MultiLogger', function () {
+$container->set('Bayfront\MultiLogger\Log', function () {
 
-    $log = new Logger('App');
+    $app_channel = new Logger('App');
 
     $level = App::environment() == App::ENV_DEV ? Level::Debug : Level::Info;
 
@@ -25,13 +25,13 @@ $container->set('Bayfront\MultiLogger\MultiLogger', function () {
 
     $file_handler->setFormatter(new LineFormatter($output, $date_format));
 
-    $log->pushHandler($file_handler);
+    $app_channel->pushHandler($file_handler);
 
-    return new Bayfront\MultiLogger\MultiLogger($log);
+    return new Bayfront\MultiLogger\Log($app_channel);
 
 });
 
-$container->setAlias('log', 'Bayfront\MultiLogger\MultiLogger');
+$container->setAlias('log', 'Bayfront\MultiLogger\Log');
 ```
 
 ## Installation

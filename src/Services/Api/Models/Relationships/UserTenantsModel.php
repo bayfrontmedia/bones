@@ -14,7 +14,7 @@ use Bayfront\Bones\Services\Api\Models\Interfaces\RelationshipInterface;
 use Bayfront\Bones\Services\Api\Models\Resources\TenantsModel;
 use Bayfront\Bones\Services\Api\Models\Resources\UsersModel;
 use Bayfront\Bones\Services\Api\Utilities\Api;
-use Bayfront\MultiLogger\MultiLogger;
+use Bayfront\MultiLogger\Log;
 use Bayfront\PDO\Db;
 use Bayfront\PDO\Exceptions\InvalidDatabaseException;
 use Bayfront\PDO\Exceptions\QueryException;
@@ -27,12 +27,12 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
     protected TenantsModel $tenantsModel;
     protected UsersModel $usersModel;
 
-    public function __construct(EventService $events, Db $db, MultiLogger $multiLogger, TenantsModel $tenantsModel, UsersModel $usersModel)
+    public function __construct(EventService $events, Db $db, Log $log, TenantsModel $tenantsModel, UsersModel $usersModel)
     {
         $this->tenantsModel = $tenantsModel;
         $this->usersModel = $usersModel;
 
-        parent::__construct($events, $db, $multiLogger);
+        parent::__construct($events, $db, $log);
     }
 
     /**
