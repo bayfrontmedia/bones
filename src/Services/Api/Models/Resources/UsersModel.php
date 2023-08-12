@@ -917,9 +917,13 @@ class UsersModel extends ApiModel implements ResourceInterface
             $attrs['password'] = '****';
         }
 
+        if (isset($attrs['meta'])) {
+            $attrs['meta'] = json_decode($attrs['meta'], true);
+        }
+
         $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
         $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
-        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+        $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
 
         $this->events->doEvent('api.user.update', $id, $pre_update, $post_update, $cols_updated);
 

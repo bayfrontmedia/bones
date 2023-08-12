@@ -715,7 +715,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
         $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
-        $cols_updated = Arr::only($attrs, $this->getAllowedAttrs());
+        $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
 
         $this->events->doEvent('api.tenant.invitation.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 

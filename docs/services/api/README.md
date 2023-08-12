@@ -76,6 +76,27 @@ The following [console commands](../../usage/console.md) can be used with relati
 - `php bones api:manage:tenant`
 - `php bones api:manage:user`
 
+## Events
+
+### Resource events return the following
+
+**Create**
+
+- ID
+- Defined attributes
+
+**Update**
+
+- ID
+- Resource before update
+- Resource after update
+- Column names which were updated
+
+** Delete**
+
+- ID
+- Resource at time of deletion
+
 ## Additional information
 
 Additional documentation is coming soon.
