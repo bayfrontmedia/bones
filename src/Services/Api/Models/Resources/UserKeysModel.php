@@ -690,7 +690,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @return void
+     * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $scoped_id, string $id): void
     {
@@ -701,6 +703,25 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
             $msg = 'Unable to delete user key';
             $reason = 'Invalid user ID';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $scoped_id,
+                'key_id' => $id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        // Exists
+
+        try {
+            $resource = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
+
+            $msg = 'Unable to delete user key';
+            $reason = 'User and/or key does not exist';
 
             $this->log->notice($msg, [
                 'reason' => $reason,
@@ -734,7 +755,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
             // Event
 
-            $this->events->doEvent('api.user.key.delete', $scoped_id, $id);
+            $this->events->doEvent('api.user.key.delete', $scoped_id, $id, $resource);
 
             return;
 

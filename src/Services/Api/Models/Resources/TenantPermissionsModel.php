@@ -635,14 +635,18 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @return void
+     * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $scoped_id, string $id): void
     {
 
         // Exists
 
-        if (!$this->idExists($scoped_id, $id)) {
+        try {
+            $resource = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to delete tenant permission';
             $reason = 'Tenant and / or permission ID does not exist';
@@ -677,7 +681,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.permission.delete', $scoped_id, $id);
+        $this->events->doEvent('api.tenant.permission.delete', $scoped_id, $id, $resource);
 
     }
 

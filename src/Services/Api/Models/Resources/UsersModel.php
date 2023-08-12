@@ -926,14 +926,18 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @return void
+     * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $id): void
     {
 
         // Exists
 
-        if (!$this->idExists($id)) {
+        try {
+            $resource = $this->get($id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to delete user';
             $reason = 'User ID does not exist';
@@ -965,7 +969,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.delete', $id);
+        $this->events->doEvent('api.user.delete', $id, $resource);
 
     }
 

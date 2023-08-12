@@ -681,14 +681,18 @@ class TenantsModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @return void
+     * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $id): void
     {
 
         // Exists
 
-        if (!$this->idExists($id)) {
+        try {
+            $resource = $this->get($id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to delete tenant';
             $reason = 'Tenant ID does not exist';
@@ -720,7 +724,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.delete', $id);
+        $this->events->doEvent('api.tenant.delete', $id, $resource);
 
     }
 

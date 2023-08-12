@@ -651,13 +651,19 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
      * @param string $id
      * @param bool $allow_protected
      * @return void
+     * @throws BadRequestException
      * @throws ForbiddenException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $scoped_id, string $id, bool $allow_protected = false): void
     {
 
-        if (!$this->idExists($scoped_id, $id, $allow_protected)) {
+        // Exists
+
+        try {
+            $resource = $this->get($scoped_id, $id, [], $allow_protected);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to delete user meta';
             $reason = 'User and / or meta ID does not exist';
@@ -709,7 +715,7 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.user.meta.delete', $scoped_id, $id);
+        $this->events->doEvent('api.user.meta.delete', $scoped_id, $id, $resource);
 
     }
 

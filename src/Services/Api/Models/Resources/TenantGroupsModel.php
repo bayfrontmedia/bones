@@ -597,12 +597,18 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
      * @param string $scoped_id
      * @param string $id
      * @return void
+     * @throws BadRequestException
      * @throws NotFoundException
+     * @throws UnexpectedApiException
      */
     public function delete(string $scoped_id, string $id): void
     {
 
-        if (!$this->idExists($scoped_id, $id)) {
+        // Exists
+
+        try {
+            $resource = $this->get($scoped_id, $id);
+        } catch (NotFoundException) {
 
             $msg = 'Unable to delete tenant group';
             $reason = 'Tenant and / or group ID does not exist';
@@ -637,7 +643,7 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Event
 
-        $this->events->doEvent('api.tenant.group.delete', $scoped_id, $id);
+        $this->events->doEvent('api.tenant.group.delete', $scoped_id, $id, $resource);
 
     }
 
