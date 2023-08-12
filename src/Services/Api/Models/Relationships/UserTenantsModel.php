@@ -173,7 +173,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('User added to tenants', [
+            $this->apiLogChannel->info('User added to tenants', [
                 'user_id' => $resource_id,
                 'tenant_ids' => $relationship_ids
             ]);
@@ -256,7 +256,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('User tenants read', [
+            $this->apiLogChannel->info('User tenants read', [
                 'user_id' => $resource_id,
                 'tenant_ids' => Arr::pluck($results['data'], 'id')
             ]);
@@ -360,7 +360,7 @@ class UserTenantsModel extends ApiModel implements RelationshipInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('User removed from tenants', [
+            $this->apiLogChannel->info('User removed from tenants', [
                 'user_id' => $resource_id,
                 'tenant_ids' => $relationship_ids
             ]);

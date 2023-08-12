@@ -323,7 +323,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant permission created', [
+            $this->apiLogChannel->info('Tenant permission created', [
                 'tenant_id' => $scoped_id,
                 'permission_id' => $uuid['str']
             ]);
@@ -405,7 +405,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant permission read', [
+            $this->apiLogChannel->info('Tenant permission read', [
                 'tenant_id' => $scoped_id,
                 'permission_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -492,7 +492,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant permission read', [
+            $this->apiLogChannel->info('Tenant permission read', [
                 'tenant_id' => $scoped_id,
                 'permission_id' => [$result['id']]
             ]);
@@ -616,7 +616,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant permission updated', [
+            $this->apiLogChannel->info('Tenant permission updated', [
                 'tenant_id' => $scoped_id,
                 'permission_id' => $id
             ]);
@@ -668,7 +668,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant permission deleted', [
+            $this->apiLogChannel->info('Tenant permission deleted', [
                 'tenant_id' => $scoped_id,
                 'permission_id' => $id
             ]);

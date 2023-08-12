@@ -183,7 +183,7 @@ class TenantGroupUsersModel extends ApiModel implements ScopedRelationshipInterf
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Users added to tenant group', [
+            $this->apiLogChannel->info('Users added to tenant group', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $resource_id,
                 'user_ids' => $relationship_ids
@@ -271,7 +271,7 @@ class TenantGroupUsersModel extends ApiModel implements ScopedRelationshipInterf
 
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Tenant group users read', [
+            $this->apiLogChannel->info('Tenant group users read', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $resource_id,
                 'user_ids' => Arr::pluck($results['data'], 'id')
@@ -359,7 +359,7 @@ class TenantGroupUsersModel extends ApiModel implements ScopedRelationshipInterf
 
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
 
-            $this->log->info('Users removed from tenant group', [
+            $this->apiLogChannel->info('Users removed from tenant group', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $resource_id,
                 'user_ids' => $relationship_ids

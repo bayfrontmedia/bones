@@ -24,7 +24,7 @@ abstract class ApiModel extends Model
     protected EventService $events;
     protected Db $db;
     protected Log $log;
-    protected Logger $apiLogChannel;
+    protected Logger $apiLogChannel; // Channel to log API actions
 
     /**
      * @param EventService $events
