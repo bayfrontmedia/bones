@@ -660,7 +660,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         // Update
 
         $this->db->update('api_tenants', $attrs, [
-            'id' => $pre_update['id']
+            'id' => $this->UUIDtoBIN($pre_update['id'])
         ]);
 
         // Log
