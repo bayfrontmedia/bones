@@ -444,6 +444,10 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         $attrs['password'] = '****'; // Hide password from event
 
+        if (isset($attrs['meta'])) {
+            $attrs['meta'] = json_decode($attrs['meta'], true);
+        }
+
         $this->events->doEvent('api.user.create', $uuid['str'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $uuid['str'];

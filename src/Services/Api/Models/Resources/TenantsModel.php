@@ -328,6 +328,10 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Event
 
+        if (isset($attrs['meta'])) {
+            $attrs['meta'] = json_decode($attrs['meta'], true);
+        }
+
         $this->events->doEvent('api.tenant.create', $uuid['str'], Arr::only($attrs, $this->getAllowedAttrs()));
 
         return $uuid['str'];
