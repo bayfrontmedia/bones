@@ -104,19 +104,19 @@ class PublicController extends PublicApiController
 
         try {
 
-            if (App::getConfig('api.registration.users.enabled')) {
-
-                $attrs['enabled'] = true;
-                $id = $this->usersModel->create($attrs);
-                $created = $this->usersModel->get($id);
-
-            } else {
+            if (App::getConfig('api.users.verify_email')) {
 
                 $attrs['enabled'] = false;
                 $id = $this->usersModel->create($attrs, true);
-                $created = $this->usersModel->get($id);
+
+            } else {
+
+                $attrs['enabled'] = true;
+                $id = $this->usersModel->create($attrs);
 
             }
+
+            $created = $this->usersModel->get($id);
 
         } catch (BadRequestException $e) {
             App::abort(400, $e->getMessage(), [], 10620);
@@ -135,7 +135,7 @@ class PublicController extends PublicApiController
     }
 
     /**
-     * Verify new user verification meta and enable user if valid.
+     * Verify email verification key and enable user if needed.
      *
      * @param array $args
      * @return void
@@ -148,10 +148,10 @@ class PublicController extends PublicApiController
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function verifyUser(array $args): void
+    public function verifyUserEmail(array $args): void
     {
 
-        if ($this->usersModel->verifyNewUserVerification($args['user_id'], $args['verify_id'])) {
+        if ($this->usersModel->verifyEmailVerificationKey($args['user_id'], $args['verify_key'])) {
 
             $results = $this->usersModel->get($args['user_id']);
 

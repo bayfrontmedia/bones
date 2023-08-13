@@ -191,88 +191,109 @@ class UsersModel extends ApiModel implements ResourceInterface
     }
 
     /**
-     * Create new user verification meta.
+     * Create email verification key (00-email-verification user meta).
+     *
+     * Triggers the api.user.email.verification.create event, which sends the user ID and verification array.
+     *
+     * Verification array contains the following keys:
+     *
+     *   - email
+     *   - key
+     *   - enable_on_success (bool)
+     *
+     * TODO:
+     * No logging is taking place when creating or verifying.
      *
      * @param string $user_id
-     * @return string
+     * @param string $email
+     * @param bool $enable_on_success (Enable user when verified? For new users)
+     * @return string (Verification key)
      * @throws UnexpectedApiException
      */
-    protected function createNewUserVerification(string $user_id): string
+    protected function createEmailVerificationKey(string $user_id, string $email, bool $enable_on_success = false): string
     {
 
         try {
-            $id = App::createKey(8);
+            $key = App::createKey(8);
         } catch (Exception $e) {
             throw new UnexpectedApiException($e->getMessage());
         }
 
-        $this->db->query("INSERT INTO api_user_meta (id, userId, metaValue) VALUES ('00-new-user-verification', UUID_TO_BIN(:user_id, 1), :id) 
+        $value = [
+            'email' => $email,
+            'key' => $key,
+            'enable_on_success' => $enable_on_success
+        ];
+
+        $this->db->query("INSERT INTO api_user_meta (id, userId, metaValue) VALUES ('00-email-verification', UUID_TO_BIN(:user_id, 1), :value) 
                                 ON DUPLICATE KEY UPDATE id=VALUES(id), userId=VALUES(userId), metaValue=VALUES(metaValue)", [
-            'id' => $id,
+            'value' => json_encode($value),
             'user_id' => $user_id
         ]);
 
-        $this->events->doEvent('api.user.verification.create', $user_id, $id);
+        $this->events->doEvent('api.user.email.verification.create', $user_id, $value);
 
-        return $id;
+        return $key;
 
     }
 
     /**
-     * Get value of new user verification meta.
+     * Verify email verification key (00-email-verification user meta).
+     *
+     * Triggers the api.user.email.verification.success event, which sends the user ID and verification array.
+     *
+     * Verification array contains the following keys:
+     *
+     *    - email
+     *    - key
+     *    - enable_on_success (bool)
      *
      * @param string $user_id
-     * @return string
-     */
-    protected function getNewUserVerification(string $user_id): string
-    {
-
-        return $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
-            'id' => '00-new-user-verification',
-            'user_id' => $user_id
-        ]);
-
-    }
-
-    /**
-     * Verify new user verification meta and enable user if valid.
-     *
-     * @param string $user_id
-     * @param string $id
+     * @param string $key
      * @return bool
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function verifyNewUserVerification(string $user_id, string $id): bool
+    public function verifyEmailVerificationKey(string $user_id, string $key): bool
     {
 
         if (!Validate::uuid($user_id)) {
             return false;
         }
 
-        $exists = $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND metaValue = :value", [
-            'id' => '00-new-user-verification',
-            'user_id' => $user_id,
-            'value' => $id
+        $exists = $this->db->single("SELECT metaValue FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+            'id' => '00-email-verification',
+            'user_id' => $user_id
         ]);
 
         if ($exists) {
 
-            $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1) AND metaValue = :value", [
-                'id' => '00-new-user-verification',
-                'user_id' => $user_id,
-                'value' => $id
-            ]);
+            $value = json_decode($exists, true);
 
-            $this->update($user_id, [
-                'enabled' => true
-            ]);
+            if (Arr::get($value, 'key') == $key && Arr::has($value, 'email')) { // Valid
 
-            $this->events->doEvent('api.user.verification.success', $user_id);
+                $this->db->query("DELETE FROM api_user_meta WHERE id = :id AND userId = UUID_TO_BIN(:user_id, 1)", [
+                    'id' => '00-email-verification',
+                    'user_id' => $user_id
+                ]);
 
-            return true;
+                $update_arr = [
+                    'email' => Arr::get($value, 'email')
+                ];
+
+                if (Arr::get($value, 'enable_on_success', false) === true) {
+                    $update_arr['enabled'] = true;
+                }
+
+                $this->update($user_id, $update_arr, false);
+
+                $this->events->doEvent('api.user.email.verification.success', $user_id, $value);
+
+                return true;
+
+            }
 
         }
 
@@ -427,7 +448,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         $this->db->insert('api_users', $attrs);
 
         if ($include_verification) {
-            $this->createNewUserVerification($uuid['str']);
+            $this->createEmailVerificationKey($uuid['str'], $attrs['email'], true);
         }
 
         // Log
@@ -740,13 +761,14 @@ class UsersModel extends ApiModel implements ResourceInterface
      *
      * @param string $id
      * @param array $attrs
+     * @param bool $check_email_verification (When FALSE, will skip checking if email verification is needed. Used during verification.)
      * @return void
      * @throws BadRequestException
      * @throws ConflictException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
-    public function update(string $id, array $attrs): void
+    public function update(string $id, array $attrs, bool $check_email_verification = true): void
     {
 
         if (empty($attrs)) { // Nothing to update
@@ -891,6 +913,14 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
+            if ($check_email_verification === true && App::getConfig('api.users.verify_email')) {
+
+                $this->createEmailVerificationKey($id, $attrs['email']);
+
+                unset($attrs['email']); // Do not update yet
+
+            }
+
         }
 
         // Enabled
@@ -901,9 +931,13 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Update
 
-        $this->db->update('api_users', $attrs, [
-            'id' => $this->UUIDtoBIN($pre_update['id'])
-        ]);
+        if (!empty($attrs)) { // If only the password existed, it was removed
+
+            $this->db->update('api_users', $attrs, [
+                'id' => $this->UUIDtoBIN($pre_update['id'])
+            ]);
+
+        }
 
         // Log
 

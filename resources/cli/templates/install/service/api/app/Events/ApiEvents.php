@@ -145,9 +145,9 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 
         get('/v1', 'Bayfront\Bones\Services\Api\Controllers\StatusController:index')
 
-            // Verify new user
+            // Verify user email
 
-            ->get('/v1/users/{*:user_id}/verify/{*:verify_id}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyUser')
+            ->get('/v1/users/{*:user_id}/verify/{*:verify_key}', 'Bayfront\Bones\Services\Api\Controllers\PublicController:verifyUserEmail')
 
             // Verify tenant invitation
 

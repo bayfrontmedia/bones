@@ -53,8 +53,7 @@ return [
             'open' => false // Enable open registrations by all users?
         ],
         'users' => [
-            'public' => true, // Enable public registrations?
-            'enabled' => false // User accounts enabled by default? False will create a verification ID.
+            'public' => true // Enable public registrations?
         ]
     ],
     'duration' => [ // Validity durations (in minutes)
@@ -86,6 +85,9 @@ return [
     ],
     'tenants' => [
         'max_users' => 50 // Default max number of users allowed
+    ],
+    'users' => [
+        'verify_email' => true // Users must verify email (new users will be disabled until email is verified)
     ],
     'response' => [
         'base_url' => $protocol . App::getEnv('ROUTER_HOST') . App::getEnv('ROUTER_ROUTE_PREFIX') . '/v1', // Base URL to the API (No trailing slash)

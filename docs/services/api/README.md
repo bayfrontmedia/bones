@@ -92,7 +92,7 @@ The following [console commands](../../usage/console.md) can be used with relati
 - Resource after update
 - Column names which were updated
 
-** Delete**
+**Delete**
 
 - ID
 - Resource at time of deletion
