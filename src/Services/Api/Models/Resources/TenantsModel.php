@@ -289,6 +289,8 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         $attrs['id'] = $uuid['bin'];
 
+        $owner_uuid = $attrs['owner']; // Save for event
+
         $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
 
         try {
@@ -328,6 +330,8 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Event
 
+        $attrs['owner'] = $owner_uuid;
+
         if (isset($attrs['meta'])) {
             $attrs['meta'] = json_decode($attrs['meta'], true);
         }
@@ -341,6 +345,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
     /**
      * Get tenant collection.
      *
+     * NOTE:
+     * Filtering by owner only works with the "eq" and "!eq" operators.
+     *
      * @param array $args
      * @return array
      * @throws BadRequestException
@@ -353,6 +360,16 @@ class TenantsModel extends ApiModel implements ResourceInterface
             $args['select'][] = '*';
         } else {
             $args['select'] = array_merge($args['select'], ['id']); // Force return ID
+        }
+
+        // UUID_TO_BIN
+        
+        if (isset($args['where']['owner']['eq'])) {
+            $args['where']['owner']['eq'] = $this->UUIDtoBIN($args['where']['owner']['eq']);
+        }
+
+        if (isset($args['where']['owner']['!eq'])) {
+            $args['where']['owner']['!eq'] = $this->UUIDtoBIN($args['where']['owner']['!eq']);
         }
 
         // Query
@@ -629,6 +646,10 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             }
 
+            $owner_uuid = $attrs['owner']; // Save for event
+
+            $attrs['owner'] = $this->UUIDtoBIN($attrs['owner']);
+
         }
 
         // Check name exists
@@ -674,6 +695,10 @@ class TenantsModel extends ApiModel implements ResourceInterface
         }
 
         // Event
+
+        if (isset($owner_uuid)) {
+            $attrs['owner'] = $owner_uuid;
+        }
 
         if (isset($attrs['meta'])) {
             $attrs['meta'] = json_decode($attrs['meta'], true);
