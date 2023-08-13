@@ -201,9 +201,6 @@ class UsersModel extends ApiModel implements ResourceInterface
      *   - key
      *   - enable_on_success (bool)
      *
-     * TODO:
-     * No logging is taking place when creating or verifying.
-     *
      * @param string $user_id
      * @param string $email
      * @param bool $enable_on_success (Enable user when verified? For new users)
@@ -230,6 +227,17 @@ class UsersModel extends ApiModel implements ResourceInterface
             'value' => json_encode($value),
             'user_id' => $user_id
         ]);
+
+        // Log
+
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+
+            $this->apiLogChannel->info('User meta created', [
+                'user_id' => $user_id,
+                'meta_id' => '00-email-verification'
+            ]);
+
+        }
 
         $this->events->doEvent('api.user.email.verification.create', $user_id, $value);
 
@@ -278,6 +286,17 @@ class UsersModel extends ApiModel implements ResourceInterface
                     'id' => '00-email-verification',
                     'user_id' => $user_id
                 ]);
+
+                // Log
+
+                if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+
+                    $this->apiLogChannel->info('User meta deleted', [
+                        'user_id' => $user_id,
+                        'meta_id' => '00-email-verification'
+                    ]);
+
+                }
 
                 $update_arr = [
                     'email' => Arr::get($value, 'email')
