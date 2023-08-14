@@ -4,6 +4,7 @@ namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
 use Symfony\Component\Console\Command\Command;
@@ -25,7 +26,7 @@ class ScheduleRun extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
 
         $this->setName('schedule:run')
@@ -44,6 +45,11 @@ class ScheduleRun extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        if (App::isDown()) {
+            $output->writeln('<error>Unable to run scheduled jobs while Bones is down.</error>');
+            return Command::FAILURE;
+        }
 
         $output->writeln('<info>Begin running scheduled jobs...</info>');
 
