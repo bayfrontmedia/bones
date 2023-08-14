@@ -41,7 +41,7 @@ return [
                 Api::ACTION_UPDATE,
                 Api::ACTION_DELETE
             ],
-            'channel' => 'Audit' // Log channel name to use
+            'channel' => 'Audit' // Log channel name to use (blank for default)
         ]
     ],
     'required_meta' => [ // Validate required meta keys in dot notation. Empty array for none.
