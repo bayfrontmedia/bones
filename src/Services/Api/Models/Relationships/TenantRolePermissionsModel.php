@@ -222,9 +222,9 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Permissions added to tenant role', [
+            $this->auditLogChannel->info('Permissions added to tenant role', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $relationship_ids
@@ -310,9 +310,9 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role permissions read', [
+            $this->auditLogChannel->info('Tenant role permissions read', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => Arr::pluck($results['data'], 'id')
@@ -398,9 +398,9 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Permissions removed from tenant role', [
+            $this->auditLogChannel->info('Permissions removed from tenant role', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $relationship_ids
@@ -455,9 +455,9 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Permissions removed from tenant role', [
+            $this->auditLogChannel->info('Permissions removed from tenant role', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $ids

@@ -302,9 +302,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role created', [
+            $this->auditLogChannel->info('Tenant role created', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $uuid['str']
             ]);
@@ -384,9 +384,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role read', [
+            $this->auditLogChannel->info('Tenant role read', [
                 'tenant_id' => $scoped_id,
                 'role_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -471,9 +471,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role read', [
+            $this->auditLogChannel->info('Tenant role read', [
                 'tenant_id' => $scoped_id,
                 'role_id' => [$result['id']]
             ]);
@@ -598,9 +598,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role updated', [
+            $this->auditLogChannel->info('Tenant role updated', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $id
             ]);
@@ -658,9 +658,9 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant role deleted', [
+            $this->auditLogChannel->info('Tenant role deleted', [
                 'tenant_id' => $scoped_id,
                 'role_id' => $id
             ]);

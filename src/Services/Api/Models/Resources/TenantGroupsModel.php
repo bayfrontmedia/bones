@@ -283,9 +283,9 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant group created', [
+            $this->auditLogChannel->info('Tenant group created', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $uuid['str']
             ]);
@@ -365,9 +365,9 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant group read', [
+            $this->auditLogChannel->info('Tenant group read', [
                 'tenant_id' => $scoped_id,
                 'group_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -452,9 +452,9 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant group read', [
+            $this->auditLogChannel->info('Tenant group read', [
                 'tenant_id' => $scoped_id,
                 'group_id' => [$result['id']]
             ]);
@@ -579,9 +579,9 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant group updated', [
+            $this->auditLogChannel->info('Tenant group updated', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $id
             ]);
@@ -639,9 +639,9 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant group deleted', [
+            $this->auditLogChannel->info('Tenant group deleted', [
                 'tenant_id' => $scoped_id,
                 'group_id' => $id
             ]);

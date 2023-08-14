@@ -230,9 +230,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant user permissions read', [
+            $this->auditLogChannel->info('Tenant user permissions read', [
                 'tenant_id' => $tenant_id,
                 'user_id' => $user_id,
                 'permission_ids' => Arr::pluck($results['data'], 'id')
@@ -448,9 +448,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Users added to tenant', [
+            $this->auditLogChannel->info('Users added to tenant', [
                 'tenant_id' => $resource_id,
                 'user_ids' => $relationship_ids
             ]);
@@ -532,9 +532,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant users read', [
+            $this->auditLogChannel->info('Tenant users read', [
                 'tenant_id' => $resource_id,
                 'user_ids' => Arr::pluck($results['data'], 'id')
             ]);
@@ -637,9 +637,9 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Users removed from tenant', [
+            $this->auditLogChannel->info('Users removed from tenant', [
                 'tenant_id' => $resource_id,
                 'user_ids' => $relationship_ids
             ]);

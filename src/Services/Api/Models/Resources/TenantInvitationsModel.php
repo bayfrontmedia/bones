@@ -398,9 +398,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant invitation created', [
+            $this->auditLogChannel->info('Tenant invitation created', [
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $attrs['email']
             ]);
@@ -480,9 +480,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant invitation read', [
+            $this->auditLogChannel->info('Tenant invitation read', [
                 'tenant_id' => $scoped_id,
                 'invitation_id' => Arr::pluck($results['data'], 'email')
             ]);
@@ -567,9 +567,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant invitation read', [
+            $this->auditLogChannel->info('Tenant invitation read', [
                 'tenant_id' => $scoped_id,
                 'invitation_id' => [$result['email']]
             ]);
@@ -702,9 +702,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant invitation updated', [
+            $this->auditLogChannel->info('Tenant invitation updated', [
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $id
             ]);
@@ -762,9 +762,9 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant invitation deleted', [
+            $this->auditLogChannel->info('Tenant invitation deleted', [
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $id
             ]);

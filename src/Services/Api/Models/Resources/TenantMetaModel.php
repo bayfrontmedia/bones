@@ -283,9 +283,9 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant meta created', [
+            $this->auditLogChannel->info('Tenant meta created', [
                 'tenant_id' => $scoped_id,
                 'meta_id' => $attrs['id']
             ]);
@@ -372,9 +372,9 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant meta read', [
+            $this->auditLogChannel->info('Tenant meta read', [
                 'tenant_id' => $scoped_id,
                 'meta_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -478,9 +478,9 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant meta read', [
+            $this->auditLogChannel->info('Tenant meta read', [
                 'tenant_id' => $scoped_id,
                 'meta_id' => [$result['id']]
             ]);
@@ -632,9 +632,9 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant meta updated', [
+            $this->auditLogChannel->info('Tenant meta updated', [
                 'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);
@@ -711,9 +711,9 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant meta deleted', [
+            $this->auditLogChannel->info('Tenant meta deleted', [
                 'tenant_id' => $scoped_id,
                 'meta_id' => $id
             ]);

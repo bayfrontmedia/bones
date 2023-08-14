@@ -346,9 +346,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User key created', [
+            $this->auditLogChannel->info('User key created', [
                 'user_id' => $scoped_id,
                 'key_id' => $id_short
             ]);
@@ -444,9 +444,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User key read', [
+            $this->auditLogChannel->info('User key read', [
                 'user_id' => $scoped_id,
                 'key_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -531,9 +531,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User key read', [
+            $this->auditLogChannel->info('User key read', [
                 'user_id' => $scoped_id,
                 'key_id' => [$result['id']]
             ]);
@@ -672,9 +672,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User key updated', [
+            $this->auditLogChannel->info('User key updated', [
                 'user_id' => $scoped_id,
                 'key_id' => $id
             ]);
@@ -751,9 +751,9 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
             // Log
 
-            if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+            if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-                $this->apiLogChannel->info('User key deleted', [
+                $this->auditLogChannel->info('User key deleted', [
                     'user_id' => $scoped_id,
                     'key_id' => $id
                 ]);

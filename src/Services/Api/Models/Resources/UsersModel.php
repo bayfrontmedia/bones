@@ -230,9 +230,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User meta created', [
+            $this->auditLogChannel->info('User meta created', [
                 'user_id' => $user_id,
                 'meta_id' => '00-email-verification'
             ]);
@@ -289,9 +289,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
                 // Log
 
-                if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+                if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-                    $this->apiLogChannel->info('User meta deleted', [
+                    $this->auditLogChannel->info('User meta deleted', [
                         'user_id' => $user_id,
                         'meta_id' => '00-email-verification'
                     ]);
@@ -472,9 +472,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User created', [
+            $this->auditLogChannel->info('User created', [
                 'user_id' => $uuid['str']
             ]);
 
@@ -533,9 +533,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User read', [
+            $this->auditLogChannel->info('User read', [
                 'user_id' => Arr::pluck($results['data'], 'id')
             ]);
 
@@ -615,9 +615,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User read', [
+            $this->auditLogChannel->info('User read', [
                 'user_id' => [$result['id']]
             ]);
 
@@ -678,9 +678,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             // Log
 
-            if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+            if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-                $this->apiLogChannel->info('User read', [
+                $this->auditLogChannel->info('User read', [
                     'user_id' => [$result['id']]
                 ]);
 
@@ -740,9 +740,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User read', [
+            $this->auditLogChannel->info('User read', [
                 'user_id' => [$result['id']]
             ]);
 
@@ -960,9 +960,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User updated', [
+            $this->auditLogChannel->info('User updated', [
                 'user_id' => $id
             ]);
 
@@ -1024,9 +1024,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('User deleted', [
+            $this->auditLogChannel->info('User deleted', [
                 'user_id' => $id
             ]);
 

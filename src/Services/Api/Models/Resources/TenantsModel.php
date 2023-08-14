@@ -320,9 +320,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant created', [
+            $this->auditLogChannel->info('Tenant created', [
                 'tenant_id' => $uuid['str']
             ]);
 
@@ -394,9 +394,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant read', [
+            $this->auditLogChannel->info('Tenant read', [
                 'tenant_id' => Arr::pluck($results['data'], 'id')
             ]);
 
@@ -476,9 +476,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_READ, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant read', [
+            $this->auditLogChannel->info('Tenant read', [
                 'tenant_id' => [$result['id']]
             ]);
 
@@ -686,9 +686,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant updated', [
+            $this->auditLogChannel->info('Tenant updated', [
                 'tenant_id' => $id
             ]);
 
@@ -750,9 +750,9 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.actions'))) {
+        if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->apiLogChannel->info('Tenant deleted', [
+            $this->auditLogChannel->info('Tenant deleted', [
                 'tenant_id' => $id
             ]);
 
