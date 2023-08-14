@@ -31,6 +31,8 @@ The response of the scheduler's [run method](https://github.com/bayfrontmedia/cr
 Although scheduled jobs do not have to be added until the `app.schedule.start` event,
 subscribing them to the `app.cli` event will enable them to be shown when using the `php bones schedule:list` [console command](#console-commands).
 
+> **NOTE:** The schedule will not run when Bones is down. ([more info](../utilities/app.md#isdown))
+
 ## Installation
 
 The scheduler service can be installed with the `php bones install:service --scheduler` [console command](../usage/console.md).
