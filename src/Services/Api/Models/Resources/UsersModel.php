@@ -813,7 +813,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         // Exists
 
         try {
-            $pre_update = $this->get($id);
+            $pre_update = $this->getEntire($id, true);
         } catch (NotFoundException) {
 
             $msg = 'Unable to update user';
