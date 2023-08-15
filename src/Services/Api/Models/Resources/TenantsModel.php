@@ -686,16 +686,6 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
-
-            $this->auditLogChannel->info('Tenant updated', [
-                'tenant_id' => $id
-            ]);
-
-        }
-
-        // Event
-
         if (isset($owner_uuid)) {
             $attrs['owner'] = $owner_uuid;
         }
@@ -707,6 +697,22 @@ class TenantsModel extends ApiModel implements ResourceInterface
         $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
         $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
         $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
+
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
+
+            $context = [
+                'tenant_id' => $id
+            ];
+
+            if (App::getConfig('api.log.audit.include_updated')) {
+                $context['resource'] = $post_update;
+            }
+
+            $this->auditLogChannel->info('Tenant updated', $context);
+
+        }
+
+        // Event
 
         $this->events->doEvent('api.tenant.update', $id, $pre_update, $post_update, $cols_updated);
 

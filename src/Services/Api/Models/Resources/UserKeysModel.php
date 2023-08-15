@@ -672,20 +672,26 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
         // Log
 
+        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
+        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
+        $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
+
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('User key updated', [
+            $context = [
                 'user_id' => $scoped_id,
                 'key_id' => $id
-            ]);
+            ];
+
+            if (App::getConfig('api.log.audit.include_updated')) {
+                $context['resource'] = $post_update;
+            }
+
+            $this->auditLogChannel->info('User key updated', $context);
 
         }
 
         // Event
-
-        $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
-        $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
-        $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
 
         $this->events->doEvent('api.user.key.update', $scoped_id, $id, $pre_update, $post_update, $cols_updated);
 

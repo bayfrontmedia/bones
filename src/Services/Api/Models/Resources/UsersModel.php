@@ -932,7 +932,9 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             }
 
-            if ($check_email_verification === true && App::getConfig('api.users.verify_email')) {
+            if ($check_email_verification === true
+                && App::getConfig('api.users.verify_email')
+                && Arr::get($pre_update, 'email') != $attrs['email']) {
 
                 $this->createEmailVerificationKey($id, $attrs['email']);
 
@@ -960,18 +962,12 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
-        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
-
-            $this->auditLogChannel->info('User updated', [
-                'user_id' => $id
-            ]);
-
+        if (isset($pre_update['password'])) { // Hide password
+            $pre_update['password'] = '**UNCHANGED**';
         }
 
-        // Event
-
-        if (isset($attrs['password'])) { // Hide password from event
-            $attrs['password'] = '****';
+        if (isset($attrs['password'])) { // Hide password
+            $attrs['password'] = '**UPDATED**';
         }
 
         if (isset($attrs['meta'])) {
@@ -981,6 +977,22 @@ class UsersModel extends ApiModel implements ResourceInterface
         $pre_update = Arr::only($pre_update, $this->getAllowedAttrs());
         $post_update = Arr::only(array_merge($pre_update, $attrs), $this->getAllowedAttrs());
         $cols_updated = array_keys(Arr::only($attrs, $this->getAllowedAttrs()));
+
+        if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
+
+            $context = [
+                'user_id' => $id
+            ];
+
+            if (App::getConfig('api.log.audit.include_updated')) {
+                $context['resource'] = $post_update;
+            }
+
+            $this->auditLogChannel->info('User updated', $context);
+
+        }
+
+        // Event
 
         $this->events->doEvent('api.user.update', $id, $pre_update, $post_update, $cols_updated);
 
