@@ -6,6 +6,7 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\EventService;
 use Bayfront\Bones\Application\Services\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Exceptions\HttpException;
 use Bayfront\Bones\Services\Api\Exceptions\BadRequestException;
 use Bayfront\Bones\Services\Api\Exceptions\ConflictException;
 use Bayfront\Bones\Services\Api\Exceptions\ForbiddenException;
@@ -848,19 +849,35 @@ class AuthModel extends ApiModel
     }
 
     /**
-     * Remove password token for user.
+     * Remove password token for user, if existing.
      *
      * @param string $user_id
      * @return void
-     * @throws BadRequestException
-     * @throws ForbiddenException
      * @throws NotFoundException
      * @throws UnexpectedApiException
      */
     public function deletePasswordToken(string $user_id): void
     {
 
-        $this->userMetaModel->delete($user_id, '00-password-token', true);
+        if (!$this->usersModel->idExists($user_id)) {
+
+            $msg = 'Unable to delete password token';
+            $reason = 'User ID does not exist';
+
+            $this->log->notice($msg, [
+                'reason' => $reason,
+                'user_id' => $user_id
+            ]);
+
+            throw new NotFoundException($msg . ': ' . $reason);
+
+        }
+
+        try {
+            $this->userMetaModel->delete($user_id, '00-password-token', true);
+        } catch (HttpException) {
+            // Do nothing (delete if existing)
+        }
 
         // Event
 

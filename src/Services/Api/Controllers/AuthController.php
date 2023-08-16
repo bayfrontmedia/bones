@@ -203,7 +203,7 @@ class AuthController extends AuthApiController
     }
 
     /**
-     * Delete password token for user.
+     * Delete password token for user, if existing.
      *
      * @param array $args
      * @return void
@@ -218,14 +218,12 @@ class AuthController extends AuthApiController
     {
 
         try {
-
             $this->authModel->deletePasswordToken($args['user_id']);
-
-            $this->response->setStatusCode(204)->send();
-
         } catch (NotFoundException $e) {
             App::abort(404, $e->getMessage(), [], 10410);
         }
+
+        $this->response->setStatusCode(204)->send();
 
     }
 
