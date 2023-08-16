@@ -323,11 +323,17 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant permission created', [
+            $context = [
                 'action' => 'api.tenant.permission.create',
                 'tenant_id' => $scoped_id,
                 'permission_id' => $uuid['str']
-            ]);
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = Arr::only($attrs, $this->getAllowedAttrs());
+            }
+
+            $this->auditLogChannel->info('Tenant permission created', $context);
 
         }
 
@@ -689,11 +695,16 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant permission deleted', [
+            $context = [
                 'action' => 'api.tenant.permission.delete',
-                'tenant_id' => $scoped_id,
-                'resource' => $resource
-            ]);
+                'tenant_id' => $scoped_id
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = $resource;
+            }
+
+            $this->auditLogChannel->info('Tenant permission deleted', $context);
 
         }
 

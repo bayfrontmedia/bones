@@ -322,10 +322,16 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant created', [
+            $context = [
                 'action' => 'api.tenant.create',
                 'tenant_id' => $uuid['str']
-            ]);
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = Arr::only($attrs, $this->getAllowedAttrs());
+            }
+
+            $this->auditLogChannel->info('Tenant created', $context);
 
         }
 
@@ -762,10 +768,15 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant deleted', [
-                'action' => 'api.tenant.delete',
-                'resource' => $resource
-            ]);
+            $context = [
+                'action' => 'api.tenant.delete'
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = $resource;
+            }
+
+            $this->auditLogChannel->info('Tenant deleted', $context);
 
         }
 

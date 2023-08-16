@@ -482,10 +482,16 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('User created', [
+            $context = [
                 'action' => 'api.user.create',
                 'user_id' => $uuid['str']
-            ]);
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = Arr::only($attrs, $this->getAllowedAttrs());
+            }
+
+            $this->auditLogChannel->info('User created', $context);
 
         }
 
@@ -1046,10 +1052,15 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('User deleted', [
-                'action' => 'api.user.delete',
-                'resource' => $resource
-            ]);
+            $context = [
+                'action' => 'api.user.delete'
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = $resource;
+            }
+
+            $this->auditLogChannel->info('User deleted', $context);
 
         }
 

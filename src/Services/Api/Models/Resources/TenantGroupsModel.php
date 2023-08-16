@@ -285,11 +285,17 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant group created', [
+            $context = [
                 'action' => 'api.tenant.group.create',
                 'tenant_id' => $scoped_id,
                 'group_id' => $uuid['str']
-            ]);
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = Arr::only($attrs, $this->getAllowedAttrs());
+            }
+
+            $this->auditLogChannel->info('Tenant group created', $context);
 
         }
 
@@ -651,11 +657,16 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
-            $this->auditLogChannel->info('Tenant group deleted', [
+            $context = [
                 'action' => 'api.tenant.group.delete',
-                'tenant_id' => $scoped_id,
-                'resource' => $resource
-            ]);
+                'tenant_id' => $scoped_id
+            ];
+
+            if (App::getConfig('api.log.audit.include_resource')) {
+                $context['resource'] = $resource;
+            }
+
+            $this->auditLogChannel->info('Tenant group deleted', $context);
 
         }
 
