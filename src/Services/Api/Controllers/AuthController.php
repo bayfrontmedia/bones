@@ -203,6 +203,33 @@ class AuthController extends AuthApiController
     }
 
     /**
+     * Delete password token for user.
+     *
+     * @param array $args
+     * @return void
+     * @throws BadRequestException
+     * @throws ContainerNotFoundException
+     * @throws ForbiddenException
+     * @throws HttpException
+     * @throws InvalidStatusCodeException
+     * @throws UnexpectedApiException
+     */
+    public function deletePasswordToken(array $args): void
+    {
+
+        try {
+
+            $this->authModel->deletePasswordToken($args['user_id']);
+
+            $this->response->setStatusCode(204)->send();
+
+        } catch (NotFoundException $e) {
+            App::abort(404, $e->getMessage(), [], 10410);
+        }
+
+    }
+
+    /**
      * Update password using token.
      *
      * @param array $args

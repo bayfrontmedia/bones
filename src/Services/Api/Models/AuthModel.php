@@ -848,6 +848,27 @@ class AuthModel extends ApiModel
     }
 
     /**
+     * Remove password token for user.
+     *
+     * @param string $user_id
+     * @return void
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws UnexpectedApiException
+     */
+    public function deletePasswordToken(string $user_id): void
+    {
+
+        $this->userMetaModel->delete($user_id, '00-password-token', true);
+
+        // Event
+
+        $this->events->doEvent('api.password.token.delete', $user_id);
+
+    }
+
+    /**
      * Update user password and delete token.
      *
      * @param string $user_id

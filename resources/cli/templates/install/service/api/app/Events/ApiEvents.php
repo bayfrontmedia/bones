@@ -162,6 +162,7 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
 
             ->post('/v1/auth/password-token', 'Bayfront\Bones\Services\Api\Controllers\AuthController:createPasswordToken')
             ->get('/v1/auth/password-token/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\AuthController:passwordTokenExists')
+            ->delete('/v1/auth/password-token/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\AuthController:deletePasswordToken')
             ->post('/v1/auth/password-update/{*:user_id}', 'Bayfront\Bones\Services\Api\Controllers\AuthController:updatePassword')
 
             // ---- Resources ----
