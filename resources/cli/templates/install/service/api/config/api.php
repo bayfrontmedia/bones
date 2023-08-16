@@ -9,6 +9,7 @@
 
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Services\Api\Utilities\Api;
+use Bayfront\MultiLogger\ChannelName;
 
 // Variables
 
@@ -41,7 +42,7 @@ return [
                 Api::ACTION_UPDATE,
                 Api::ACTION_DELETE
             ],
-            'channel' => 'Audit', // Log channel name to use (blank for default)
+            'channel' => ChannelName::AUDIT, // Log channel name to use (blank for default)
             'include_resource' => true // Include resource in the log?
         ]
     ],

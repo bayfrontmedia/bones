@@ -111,16 +111,16 @@
         },
         {
             "name": "bayfrontmedia/cron-scheduler",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/cron-scheduler.git",
-                "reference": "f9229377850dfd3f37db05fc0d26e1b3682cea65"
+                "reference": "91d9cf9e38b39c89fc7f58297183a58792d65aed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/cron-scheduler/zipball/f9229377850dfd3f37db05fc0d26e1b3682cea65",
-                "reference": "f9229377850dfd3f37db05fc0d26e1b3682cea65",
+                "url": "https://api.github.com/repos/bayfrontmedia/cron-scheduler/zipball/91d9cf9e38b39c89fc7f58297183a58792d65aed",
+                "reference": "91d9cf9e38b39c89fc7f58297183a58792d65aed",
                 "shasum": ""
             },
             "require": {
@@ -155,9 +155,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/cron-scheduler/issues",
-                "source": "https://github.com/bayfrontmedia/cron-scheduler/tree/v2.0.0"
+                "source": "https://github.com/bayfrontmedia/cron-scheduler/tree/v2.0.1"
             },
-            "time": "2023-01-26T20:01:00+00:00"
+            "time": "2023-08-15T17:32:57+00:00"
         },
         {
             "name": "bayfrontmedia/leaky-bucket",
@@ -213,16 +213,16 @@
         },
         {
             "name": "bayfrontmedia/multi-logger",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/multi-logger.git",
-                "reference": "4533feb10960b2b12a6007a650db31349e5983b3"
+                "reference": "1e64ba3c2ad6ceb1bdd4ba9c8e220334aa6776f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/multi-logger/zipball/4533feb10960b2b12a6007a650db31349e5983b3",
-                "reference": "4533feb10960b2b12a6007a650db31349e5983b3",
+                "url": "https://api.github.com/repos/bayfrontmedia/multi-logger/zipball/1e64ba3c2ad6ceb1bdd4ba9c8e220334aa6776f4",
+                "reference": "1e64ba3c2ad6ceb1bdd4ba9c8e220334aa6776f4",
                 "shasum": ""
             },
             "require": {
@@ -256,9 +256,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/multi-logger/issues",
-                "source": "https://github.com/bayfrontmedia/multi-logger/tree/v1.0.0"
+                "source": "https://github.com/bayfrontmedia/multi-logger/tree/v1.1.0"
             },
-            "time": "2023-08-12T01:37:04+00:00"
+            "time": "2023-08-16T13:45:11+00:00"
         },
         {
             "name": "bayfrontmedia/php-array-helpers",
