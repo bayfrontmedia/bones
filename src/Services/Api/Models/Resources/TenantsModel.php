@@ -764,7 +764,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
 
             $this->auditLogChannel->info('Tenant deleted', [
                 'action' => 'api.tenant.delete',
-                'tenant_id' => $id
+                'resource' => $resource
             ]);
 
         }

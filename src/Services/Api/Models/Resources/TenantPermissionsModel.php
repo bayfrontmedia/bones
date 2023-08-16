@@ -692,7 +692,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
             $this->auditLogChannel->info('Tenant permission deleted', [
                 'action' => 'api.tenant.permission.delete',
                 'tenant_id' => $scoped_id,
-                'permission_id' => $id
+                'resource' => $resource
             ]);
 
         }

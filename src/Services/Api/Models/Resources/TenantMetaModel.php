@@ -726,7 +726,7 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
             $this->auditLogChannel->info('Tenant meta deleted', [
                 'action' => 'api.tenant.meta.delete',
                 'tenant_id' => $scoped_id,
-                'meta_id' => $id
+                'resource' => $resource
             ]);
 
         }

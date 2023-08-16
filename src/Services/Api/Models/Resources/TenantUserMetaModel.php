@@ -774,7 +774,7 @@ class TenantUserMetaModel extends ApiModel
                 'action' => 'api.tenant.user.meta.delete',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
-                'meta_id' => $id
+                'resource' => $resource
             ]);
 
         }

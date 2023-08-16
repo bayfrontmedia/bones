@@ -474,6 +474,12 @@ class UsersModel extends ApiModel implements ResourceInterface
 
         // Log
 
+        $attrs['password'] = '****'; // Hide password from event
+
+        if (isset($attrs['meta'])) {
+            $attrs['meta'] = json_decode($attrs['meta'], true);
+        }
+
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User created', [
@@ -484,12 +490,6 @@ class UsersModel extends ApiModel implements ResourceInterface
         }
 
         // Event
-
-        $attrs['password'] = '****'; // Hide password from event
-
-        if (isset($attrs['meta'])) {
-            $attrs['meta'] = json_decode($attrs['meta'], true);
-        }
 
         $this->events->doEvent('api.user.create', $uuid['str'], Arr::only($attrs, $this->getAllowedAttrs()));
 
@@ -1048,7 +1048,7 @@ class UsersModel extends ApiModel implements ResourceInterface
 
             $this->auditLogChannel->info('User deleted', [
                 'action' => 'api.user.delete',
-                'user_id' => $id
+                'resource' => $resource
             ]);
 
         }

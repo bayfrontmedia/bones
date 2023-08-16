@@ -777,7 +777,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
             $this->auditLogChannel->info('Tenant invitation deleted', [
                 'action' => 'api.tenant.invitation.delete',
                 'tenant_id' => $scoped_id,
-                'invitation_id' => $id
+                'resource' => $resource
             ]);
 
         }

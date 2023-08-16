@@ -766,7 +766,7 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
                 $this->auditLogChannel->info('User key deleted', [
                     'action' => 'api.user.key.delete',
                     'user_id' => $scoped_id,
-                    'key_id' => $id
+                    'resource' => $resource
                 ]);
 
             }

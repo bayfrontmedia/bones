@@ -654,7 +654,7 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
             $this->auditLogChannel->info('Tenant group deleted', [
                 'action' => 'api.tenant.group.delete',
                 'tenant_id' => $scoped_id,
-                'group_id' => $id
+                'resource' => $resource
             ]);
 
         }

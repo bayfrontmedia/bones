@@ -673,7 +673,7 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
             $this->auditLogChannel->info('Tenant role deleted', [
                 'action' => 'api.tenant.role.delete',
                 'tenant_id' => $scoped_id,
-                'role_id' => $id
+                'resource' => $resource
             ]);
 
         }
