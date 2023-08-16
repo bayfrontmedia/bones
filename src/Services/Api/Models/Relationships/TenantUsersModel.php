@@ -233,6 +233,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant user permissions read', [
+                'action' => 'api.tenant.user.permissions.read',
                 'tenant_id' => $tenant_id,
                 'user_id' => $user_id,
                 'permission_ids' => Arr::pluck($results['data'], 'id')
@@ -451,6 +452,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Users added to tenant', [
+                'action' => 'api.tenant.users.add',
                 'tenant_id' => $resource_id,
                 'user_ids' => $relationship_ids
             ]);
@@ -535,6 +537,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant users read', [
+                'action' => 'api.tenant.users.read',
                 'tenant_id' => $resource_id,
                 'user_ids' => Arr::pluck($results['data'], 'id')
             ]);
@@ -640,6 +643,7 @@ class TenantUsersModel extends ApiModel implements RelationshipInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Users removed from tenant', [
+                'action' => 'api.tenant.users.remove',
                 'tenant_id' => $resource_id,
                 'user_ids' => $relationship_ids
             ]);

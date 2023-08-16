@@ -324,6 +324,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant permission created', [
+                'action' => 'api.tenant.permission.create',
                 'tenant_id' => $scoped_id,
                 'permission_id' => $uuid['str']
             ]);
@@ -406,6 +407,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant permission read', [
+                'action' => 'api.tenant.permission.read',
                 'tenant_id' => $scoped_id,
                 'permission_id' => Arr::pluck($results['data'], 'id')
             ]);
@@ -493,6 +495,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant permission read', [
+                'action' => 'api.tenant.permission.read',
                 'tenant_id' => $scoped_id,
                 'permission_id' => [$result['id']]
             ]);
@@ -624,6 +627,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
+                'action' => 'api.tenant.permission.update',
                 'tenant_id' => $scoped_id,
                 'permission_id' => $id
             ];
@@ -686,6 +690,7 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant permission deleted', [
+                'action' => 'api.tenant.permission.delete',
                 'tenant_id' => $scoped_id,
                 'permission_id' => $id
             ]);

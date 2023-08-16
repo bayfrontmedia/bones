@@ -401,6 +401,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant invitation created', [
+                'action' => 'api.tenant.invitation.create',
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $attrs['email']
             ]);
@@ -483,6 +484,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant invitation read', [
+                'action' => 'api.tenant.invitation.read',
                 'tenant_id' => $scoped_id,
                 'invitation_id' => Arr::pluck($results['data'], 'email')
             ]);
@@ -570,6 +572,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant invitation read', [
+                'action' => 'api.tenant.invitation.read',
                 'tenant_id' => $scoped_id,
                 'invitation_id' => [$result['email']]
             ]);
@@ -709,6 +712,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
+                'action' => 'api.tenant.invitation.update',
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $id
             ];
@@ -771,6 +775,7 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant invitation deleted', [
+                'action' => 'api.tenant.invitation.delete',
                 'tenant_id' => $scoped_id,
                 'invitation_id' => $id
             ]);

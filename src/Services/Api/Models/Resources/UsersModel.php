@@ -233,6 +233,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User meta created', [
+                'action' => 'api.user.email.verification.create',
                 'user_id' => $user_id,
                 'meta_id' => '00-email-verification'
             ]);
@@ -292,6 +293,7 @@ class UsersModel extends ApiModel implements ResourceInterface
                 if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
                     $this->auditLogChannel->info('User meta deleted', [
+                        'action' => 'api.user.email.verification.success',
                         'user_id' => $user_id,
                         'meta_id' => '00-email-verification'
                     ]);
@@ -475,6 +477,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User created', [
+                'action' => 'api.user.create',
                 'user_id' => $uuid['str']
             ]);
 
@@ -536,6 +539,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User read', [
+                'action' => 'api.user.read',
                 'user_id' => Arr::pluck($results['data'], 'id')
             ]);
 
@@ -618,6 +622,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User read', [
+                'action' => 'api.user.read',
                 'user_id' => [$result['id']]
             ]);
 
@@ -681,6 +686,7 @@ class UsersModel extends ApiModel implements ResourceInterface
             if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
                 $this->auditLogChannel->info('User read', [
+                    'action' => 'api.user.read',
                     'user_id' => [$result['id']]
                 ]);
 
@@ -743,6 +749,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User read', [
+                'action' => 'api.user.read',
                 'user_id' => [$result['id']]
             ]);
 
@@ -981,6 +988,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
+                'action' => 'api.user.update',
                 'user_id' => $id
             ];
 
@@ -1039,6 +1047,7 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('User deleted', [
+                'action' => 'api.user.delete',
                 'user_id' => $id
             ]);
 

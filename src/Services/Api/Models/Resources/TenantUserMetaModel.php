@@ -310,6 +310,7 @@ class TenantUserMetaModel extends ApiModel
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant user meta created', [
+                'action' => 'api.tenant.user.meta.create',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
                 'meta_id' => $attrs['id']
@@ -404,6 +405,7 @@ class TenantUserMetaModel extends ApiModel
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant user meta read', [
+                'action' => 'api.tenant.user.meta.read',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
                 'meta_id' => Arr::pluck($results['data'], 'id')
@@ -516,6 +518,7 @@ class TenantUserMetaModel extends ApiModel
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant user meta read', [
+                'action' => 'api.tenant.user.meta.read',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
                 'meta_id' => [$result['id']]
@@ -681,6 +684,7 @@ class TenantUserMetaModel extends ApiModel
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
+                'action' => 'api.tenant.user.meta.update',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
                 'meta_id' => $id
@@ -767,6 +771,7 @@ class TenantUserMetaModel extends ApiModel
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant user meta deleted', [
+                'action' => 'api.tenant.user.meta.delete',
                 'tenant_id' => $scoped_id,
                 'user_id' => $user_id,
                 'meta_id' => $id

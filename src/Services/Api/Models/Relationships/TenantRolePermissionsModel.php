@@ -225,6 +225,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Permissions added to tenant role', [
+                'action' => 'api.tenant.role.permissions.add',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $relationship_ids
@@ -313,6 +314,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant role permissions read', [
+                'action' => 'api.tenant.role.permissions.read',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => Arr::pluck($results['data'], 'id')
@@ -401,6 +403,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Permissions removed from tenant role', [
+                'action' => 'api.tenant.role.permissions.remove',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $relationship_ids
@@ -458,6 +461,7 @@ class TenantRolePermissionsModel extends ApiModel implements ScopedRelationshipI
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Permissions removed from tenant role', [
+                'action' => 'api.tenant.role.permissions.remove',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'permission_ids' => $ids

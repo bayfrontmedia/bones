@@ -323,6 +323,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_CREATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant created', [
+                'action' => 'api.tenant.create',
                 'tenant_id' => $uuid['str']
             ]);
 
@@ -397,6 +398,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant read', [
+                'action' => 'api.tenant.read',
                 'tenant_id' => Arr::pluck($results['data'], 'id')
             ]);
 
@@ -479,6 +481,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant read', [
+                'action' => 'api.tenant.read',
                 'tenant_id' => [$result['id']]
             ]);
 
@@ -701,6 +704,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
+                'action' => 'api.tenant.update',
                 'tenant_id' => $id
             ];
 
@@ -759,6 +763,7 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant deleted', [
+                'action' => 'api.tenant.delete',
                 'tenant_id' => $id
             ]);
 

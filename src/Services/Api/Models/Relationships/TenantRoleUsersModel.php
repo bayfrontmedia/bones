@@ -184,6 +184,7 @@ class TenantRoleUsersModel extends ApiModel implements ScopedRelationshipInterfa
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Users added to tenant role', [
+                'action' => 'api.tenant.role.users.add',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'user_ids' => $relationship_ids
@@ -272,6 +273,7 @@ class TenantRoleUsersModel extends ApiModel implements ScopedRelationshipInterfa
         if (in_array(Api::ACTION_READ, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Tenant role users read', [
+                'action' => 'api.tenant.role.users.read',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'user_ids' => Arr::pluck($results['data'], 'id')
@@ -360,6 +362,7 @@ class TenantRoleUsersModel extends ApiModel implements ScopedRelationshipInterfa
         if (in_array(Api::ACTION_UPDATE, App::getConfig('api.log.audit.actions'))) {
 
             $this->auditLogChannel->info('Users removed from tenant role', [
+                'action' => 'api.tenant.role.users.remove',
                 'tenant_id' => $scoped_id,
                 'role_id' => $resource_id,
                 'user_ids' => $relationship_ids
