@@ -9,7 +9,7 @@ use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Bayfront\RouteIt\Router;
 
 /**
- * Routes event subscriber.
+ * RouterEvents subscriber.
  *
  * Created with Bones v_bones_version_
  */
