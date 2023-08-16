@@ -42,7 +42,7 @@ return [
                 Api::ACTION_DELETE
             ],
             'channel' => 'Audit', // Log channel name to use (blank for default)
-            'include_updated' => true // Include updated resource in the log?
+            'include_resource' => true // Include resource in the log?
         ]
     ],
     'required_meta' => [ // Validate required meta keys in dot notation. Empty array for none.

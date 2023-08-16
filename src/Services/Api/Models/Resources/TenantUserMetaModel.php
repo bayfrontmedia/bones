@@ -690,7 +690,7 @@ class TenantUserMetaModel extends ApiModel
                 'meta_id' => $id
             ];
 
-            if (App::getConfig('api.log.audit.include_updated')) {
+            if (App::getConfig('api.log.audit.include_resource')) {
                 $context['resource'] = $post_update;
             }
 
