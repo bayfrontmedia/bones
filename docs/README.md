@@ -79,6 +79,7 @@ they should never contain sensitive information such as account credentials.**
 
 Bones will automatically place the following services into the container:
 
+- [Encryptor](services/encryptor.md)
 - [Events](services/events.md)
 - [Filters](services/filters.md)
 - [Response](services/response.md)
