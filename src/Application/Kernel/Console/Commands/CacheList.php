@@ -14,8 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CacheList extends Command
 {
 
-    public function __construct()
+    protected Encryptor $encryptor;
+
+    public function __construct(Encryptor $encryptor)
     {
+        $this->encryptor = $encryptor;
+
         parent::__construct();
     }
 
@@ -51,9 +55,7 @@ class CacheList extends Command
 
             if (empty($return_types) || in_array('config', $return_types)) {
 
-                $encryptor = new Encryptor(App::getEnv('APP_KEY'));
-
-                $configs = json_decode($encryptor->decryptString(file_get_contents(App::storagePath('/bones/cache/config'))), true);
+                $configs = json_decode($this->encryptor->decryptString(file_get_contents(App::storagePath('/bones/cache/config'))), true);
 
                 foreach (array_keys($configs) as $config) {
 

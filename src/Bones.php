@@ -45,6 +45,7 @@ use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
+use Bayfront\Encryptor\Encryptor;
 use Bayfront\Hooks\Hooks;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -155,9 +156,24 @@ class Bones
             Dotenv::createImmutable(App::basePath())->load();
         }
 
+        // ------------------------- Encryptor -------------------------
+
+        /*
+         * NOTE:
+         *
+         * This must be created and added to the container before the first
+         * time App::getConfig() is used, as it may be needed to decrypt
+         * cached config values.
+         */
+
+        $encryptor = new Encryptor(App::getEnv('APP_KEY'));
+
+        self::$container->set(get_class($encryptor), $encryptor);
+        self::$container->setAlias('encryptor', get_class($encryptor));
+
         // ------------------------- Set timezone -------------------------
 
-        if (Time::isTimezone(App::getConfig('app.timezone'))) {
+        if (Time::isTimezone(App::getConfig('app.timezone', ''))) {
             date_default_timezone_set(App::getConfig('app.timezone'));
             date_default_timezone_set(App::getConfig('app.timezone'));
         } else {
@@ -413,7 +429,7 @@ class Bones
         if (App::getInterface() == App::INTERFACE_HTTP) {
             $this->startHttp($response, $events, $filters);
         } else if (App::getInterface() == App::INTERFACE_CLI) {
-            $this->startCli($events, $filters);
+            $this->startCli($encryptor, $events, $filters);
         }
 
         // ------------------------- Shutdown -------------------------
@@ -464,13 +480,16 @@ class Bones
     }
 
     /**
+     * @param Encryptor $encryptor
      * @param EventService $events
      * @param FilterService $filters
      * @return void
+     * @throws ContainerException
+     * @throws NotFoundException
      * @throws Exception
      */
 
-    protected function startCli(EventService $events, FilterService $filters): void
+    protected function startCli(Encryptor $encryptor, EventService $events, FilterService $filters): void
     {
 
         $console = new Application();
@@ -487,8 +506,8 @@ class Bones
         $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
         $console->add(new CacheClear());
-        $console->add(new CacheList());
-        $console->add(new CacheSave());
+        $console->add(new CacheList($encryptor));
+        $console->add(new CacheSave($encryptor));
         $console->add(new ContainerList(self::$container));
         $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
         $console->add(new EventList($events));

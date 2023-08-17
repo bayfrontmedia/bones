@@ -9,9 +9,6 @@ use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
-use Bayfront\Encryptor\DecryptException;
-use Bayfront\Encryptor\Encryptor;
-use Bayfront\Encryptor\InvalidCipherException;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Exception;
@@ -140,12 +137,12 @@ class App
 
             try {
 
-                $encryptor = new Encryptor(self::getEnv('APP_KEY'));
+                $encryptor = self::get('Bayfront\Encryptor\Encryptor');
 
                 self::$config_cached = true;
                 self::$config = json_decode($encryptor->decryptString(file_get_contents(self::storagePath('/bones/cache/config'))), true);
 
-            } catch (DecryptException|InvalidCipherException $e) { // Fail silently
+            } catch (Exception) { // Fail silently
 
                 self::$config_cached = true;
                 self::$config = [];

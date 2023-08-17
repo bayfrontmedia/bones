@@ -15,8 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CacheSave extends Command
 {
 
-    public function __construct()
+    protected Encryptor $encryptor;
+
+    public function __construct(Encryptor $encryptor)
     {
+        $this->encryptor = $encryptor;
+
         parent::__construct();
     }
 
@@ -149,9 +153,7 @@ class CacheSave extends Command
                     mkdir($cache_dir, 0755, true);
                 }
 
-                $encryptor = new Encryptor(App::getEnv('APP_KEY'));
-
-                $success = file_put_contents($cache_dest, $encryptor->encryptString(json_encode($config)));
+                $success = file_put_contents($cache_dest, $this->encryptor->encryptString(json_encode($config)));
 
                 if (!$success) {
                     $output->writeln('<error>Failed to cache config files: Unable to create file (' . $cache_dest . ') </error>');

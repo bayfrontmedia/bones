@@ -8,15 +8,16 @@ Bones utilizes a variety of services within the framework.
 When Bones is started, all required services are bound to the container and available for use, 
 referenced by their alias (see table below).
 
-| Service                                  | ID                                                      | Alias        |
-|------------------------------------------|---------------------------------------------------------|--------------|
-| [Events](../services/events.md)          | `Bayfront\Bones\Application\Services\EventService`      | `events`     |
-| [Filters](../services/filters.md)        | `Bayfront\Bones\Application\Services\FilterService`     | `filters`    |
-| [HTTP Response](../services/response.md) | `Bayfront\HttpResponse\Response`                        | `response`   |
-| [Database](../services/db.md)*           | `Bayfront\PDO\Db`                                       | `db`         |
-| [Router](../services/router.md)*         | `Bayfront\RouteIt\Router`                               | `router`     |
-| [Scheduler](../services/scheduler.md)*   | `Bayfront\CronScheduler\Cron`                           | `scheduler`  |
-| [Veil](../services/veil.md)*             | `Bayfront\Veil\Veil`                                    | `veil`       |
+| Service                                                 | ID                                                  | Alias       |
+|---------------------------------------------------------|-----------------------------------------------------|-------------|
+| [Events](../services/events.md)                         | `Bayfront\Bones\Application\Services\EventService`  | `events`    |
+| [Filters](../services/filters.md)                       | `Bayfront\Bones\Application\Services\FilterService` | `filters`   |
+| [Encryptor](https://github.com/bayfrontmedia/encryptor) | `Bayfront\Encryptor\Encryptor`                      | `encryptor` |
+| [HTTP Response](../services/response.md)                | `Bayfront\HttpResponse\Response`                    | `response`  |
+| [Database](../services/db.md)*                          | `Bayfront\PDO\Db`                                   | `db`        |
+| [Router](../services/router.md)*                        | `Bayfront\RouteIt\Router`                           | `router`    |
+| [Scheduler](../services/scheduler.md)*                  | `Bayfront\CronScheduler\Cron`                       | `scheduler` |
+| [Veil](../services/veil.md)*                            | `Bayfront\Veil\Veil`                                | `veil`      |
 
 **NOTE:**
 
