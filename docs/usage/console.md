@@ -34,6 +34,23 @@ php bones api:manage:tenant
 # Manage API user
 php bones api:manage:user
 
+# Clear cache
+php bones cache:clear
+# Clear specific types of cache
+php bones cache:clear --all --commands --events --filters
+
+# List contents of cache
+php bones cache:list
+# List specific types of cache
+php bones cache:list --type=commands --type=events --type=filters
+# Return as JSON
+php bones cache:list --json
+
+# Save cache
+php bones cache:save --all
+# Save specific types of cache
+php bones cache:save --commands --events --filters
+
 # List contents of the service container
 php bones container:list
 # Return as JSON

@@ -6,6 +6,9 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AboutBones;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheClear;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheSave;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
@@ -54,9 +57,10 @@ use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Veil\Veil;
-use DirectoryIterator;
 use Dotenv\Dotenv;
 use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Application;
 
 class Bones
@@ -485,6 +489,9 @@ class Bones
 
         $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
+        $console->add(new CacheClear());
+        $console->add(new CacheList());
+        $console->add(new CacheSave());
         $console->add(new ContainerList(self::$container));
         $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
         $console->add(new EventList($events));
@@ -567,17 +574,38 @@ class Bones
 
         if (App::getConfig('app.events.autoload', false) && is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/events.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/events.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Events\\' . basename($item->getFileName(), '.php');
-
+                foreach ($cache as $class) {
                     $events->addSubscriber(self::$container->make($class));
+                }
+
+            } else {
+
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+
+                foreach ($list as $item) {
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Events\\' . $namespace;
+
+                        $events->addSubscriber(self::$container->make($class));
+
+                    }
 
                 }
+
             }
 
         } else {
@@ -613,17 +641,38 @@ class Bones
 
         if (App::getConfig('app.filters.autoload', false) && is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/filters.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/filters.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
-
+                foreach ($cache as $class) {
                     $filters->addSubscriber(self::$container->make($class));
+                }
+
+            } else {
+
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+
+                foreach ($list as $item) {
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Filters\\' . $namespace;
+
+                        $filters->addSubscriber(self::$container->make($class));
+
+                    }
 
                 }
+
             }
 
         } else {
@@ -658,18 +707,42 @@ class Bones
 
         if (App::getConfig('app.commands.autoload', false) && is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/commands.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/commands.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . basename($item->getFileName(), '.php');
+                foreach ($cache as $class) {
 
                     $command = self::$container->make($class);
                     $console->add($command);
 
                 }
+
+            } else {
+
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+
+                foreach ($list as $item) {
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . $namespace;
+
+                        $command = self::$container->make($class);
+                        $console->add($command);
+
+                    }
+
+                }
+
             }
 
         } else {
@@ -679,7 +752,8 @@ class Bones
             if (!empty($list)) {
 
                 foreach ($list as $item) {
-                    $console->add($item);
+                    $command = self::$container->make($item);
+                    $console->add($command);
                 }
 
             }
