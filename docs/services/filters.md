@@ -12,8 +12,6 @@ One or multiple [subscriptions](#creating-a-subscription) can be assigned to eac
 Since the service container is used to instantiate the filter subscribers, you can type-hint any dependencies
 in its constructor, and the container will use dependency injection to resolve them for you.
 
-How filters are loaded depends on the [app config settings](../usage/config.md#filters).
-
 ## Methods
 
 - [getSubscriptions](#getsubscriptions)
@@ -88,6 +86,15 @@ $filtered = $filters->doFilter('example.filter', $filtered);
 ## Creating a subscription
 
 To create a filter subscriber, use the `php bones make:filter` [console command](#console-commands).
+
+### Caching filter subscribers
+
+Performance can be improved by caching filter subscribers.
+This should only be done in a production environment, where subscriptions will remain unchanged.
+
+Filters can be cached with the `php bones cache:save --filters` console command.
+
+For more information, see [console commands](../usage/console.md).
 
 ## Filters
 

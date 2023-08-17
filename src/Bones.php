@@ -147,7 +147,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '3.3.0');
+        Constants::define('BONES_VERSION', '4.0.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -310,10 +310,7 @@ class Bones
             'key',
             'debug',
             'environment',
-            'timezone',
-            'events',
-            'filters',
-            'commands'
+            'timezone'
         ])) {
             throw new InvalidConfigurationException('Unable to start app: invalid configuration');
         }
@@ -572,7 +569,7 @@ class Bones
 
         $dir = App::basePath('/app/Events');
 
-        if (App::getConfig('app.events.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
             if (is_file(App::storagePath('/bones/cache/events.json'))) {
 
@@ -608,18 +605,6 @@ class Bones
 
             }
 
-        } else {
-
-            $list = App::getConfig('app.events.load', []);
-
-            if (!empty($list)) {
-
-                foreach ($list as $item) {
-                    $events->addSubscriber(self::$container->make($item));
-                }
-
-            }
-
         }
 
     }
@@ -639,7 +624,7 @@ class Bones
 
         $dir = App::basePath('/app/Filters');
 
-        if (App::getConfig('app.filters.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
             if (is_file(App::storagePath('/bones/cache/filters.json'))) {
 
@@ -675,18 +660,6 @@ class Bones
 
             }
 
-        } else {
-
-            $list = App::getConfig('app.filters.load', []);
-
-            if (!empty($list)) {
-
-                foreach ($list as $item) {
-                    $filters->addSubscriber(self::$container->make($item));
-                }
-
-            }
-
         }
 
     }
@@ -705,7 +678,7 @@ class Bones
 
         $dir = App::basePath('/app/Console/Commands');
 
-        if (App::getConfig('app.commands.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
             if (is_file(App::storagePath('/bones/cache/commands.json'))) {
 
@@ -741,19 +714,6 @@ class Bones
 
                     }
 
-                }
-
-            }
-
-        } else {
-
-            $list = App::getConfig('app.commands.load', []);
-
-            if (!empty($list)) {
-
-                foreach ($list as $item) {
-                    $command = self::$container->make($item);
-                    $console->add($command);
                 }
 
             }

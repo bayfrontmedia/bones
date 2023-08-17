@@ -52,10 +52,10 @@ class AboutBones extends Command
             'Debug mode' => App::getConfig('app.debug') ? 'True' : 'False',
             'Environment' => App::getConfig('app.environment'),
             'Timezone' => date_default_timezone_get(),
-            'Autoload events' => App::getConfig('app.events.autoload') ? 'True' : 'False',
-            'Autoload filters' => App::getConfig('app.filters.autoload') ? 'True' : 'False',
-            'Autoload commands' => App::getConfig('app.commands.autoload') ? 'True' : 'False',
-            'Base path' => App::basePath()
+            'Base path' => App::basePath(),
+            'Cached commands' => is_file(App::storagePath('/bones/cache/commands.json')) ? 'True' : 'False',
+            'Cached events' => is_file(App::storagePath('/bones/cache/events.json')) ? 'True' : 'False',
+            'Cached filters' => is_file(App::storagePath('/bones/cache/filters.json')) ? 'True' : 'False'
         ]);
 
         if ($input->getOption('json')) {

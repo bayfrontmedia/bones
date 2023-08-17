@@ -26,7 +26,6 @@ class CacheClear extends Command
 
         $this->setName('cache:clear')
             ->setDescription('Clear cache')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Clear all cache')
             ->addOption('commands', null, InputOption::VALUE_NONE, 'Clear console commands cache')
             ->addOption('events', null, InputOption::VALUE_NONE, 'Clear events cache')
             ->addOption('filters', null, InputOption::VALUE_NONE, 'Clear filters cache');
@@ -42,24 +41,46 @@ class CacheClear extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $clear_all = false;
+
+        if (!$input->getOption('commands')
+            && !$input->getOption('events')
+            && !$input->getOption('filters')) {
+
+            $clear_all = true;
+
+        }
+
         // ------------------------- Commands -------------------------
 
-        if ($input->getOption('all') || $input->getOption('commands')) {
-            unlink(App::storagePath('/bones/cache/commands.json'));
+        if ($clear_all || $input->getOption('commands')) {
+
+            if (is_file(App::storagePath('/bones/cache/commands.json'))) {
+                unlink(App::storagePath('/bones/cache/commands.json'));
+            }
+
             $output->writeln('<info>Successfully cleared console commands cache!</info>');
         }
 
         // ------------------------- Events -------------------------
 
-        if ($input->getOption('all') || $input->getOption('events')) {
-            unlink(App::storagePath('/bones/cache/events.json'));
+        if ($clear_all || $input->getOption('events')) {
+
+            if (is_file(App::storagePath('/bones/cache/events.json'))) {
+                unlink(App::storagePath('/bones/cache/events.json'));
+            }
+
             $output->writeln('<info>Successfully cleared events cache!</info>');
         }
 
         // ------------------------- Filters -------------------------
 
-        if ($input->getOption('all') || $input->getOption('filters')) {
-            unlink(App::storagePath('/bones/cache/filters.json'));
+        if ($clear_all || $input->getOption('filters')) {
+
+            if (is_file(App::storagePath('/bones/cache/filters.json'))) {
+                unlink(App::storagePath('/bones/cache/filters.json'));
+            }
+
             $output->writeln('<info>Successfully cleared filters cache!</info>');
         }
 

@@ -11,8 +11,6 @@ and one or multiple [subscriptions](#creating-a-subscription) can be assigned to
 Since the service container is used to instantiate the event subscribers, you can type-hint any dependencies
 in its constructor, and the container will use dependency injection to resolve them for you.
 
-How events are loaded depends on the [app config settings](../usage/config.md#events).
-
 ## Methods
 
 - [getSubscriptions](#getsubscriptions)
@@ -87,6 +85,15 @@ $events->doEvent('app.event');
 ## Creating a subscription
 
 To create an event subscriber, use the `make:event` [console command](#console-commands).
+
+### Caching event subscribers
+
+Performance can be improved by caching event subscribers.
+This should only be done in a production environment, where subscriptions will remain unchanged.
+
+Events can be cached with the `php bones cache:save --events` console command.
+
+For more information, see [console commands](../usage/console.md). 
 
 ## Events
 

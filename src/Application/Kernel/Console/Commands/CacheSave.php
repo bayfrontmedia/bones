@@ -28,7 +28,6 @@ class CacheSave extends Command
 
         $this->setName('cache:save')
             ->setDescription('Save cache')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Cache everything')
             ->addOption('commands', null, InputOption::VALUE_NONE, 'Cache console commands')
             ->addOption('events', null, InputOption::VALUE_NONE, 'Cache events')
             ->addOption('filters', null, InputOption::VALUE_NONE, 'Cache filters');
@@ -44,9 +43,19 @@ class CacheSave extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $save_all = false;
+
+        if (!$input->getOption('commands')
+            && !$input->getOption('events')
+            && !$input->getOption('filters')) {
+
+            $save_all = true;
+
+        }
+
         // ------------------------- Commands -------------------------
 
-        if ($input->getOption('all') || $input->getOption('commands')) {
+        if ($save_all || $input->getOption('commands')) {
 
             $output->writeln('<info>Caching console commands...</info>');
 
@@ -101,7 +110,7 @@ class CacheSave extends Command
 
         // ------------------------- Events -------------------------
 
-        if ($input->getOption('all') || $input->getOption('events')) {
+        if ($save_all || $input->getOption('events')) {
 
             $output->writeln('<info>Caching events...</info>');
 
@@ -156,7 +165,7 @@ class CacheSave extends Command
 
         // ------------------------- Filters -------------------------
 
-        if ($input->getOption('all') || $input->getOption('filters')) {
+        if ($save_all || $input->getOption('filters')) {
 
             $output->writeln('<info>Caching filters...</info>');
 

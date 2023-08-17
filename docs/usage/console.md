@@ -37,7 +37,7 @@ php bones api:manage:user
 # Clear cache
 php bones cache:clear
 # Clear specific types of cache
-php bones cache:clear --all --commands --events --filters
+php bones cache:clear --commands --events --filters
 
 # List contents of cache
 php bones cache:list
@@ -47,7 +47,7 @@ php bones cache:list --type=commands --type=events --type=filters
 php bones cache:list --json
 
 # Save cache
-php bones cache:save --all
+php bones cache:save
 # Save specific types of cache
 php bones cache:save --commands --events --filters
 
@@ -161,7 +161,7 @@ php bones schedule:run
 php bones up
 ```
 
-### Creating a new command
+## Creating a new command
 
 The easiest way of creating a new custom console command is from the command line:
 
@@ -169,6 +169,13 @@ The easiest way of creating a new custom console command is from the command lin
 php bones make:command NAME
 ```
 
-How commands are loaded depends on the [app config settings](config.md#commands).
-
 For more information, see: [https://symfony.com/doc/current/console#creating-a-command](https://symfony.com/doc/current/console#creating-a-command)
+
+## Caching commands
+
+Performance can be improved by caching commands.
+This should only be done in a production environment, where custom commands will remain unchanged.
+
+Commands can be cached with the `php bones cache:save --commands` console command.
+
+For more information, the command line documentation above.

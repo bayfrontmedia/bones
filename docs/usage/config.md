@@ -13,19 +13,7 @@ return [
     'key' => App::getEnv('APP_KEY'), // Unique to the app, not to the environment
     'debug' => App::getEnv('APP_DEBUG'),
     'environment' => App::getEnv('APP_ENVIRONMENT'), // e.g.: "dev", "staging", "qa", "prod"
-    'timezone' => App::getEnv('APP_TIMEZONE'), // See: https://www.php.net/manual/en/timezones.php
-    'events' => [
-        'autoload' => true,
-        'load' => []
-    ],
-    'filters' => [
-        'autoload' => true,
-        'load' => []
-    ],
-    'commands' => [
-        'autoload' => true,
-        'load' => []
-    ]
+    'timezone' => App::getEnv('APP_TIMEZONE') // See: https://www.php.net/manual/en/timezones.php
 ];
 ```
 
@@ -65,33 +53,3 @@ For continuity purposes, the [app utility](../utilities/app.md) contains constan
 ## timezone
 
 A valid [timezone](https://www.php.net/manual/en/timezones.php) should be defined.
-
-## events
-
-The `autoload` key accepts a `boolean` value, and is used to specify whether to autoload all the event subscribers
-located in the `app/Events` directory.
-
-When set to `false`, only those event subscribers whose fully namespaced class names are listed in the `load` array
-will be loaded.
-
-For more information, see [events](../services/events.md).
-
-## filters
-
-The `autoload` key accepts a `boolean` value, and is used to specify whether to autoload all the filter subscribers
-located in the `app/Filters` directory.
-
-When set to `false`, only those filter subscribers whose fully namespaced class names are listed in the `load` array
-will be loaded.
-
-For more information, see [filters](../services/filters.md).
-
-## commands
-
-The `autoload` key accepts a `boolean` value, and is used to specify whether to autoload all the console commands
-located in the `app/Console/Commands` directory.
-
-When set to `false`, only those console commands whose fully namespaced class names are listed in the `load` array
-will be loaded.
-
-For more information, see [console](../usage/console.md).
