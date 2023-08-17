@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Encryptor\Encryptor;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -46,11 +47,13 @@ class CacheList extends Command
 
         $return_types = $input->getOption('type');
 
-        if (is_file(App::storagePath('/bones/cache/config.json'))) {
+        if (is_file(App::storagePath('/bones/cache/config'))) {
 
             if (empty($return_types) || in_array('config', $return_types)) {
 
-                $configs = json_decode(file_get_contents(App::storagePath('/bones/cache/config.json')), true);
+                $encryptor = new Encryptor(App::getEnv('APP_KEY'));
+
+                $configs = json_decode($encryptor->decryptString(file_get_contents(App::storagePath('/bones/cache/config'))), true);
 
                 foreach (array_keys($configs) as $config) {
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a867ed6e708c4140d45295ff82d3540e",
+    "content-hash": "b006bcc922e75e9ebf52a586153581f1",
     "packages": [
         {
             "name": "bayfrontmedia/array-schema",
@@ -158,6 +158,59 @@
                 "source": "https://github.com/bayfrontmedia/cron-scheduler/tree/v2.0.1"
             },
             "time": "2023-08-15T17:32:57+00:00"
+        },
+        {
+            "name": "bayfrontmedia/encryptor",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bayfrontmedia/encryptor.git",
+                "reference": "e02e83441a5b381a0b42eef3e365ed5890cdb765"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bayfrontmedia/encryptor/zipball/e02e83441a5b381a0b42eef3e365ed5890cdb765",
+                "reference": "e02e83441a5b381a0b42eef3e365ed5890cdb765",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bayfront\\Encryptor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Robinson",
+                    "email": "john@bayfrontmedia.com",
+                    "homepage": "https://www.bayfrontmedia.com"
+                }
+            ],
+            "description": "A fast, simple two-way encryption library utilizing OpenSSL.",
+            "homepage": "https://github.com/bayfrontmedia/encryptor",
+            "keywords": [
+                "decrypt",
+                "decryption",
+                "encrypt",
+                "encryption",
+                "encryptor",
+                "openssl",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/bayfrontmedia/encryptor/issues",
+                "source": "https://github.com/bayfrontmedia/encryptor/tree/v2.0.0"
+            },
+            "time": "2023-01-26T18:19:53+00:00"
         },
         {
             "name": "bayfrontmedia/leaky-bucket",

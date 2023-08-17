@@ -36,6 +36,7 @@
     "bayfrontmedia/array-schema": "^2.0",
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
+    "bayfrontmedia/encryptor": "^2.0",
     "bayfrontmedia/leaky-bucket": "^2.2",
     "bayfrontmedia/multi-logger": "^1.0",
     "bayfrontmedia/php-array-helpers": "^2.0",

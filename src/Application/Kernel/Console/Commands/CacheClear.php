@@ -68,8 +68,8 @@ class CacheClear extends Command
 
         if ($clear_all || $input->getOption('config')) {
 
-            if (is_file(App::storagePath('/bones/cache/config.json'))) {
-                unlink(App::storagePath('/bones/cache/config.json'));
+            if (is_file(App::storagePath('/bones/cache/config'))) {
+                unlink(App::storagePath('/bones/cache/config'));
             }
 
             $output->writeln('<info>Successfully cleared config files cache!</info>');

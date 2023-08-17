@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Encryptor\Encryptor;
 use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -120,7 +121,7 @@ class CacheSave extends Command
 
             $config = [];
 
-            $cache_dest = App::storagePath('/bones/cache/config.json');
+            $cache_dest = App::storagePath('/bones/cache/config');
 
             if (is_dir($dir)) {
 
@@ -148,7 +149,9 @@ class CacheSave extends Command
                     mkdir($cache_dir, 0755, true);
                 }
 
-                $success = file_put_contents($cache_dest, json_encode($config));
+                $encryptor = new Encryptor(App::getEnv('APP_KEY'));
+
+                $success = file_put_contents($cache_dest, $encryptor->encryptString(json_encode($config)));
 
                 if (!$success) {
                     $output->writeln('<error>Failed to cache config files: Unable to create file (' . $cache_dest . ') </error>');
