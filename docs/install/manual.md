@@ -165,6 +165,15 @@ In addition, it is recommended to create a symlink in your public web root to a 
 
 Or, change "storage" to whatever you want the public storage directory to be named.
 
+### Caching items
+
+Performance can be greatly improved by caching items.
+This should only be done in a production environment, where items remain unchanged.
+
+Items can be cached with the `php bones cache:save` console command.
+
+For more information, see [console commands](../usage/console.md).
+
 ### Installation complete
 
 At this point, installation of Bones should be complete.

@@ -28,7 +28,7 @@ php bones alias:list --sort=class
 # Return as JSON
 php bones alias:list --json
 
-# Manage API service (scheduler, db, and router must exist)
+# Manage API service (db, router, scheduler, and Bayfront\MultiLogger\Log must exist)
 # Manage API tenant
 php bones api:manage:tenant
 # Manage API user
@@ -171,7 +171,7 @@ php bones make:command NAME
 
 For more information, see: [https://symfony.com/doc/current/console#creating-a-command](https://symfony.com/doc/current/console#creating-a-command)
 
-## Caching commands
+### Caching commands
 
 Performance can be improved by caching commands.
 This should only be done in a production environment, where custom commands will remain unchanged.
