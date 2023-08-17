@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `API` service.
 - Added `php bones up` and `php bones down` console commands for managing maintenance mode.
 - Added recursive lookup of all events, filters and commands. 
-- Added caching for console commands, events and filters.
+- Added caching for console commands, config files, events and filters.
 
 ### Removed
 

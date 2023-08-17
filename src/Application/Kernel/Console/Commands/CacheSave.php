@@ -29,6 +29,7 @@ class CacheSave extends Command
         $this->setName('cache:save')
             ->setDescription('Save cache')
             ->addOption('commands', null, InputOption::VALUE_NONE, 'Cache console commands')
+            ->addOption('config', null, InputOption::VALUE_NONE, 'Cache config files')
             ->addOption('events', null, InputOption::VALUE_NONE, 'Cache events')
             ->addOption('filters', null, InputOption::VALUE_NONE, 'Cache filters');
     }
@@ -46,6 +47,7 @@ class CacheSave extends Command
         $save_all = false;
 
         if (!$input->getOption('commands')
+            && !$input->getOption('config')
             && !$input->getOption('events')
             && !$input->getOption('filters')) {
 
@@ -105,6 +107,59 @@ class CacheSave extends Command
             }
 
             $output->writeln('<info>' . count($classes) . ' console commands cached successfully!</info>');
+
+        }
+
+        // ------------------------- Config -------------------------
+
+        if ($save_all || $input->getOption('config')) {
+
+            $output->writeln('<info>Caching config files...</info>');
+
+            $dir = App::configPath();
+
+            $config = [];
+
+            $cache_dest = App::storagePath('/bones/cache/config.json');
+
+            if (is_dir($dir)) {
+
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+
+                foreach ($list as $item) {
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $filename = str_replace('.php', '', basename($item->getPathName()));
+
+                        $contents = require($item->getPathName());
+
+                        if (is_array($contents)) { // Valid format
+                            $config[$filename] = $contents;
+                        }
+
+                    }
+
+                }
+
+                $cache_dir = dirname($cache_dest);
+
+                if (!is_dir($cache_dir)) {
+                    mkdir($cache_dir, 0755, true);
+                }
+
+                $success = file_put_contents($cache_dest, json_encode($config));
+
+                if (!$success) {
+                    $output->writeln('<error>Failed to cache config files: Unable to create file (' . $cache_dest . ') </error>');
+                    return Command::FAILURE;
+                }
+
+            } else {
+                unlink($cache_dest);
+            }
+
+            $output->writeln('<info>' . count($config) . ' config files cached successfully!</info>');
 
         }
 

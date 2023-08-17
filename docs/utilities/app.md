@@ -174,6 +174,15 @@ if (App::envHas('EXAMPLE_VAR')) {
 Returns value from a configuration array key using dot notation,
 with the first segment being the filename. (e.g.: filename.key)
 
+**Note:**
+
+Performance can be improved by caching config files.
+This should only be done in a production environment, where the configuration files will remain unchanged.
+
+Config files can be cached with the `php bones cache:save --config` console command.
+
+For more information, see [console commands](../usage/console.md).
+
 **Parameters:**
 
 - `$key` (string)

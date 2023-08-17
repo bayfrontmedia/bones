@@ -46,6 +46,25 @@ class CacheList extends Command
 
         $return_types = $input->getOption('type');
 
+        if (is_file(App::storagePath('/bones/cache/config.json'))) {
+
+            if (empty($return_types) || in_array('config', $return_types)) {
+
+                $configs = json_decode(file_get_contents(App::storagePath('/bones/cache/config.json')), true);
+
+                foreach (array_keys($configs) as $config) {
+
+                    $return[] = [
+                        'type' => 'Config',
+                        'value' => $config
+                    ];
+
+                }
+
+            }
+
+        }
+
         if (is_file(App::storagePath('/bones/cache/commands.json'))) {
 
             if (empty($return_types) || in_array('commands', $return_types)) {
@@ -56,7 +75,7 @@ class CacheList extends Command
 
                     $return[] = [
                         'type' => 'Command',
-                        'class' => $command
+                        'value' => $command
                     ];
 
                 }
@@ -75,7 +94,7 @@ class CacheList extends Command
 
                     $return[] = [
                         'type' => 'Event',
-                        'class' => $event
+                        'value' => $event
                     ];
 
                 }
@@ -94,7 +113,7 @@ class CacheList extends Command
 
                     $return[] = [
                         'type' => 'Filter',
-                        'class' => $filter
+                        'value' => $filter
                     ];
 
                 }
@@ -119,13 +138,13 @@ class CacheList extends Command
 
                     $rows[] = [
                         $v['type'],
-                        $v['class']
+                        $v['value']
                     ];
 
                 }
 
                 $table = new Table($output);
-                $table->setHeaders(['Type', 'Class'])->setRows($rows);
+                $table->setHeaders(['Type', 'Value'])->setRows($rows);
                 $table->render();
 
             }

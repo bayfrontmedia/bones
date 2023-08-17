@@ -27,6 +27,7 @@ class CacheClear extends Command
         $this->setName('cache:clear')
             ->setDescription('Clear cache')
             ->addOption('commands', null, InputOption::VALUE_NONE, 'Clear console commands cache')
+            ->addOption('config', null, InputOption::VALUE_NONE, 'Clear config files cache')
             ->addOption('events', null, InputOption::VALUE_NONE, 'Clear events cache')
             ->addOption('filters', null, InputOption::VALUE_NONE, 'Clear filters cache');
     }
@@ -44,6 +45,7 @@ class CacheClear extends Command
         $clear_all = false;
 
         if (!$input->getOption('commands')
+            && !$input->getOption('config')
             && !$input->getOption('events')
             && !$input->getOption('filters')) {
 
@@ -60,6 +62,17 @@ class CacheClear extends Command
             }
 
             $output->writeln('<info>Successfully cleared console commands cache!</info>');
+        }
+
+        // ------------------------- Config -------------------------
+
+        if ($clear_all || $input->getOption('config')) {
+
+            if (is_file(App::storagePath('/bones/cache/config.json'))) {
+                unlink(App::storagePath('/bones/cache/config.json'));
+            }
+
+            $output->writeln('<info>Successfully cleared config files cache!</info>');
         }
 
         // ------------------------- Events -------------------------

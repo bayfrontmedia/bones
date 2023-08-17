@@ -37,19 +37,19 @@ php bones api:manage:user
 # Clear cache
 php bones cache:clear
 # Clear specific types of cache
-php bones cache:clear --commands --events --filters
+php bones cache:clear --config --commands --events --filters
 
 # List contents of cache
 php bones cache:list
 # List specific types of cache
-php bones cache:list --type=commands --type=events --type=filters
+php bones cache:list --type=config --type=commands --type=events --type=filters
 # Return as JSON
 php bones cache:list --json
 
 # Save cache
 php bones cache:save
 # Save specific types of cache
-php bones cache:save --commands --events --filters
+php bones cache:save --config --commands --events --filters
 
 # List contents of the service container
 php bones container:list

@@ -113,11 +113,14 @@ class App
         return isset($_ENV[$key]);
     }
 
-    protected static array $config = [];
+    protected static bool $config_cached = false; // Are config values from cache?
+    protected static array $config = []; // Config values
 
     /**
      * Returns value from a configuration array key using dot notation,
      * with the first segment being the filename. (e.g.: filename.key)
+     *
+     * These values may be cached.
      *
      * @param $key string (Key to retrieve in dot notation)
      * @param $default mixed|null (Default value to return if not existing)
@@ -127,6 +130,21 @@ class App
 
     public static function getConfig(string $key, mixed $default = null): mixed
     {
+
+        if (self::$config_cached === false
+            && empty(self::$config)
+            && is_file(self::storagePath('/bones/cache/config.json'))) { // Check for cache
+
+            self::$config_cached = true;
+            self::$config = json_decode(file_get_contents(self::storagePath('/bones/cache/config.json')), true);
+
+        }
+
+        if (self::$config_cached) {
+            return Arr::get(self::$config, $key, $default);
+        }
+
+        // Config not cached...
 
         if (!Arr::has(self::$config, $key)) { // If value does not exist on config array
 
@@ -161,7 +179,6 @@ class App
         return Arr::get(self::$config, $key, $default);
 
     }
-
 
     /**
      * Return base path.
