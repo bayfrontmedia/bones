@@ -124,7 +124,7 @@ class ApiEvents extends EventSubscriber implements EventSubscriberInterface
                     'priority' => 5
                 ]
             ],
-            'api.password.token.updated' => [
+            'api.password.token.update' => [
                 [
                     'method' => 'sendPasswordUpdatedEmail',
                     'priority' => 5
