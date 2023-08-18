@@ -932,7 +932,7 @@ class AuthModel extends ApiModel
 
         $user = Arr::only($user, array_keys($this->usersModel->getSelectableCols())); // Drop sensitive columns
 
-        $this->events->doEvent('api.password.token.updated', $user);
+        $this->events->doEvent('api.password.token.update', $user);
 
     }
 
