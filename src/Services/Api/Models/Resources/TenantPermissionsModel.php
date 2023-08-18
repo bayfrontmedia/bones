@@ -697,7 +697,8 @@ class TenantPermissionsModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.tenant.permission.delete',
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'permission_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

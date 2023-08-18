@@ -731,7 +731,8 @@ class UserMetaModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.user.meta.delete',
-                'user_id' => $scoped_id
+                'user_id' => $scoped_id,
+                'meta_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

@@ -771,7 +771,8 @@ class UserKeysModel extends ApiModel implements ScopedResourceInterface
 
                 $context = [
                     'action' => 'api.user.key.delete',
-                    'user_id' => $scoped_id
+                    'user_id' => $scoped_id,
+                    'key_id' => $id
                 ];
 
                 if (App::getConfig('api.log.audit.include_resource')) {

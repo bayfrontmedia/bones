@@ -678,7 +678,8 @@ class TenantRolesModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.tenant.role.delete',
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'role_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

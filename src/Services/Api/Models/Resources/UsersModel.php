@@ -1053,7 +1053,8 @@ class UsersModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
-                'action' => 'api.user.delete'
+                'action' => 'api.user.delete',
+                'user_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

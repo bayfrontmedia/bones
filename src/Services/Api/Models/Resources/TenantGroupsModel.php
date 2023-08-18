@@ -659,7 +659,8 @@ class TenantGroupsModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.tenant.group.delete',
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'group_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

@@ -779,7 +779,8 @@ class TenantUserMetaModel extends ApiModel
             $context = [
                 'action' => 'api.tenant.user.meta.delete',
                 'tenant_id' => $scoped_id,
-                'user_id' => $user_id
+                'user_id' => $user_id,
+                'meta_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

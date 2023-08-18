@@ -731,7 +731,8 @@ class TenantMetaModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.tenant.meta.delete',
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'meta_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

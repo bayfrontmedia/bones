@@ -782,7 +782,8 @@ class TenantInvitationsModel extends ApiModel implements ScopedResourceInterface
 
             $context = [
                 'action' => 'api.tenant.invitation.delete',
-                'tenant_id' => $scoped_id
+                'tenant_id' => $scoped_id,
+                'invitation_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {

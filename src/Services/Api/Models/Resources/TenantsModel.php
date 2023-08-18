@@ -769,7 +769,8 @@ class TenantsModel extends ApiModel implements ResourceInterface
         if (in_array(Api::ACTION_DELETE, App::getConfig('api.log.audit.actions'))) {
 
             $context = [
-                'action' => 'api.tenant.delete'
+                'action' => 'api.tenant.delete',
+                'tenant_id' => $id
             ];
 
             if (App::getConfig('api.log.audit.include_resource')) {
