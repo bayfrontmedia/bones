@@ -109,5 +109,13 @@ return [
         ]),
         'roles' => $roles,
         'meta' => []
+    ],
+    'Unlocked' => [
+        'plan' => [
+            'max_users' => 9999
+        ],
+        'permissions' => $permissions,
+        'roles' => $roles,
+        'meta' => []
     ]
 ];
