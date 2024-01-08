@@ -64,7 +64,7 @@ php bones container:list --json
 php bones event:list
 # Subscriptions can be returned for specific events
 php bones event:list --event=app.bootstrap --event=app.controller
-# Subscriptions can be sorted by "event", "priority", or "subscriber" (default)
+# Subscriptions can be sorted by "event", "priority", or "subscription" (default)
 php bones event:list --sort=event
 # Return as JSON
 php bones event:list --json
@@ -73,7 +73,7 @@ php bones event:list --json
 php bones filter:list
 # Subscriptions can be returned for specific values
 php bones filter:list --value=router.parameters
-# Subscriptions can be sorted by "filter", "priority", or "subscriber" (default)
+# Subscriptions can be sorted by "filter", "priority", or "subscription" (default)
 php bones filter:list --sort=filter
 # Return as JSON
 php bones filter:list --json

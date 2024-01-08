@@ -86,7 +86,7 @@ class FilterList extends Command
                     }
 
                     $return[] = [
-                        'subscriber' => $function,
+                        'subscription' => $function,
                         'filter' => $filter,
                         'priority' => Arr::get($queue, 'priority')
                     ];
@@ -105,8 +105,8 @@ class FilterList extends Command
             $return = Arr::multisort($return, 'filter');
         } else if ($sort == 'priority') {
             $return = Arr::multisort($return, 'priority');
-        } else { // Subscriber
-            $return = Arr::multisort($return, 'subscriber');
+        } else { // Subscription
+            $return = Arr::multisort($return, 'subscription');
         }
 
         // Return
@@ -124,7 +124,7 @@ class FilterList extends Command
                 foreach ($return as $v) {
 
                     $rows[] = [
-                        $v['subscriber'],
+                        $v['subscription'],
                         $v['filter'],
                         $v['priority']
                     ];
@@ -132,7 +132,7 @@ class FilterList extends Command
                 }
 
                 $table = new Table($output);
-                $table->setHeaders(['Subscriber', 'Filter', 'Priority'])->setRows($rows);
+                $table->setHeaders(['Subscription', 'Filter', 'Priority'])->setRows($rows);
                 $table->render();
 
             }
