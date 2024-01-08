@@ -26,7 +26,6 @@ class InstallService extends Command
 
         $this->setName('install:service')
             ->setDescription('Install an optional service')
-            ->addOption('api', null, InputOption::VALUE_NONE, 'Install API service')
             ->addOption('db', null, InputOption::VALUE_NONE, 'Install database')
             ->addOption('router', null, InputOption::VALUE_NONE, 'Install router')
             ->addOption('scheduler', null, InputOption::VALUE_NONE, 'Install scheduler')
