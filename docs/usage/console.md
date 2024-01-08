@@ -16,6 +16,16 @@ The Symfony Console application is passed as a parameter to this event.
 Command line functionality includes:
 
 ```shell
+# Put Bones into maintenance mode
+php bones down
+# Comma-separated IP's to allow
+php bones down --allow=1.1.1.1,2.2.2.2
+# Message to be returned
+php bones down --message="Message to be returned"
+
+# Take Bones out of maintenance mode
+php bones up
+
 # Information about this Bones application
 php bones about:bones
 # Return as JSON
@@ -49,13 +59,6 @@ php bones cache:save --config --commands --events --filters
 php bones container:list
 # Return as JSON
 php bones container:list --json
-
-# Put Bones into maintenance mode
-php bones down
-# Comma-separated IP's to allow
-php bones down --allow=1.1.1.1,2.2.2.2
-# Message to be returned
-php bones down --message="Message to be returned"
 
 # List all event subscriptions
 php bones event:list
@@ -150,9 +153,6 @@ php bones schedule:list --json
 
 # Run all scheduled jobs which are due
 php bones schedule:run
-
-# Take Bones out of maintenance mode
-php bones up
 ```
 
 ## Creating a new command
