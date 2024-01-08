@@ -3,8 +3,8 @@
 namespace Bayfront\Bones\Application\Kernel\Bridge;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Container\Container;

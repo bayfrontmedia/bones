@@ -3,7 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;

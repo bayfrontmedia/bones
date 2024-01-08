@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Application\Services;
+namespace Bayfront\Bones\Application\Services\Filters;
 
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Bones\Interfaces\FilterSubscriberInterface;
@@ -27,38 +27,29 @@ class FilterService
     }
 
     /**
-     * Add filter subscriber.
+     * Add filter subscriptions from a filter subscriber.
      *
      * @param FilterSubscriberInterface $subscriber
      * @return void
      * @throws ServiceException
      */
 
-    public function addSubscriber(FilterSubscriberInterface $subscriber): void
+    public function addSubscriptions(FilterSubscriberInterface $subscriber): void
     {
 
-        $filters = $subscriber->getSubscriptions();
+        $subscriptions = $subscriber->getSubscriptions();
 
-        foreach ($filters as $filter => $subscriptions) {
+        foreach ($subscriptions as $subscription) {
 
             // Validate subscriptions
 
-            if (!is_array($subscriptions)) {
-                throw new ServiceException('Unable to add filter (' . get_class($subscriber) . '): Invalid subscriptions array');
+            if (!$subscription instanceof FilterSubscription) {
+                throw new ServiceException('Unable to add filter (' . get_class($subscriber) . '): Invalid filter subscription');
             }
 
-            foreach ($subscriptions as $subscription) {
+            // Add
 
-                if (!isset($subscription['method'])
-                    || !isset($subscription['priority'])) {
-                    throw new ServiceException('Unable to add filter (' . get_class($subscriber) . '): Invalid subscription array');
-                }
-
-                // Add
-
-                $this->hooks->addFilter($filter, [$subscriber, (string)$subscription['method']], (int)$subscription['priority']);
-
-            }
+            $this->hooks->addFilter($subscription->getName(), $subscription->getFunction(), $subscription->getPriority());
 
         }
 

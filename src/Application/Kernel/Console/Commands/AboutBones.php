@@ -2,7 +2,7 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;

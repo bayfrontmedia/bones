@@ -2,7 +2,7 @@
 
 Under the hood, [PHP Hooks](https://github.com/bayfrontmedia/php-hooks) is used to manage events and filters.
 
-Bones customizes the use of this library with its built-in service at `Bayfront\Bones\Application\Services\FilterService`,
+Bones customizes the use of this library with its built-in service at `Bayfront\Bones\Application\Services\Filters\FilterService`,
 which is added to the service container with alias `filters`.
 
 The concept of filters is that certain values are [filtered](#filters), adding the ability to alter the value

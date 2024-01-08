@@ -14,12 +14,12 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallService;
-use Bayfront\Bones\Application\Kernel\Console\Commands\MakeKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeCommand;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeController;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeEvent;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeException;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeFilter;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MakeKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeMigration;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeModel;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeService;
@@ -29,8 +29,8 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\MigrationList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\RouteList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleRun;
-use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Application\Utilities\Constants;
 use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
@@ -222,10 +222,10 @@ class Bones
              * Pass the exception and response as arguments to the event.
              */
 
-            if (self::$container->has('Bayfront\Bones\Application\Services\EventService')) {
+            if (self::$container->has('Bayfront\Bones\Application\Services\Events\EventService')) {
 
                 /** @var EventService $events */
-                $events = self::$container->get('Bayfront\Bones\Application\Services\EventService');
+                $events = self::$container->get('Bayfront\Bones\Application\Services\Events\EventService');
 
                 $events->doEvent('bones.exception', $response, $e);
 
@@ -415,11 +415,11 @@ class Bones
 
         $this->safeInclude(App::resourcesPath('/bootstrap.php'), self::$container);
 
-        // ------------------------- Load event and filter subscribers -------------------------
+        // ------------------------- Load event and filter subscriptions -------------------------
 
-        $this->loadEventSubscribers($events);
+        $this->loadEventSubscriptions($events);
 
-        $this->loadFilterSubscribers($filters);
+        $this->loadFilterSubscriptions($filters);
 
         // ------------------------- Bootstrap app -------------------------
 
@@ -561,7 +561,7 @@ class Bones
     }
 
     /**
-     * Load event subscribers from the app config array.
+     * Load event subscriptions from all event subscribers.
      *
      * @param EventService $events
      * @return void
@@ -570,7 +570,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadEventSubscribers(EventService $events): void
+    protected function loadEventSubscriptions(EventService $events): void
     {
 
         $dir = App::basePath('/app/Events');
@@ -582,7 +582,7 @@ class Bones
                 $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/events.json')), true);
 
                 foreach ($cache as $class) {
-                    $events->addSubscriber(self::$container->make($class));
+                    $events->addSubscriptions(self::$container->make($class));
                 }
 
             } else {
@@ -603,7 +603,7 @@ class Bones
 
                         $class = App::getConfig('app.namespace', '') . 'Events\\' . $namespace;
 
-                        $events->addSubscriber(self::$container->make($class));
+                        $events->addSubscriptions(self::$container->make($class));
 
                     }
 
@@ -616,7 +616,7 @@ class Bones
     }
 
     /**
-     * Load filter subscribers from the app config array.
+     * Load filter subscriptions from all filter subscribers.
      *
      * @param FilterService $filters
      * @return void
@@ -625,7 +625,7 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadFilterSubscribers(FilterService $filters): void
+    protected function loadFilterSubscriptions(FilterService $filters): void
     {
 
         $dir = App::basePath('/app/Filters');
@@ -637,7 +637,7 @@ class Bones
                 $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/filters.json')), true);
 
                 foreach ($cache as $class) {
-                    $filters->addSubscriber(self::$container->make($class));
+                    $filters->addSubscriptions(self::$container->make($class));
                 }
 
             } else {
@@ -658,7 +658,7 @@ class Bones
 
                         $class = App::getConfig('app.namespace', '') . 'Filters\\' . $namespace;
 
-                        $filters->addSubscriber(self::$container->make($class));
+                        $filters->addSubscriptions(self::$container->make($class));
 
                     }
 

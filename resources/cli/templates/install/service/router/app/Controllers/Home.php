@@ -3,8 +3,8 @@
 namespace _namespace_\Controllers;
 
 use Bayfront\Bones\Abstracts\Controller;
-use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\HttpResponse\Response;
 
 /**

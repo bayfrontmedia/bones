@@ -2,7 +2,7 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Exception;
 use Symfony\Component\Console\Command\Command;

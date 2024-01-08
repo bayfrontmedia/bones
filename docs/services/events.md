@@ -2,7 +2,7 @@
 
 Under the hood, [PHP Hooks](https://github.com/bayfrontmedia/php-hooks) is used to manage events and filters.
 
-Bones customizes the use of this library with its built-in service at `Bayfront\Bones\Application\Services\EventService`,
+Bones customizes the use of this library with its built-in service at `Bayfront\Bones\Application\Services\Events\EventService`,
 which is added to the service container with alias `events`.
 
 The concept of events is that certain [events](#events) are triggered by the app at different times,

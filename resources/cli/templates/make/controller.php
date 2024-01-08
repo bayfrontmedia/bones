@@ -3,7 +3,7 @@
 namespace _namespace_\Controllers;
 
 use Bayfront\Bones\Abstracts\Controller;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\HttpResponse\Response;
 
 /**

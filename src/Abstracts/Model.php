@@ -2,7 +2,7 @@
 
 namespace Bayfront\Bones\Abstracts;
 
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 
 abstract class Model
 {

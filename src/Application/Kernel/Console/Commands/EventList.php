@@ -3,7 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Exception;
 use Symfony\Component\Console\Command\Command;

@@ -3,7 +3,8 @@
 namespace _namespace_\Events;
 
 use Bayfront\Bones\Abstracts\EventSubscriber;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventSubscription;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Bayfront\RouteIt\Router;
@@ -40,14 +41,11 @@ class Routes extends EventSubscriber implements EventSubscriberInterface
 
     public function getSubscriptions(): array
     {
+
         return [
-            'app.bootstrap' => [
-                [
-                    'method' => 'addRoutes',
-                    'priority' => 5
-                ]
-            ]
+            new EventSubscription('app.bootstrap', [$this, 'addRoutes'], 10)
         ];
+
     }
 
     /**
