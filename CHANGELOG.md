@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Changed
 
 - Updated the `ExceptionHandler` to look for a `Bayfront\MultiLogger\Log` instead of a `Monolog\Logger` instance.
+- Updated `EventService` and `FilterService` locations, and added the `EventSubscription` and `FilterSubscription` classes to be used within subscribers.
 - Updated all dependencies.
 
 ### Removed

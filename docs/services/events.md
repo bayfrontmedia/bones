@@ -6,7 +6,8 @@ Bones customizes the use of this library with its built-in service at `Bayfront\
 which is added to the service container with alias `events`.
 
 The concept of events is that certain [events](#events) are triggered by the app at different times,
-and one or multiple [subscriptions](#creating-a-subscription) can be assigned to execute when a particular event occurs.
+and one or more subscriptions can be assigned to execute when a particular event occurs
+from within an [event subscriber](#creating-a-subscriber).
 
 Since the service container is used to instantiate the event subscribers, you can type-hint any dependencies
 in its constructor, and the container will use dependency injection to resolve them for you.
@@ -14,7 +15,7 @@ in its constructor, and the container will use dependency injection to resolve t
 ## Methods
 
 - [getSubscriptions](#getsubscriptions)
-- [addSubscriber](#addsubscriber)
+- [addSubscriptions](#addsubscriptions)
 - [doEvent](#doevent)
 
 <hr />
@@ -41,11 +42,11 @@ $subscriptions = $events->getSubscriptions();
 
 <hr />
 
-### addSubscriber
+### addSubscriptions
 
 **Description:**
 
-Add event subscriber.
+Add event subscriptions from an event subscriber.
 
 **Parameters:**
 
@@ -82,7 +83,9 @@ Execute all subscriptions for an event in order of priority.
 $events->doEvent('app.event');
 ```
 
-## Creating a subscription
+## Creating a subscriber
+
+Each event subscriber contains one or more subscriptions.
 
 To create an event subscriber, use the `make:event` [console command](#console-commands).
 

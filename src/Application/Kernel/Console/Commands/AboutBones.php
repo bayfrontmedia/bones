@@ -45,7 +45,7 @@ class AboutBones extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $about = array_merge($this->filters->doFilter('about.bones', []), [
+        $about = array_merge([
             'Bones version' => App::getBonesVersion(),
             'PHP version' => phpversion(),
             'POST max size' => ini_get('post_max_size'),
@@ -57,7 +57,7 @@ class AboutBones extends Command
             'Cached commands' => is_file(App::storagePath('/bones/cache/commands.json')) ? 'True' : 'False',
             'Cached events' => is_file(App::storagePath('/bones/cache/events.json')) ? 'True' : 'False',
             'Cached filters' => is_file(App::storagePath('/bones/cache/filters.json')) ? 'True' : 'False'
-        ]);
+        ], $this->filters->doFilter('about.bones', []));
 
         if ($input->getOption('json')) {
             $output->writeLn(json_encode($about));

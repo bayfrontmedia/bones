@@ -7,7 +7,7 @@ which is added to the service container with alias `filters`.
 
 The concept of filters is that certain values are [filtered](#filters), adding the ability to alter the value
 before it is sent in the response. 
-One or multiple [subscriptions](#creating-a-subscription) can be assigned to each filter.
+One or more subscriptions can be assigned to each filter from within a [filter subscriber](#creating-a-subscriber).
 
 Since the service container is used to instantiate the filter subscribers, you can type-hint any dependencies
 in its constructor, and the container will use dependency injection to resolve them for you.
@@ -15,7 +15,7 @@ in its constructor, and the container will use dependency injection to resolve t
 ## Methods
 
 - [getSubscriptions](#getsubscriptions)
-- [addSubscriber](#addsubscriber)
+- [addSubscriptions](#addsubscriptions)
 - [doFilter](#dofilter)
 
 <hr />
@@ -42,11 +42,11 @@ $subscriptions = $filters->getSubscriptions();
 
 <hr />
 
-### addSubscriber
+### addSubscriptions
 
 **Description:**
 
-Add filter subscriber.
+Add filter subscriptions from a filter subscriber.
 
 **Parameters:**
 
@@ -83,7 +83,9 @@ Execute all subscriptions for a filter in order of priority.
 $filtered = $filters->doFilter('example.filter', $filtered);
 ```
 
-## Creating a subscription
+## Creating a subscriber
+
+Each filter subscriber contains one or more subscriptions.
 
 To create a filter subscriber, use the `php bones make:filter` [console command](#console-commands).
 
