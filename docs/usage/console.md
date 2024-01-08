@@ -78,7 +78,7 @@ php bones filter:list --sort=filter
 # Return as JSON
 php bones filter:list --json
 
-# Set the APP_KEY environment variable to a cryptographically secure key
+# Set the APP_KEY environment variable to a cryptographically secure key if not already existing
 php bones install:key
 
 ## Install an optional service

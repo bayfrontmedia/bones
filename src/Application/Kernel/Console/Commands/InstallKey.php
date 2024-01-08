@@ -21,7 +21,7 @@ class InstallKey extends Command
     {
 
         $this->setName('install:key')
-            ->setDescription('Set the APP_KEY environment variable to a cryptographically secure key');
+            ->setDescription('Set the APP_KEY environment variable to a cryptographically secure key if not already existing');
 
     }
 
