@@ -2,7 +2,6 @@
 
 use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\PDO\Db;
-use Bayfront\PDO\Exceptions\QueryException;
 
 /**
  * _migration_name_ Migration.
@@ -25,7 +24,6 @@ class _migration_name_ implements MigrationInterface
 
     /**
      * @inheritDoc
-     * @throws QueryException
      */
 
     public function up(): void
@@ -39,7 +37,6 @@ class _migration_name_ implements MigrationInterface
 
     /**
      * @inheritDoc
-     * @throws QueryException
      */
 
     public function down(): void
