@@ -175,7 +175,6 @@ class Bones
 
         if (Time::isTimezone(App::getConfig('app.timezone', ''))) {
             date_default_timezone_set(App::getConfig('app.timezone'));
-            date_default_timezone_set(App::getConfig('app.timezone'));
         } else {
             date_default_timezone_set('UTC');
         }
@@ -544,18 +543,6 @@ class Bones
         if (isset($this->interface_services['router'])) {
 
             $console->add(new RouteList($this->interface_services['router']));
-
-        }
-
-        if (isset($this->interface_services['scheduler'])
-            && isset($this->interface_services['db'])
-            && isset($this->interface_services['router'])) {
-
-            $command = self::$container->make('Bayfront\Bones\Application\Kernel\Console\Commands\ApiManageTenant');
-            $console->add($command);
-
-            $command = self::$container->make('Bayfront\Bones\Application\Kernel\Console\Commands\ApiManageUser');
-            $console->add($command);
 
         }
 

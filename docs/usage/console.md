@@ -28,12 +28,6 @@ php bones alias:list --sort=class
 # Return as JSON
 php bones alias:list --json
 
-# Manage API service (db, router, scheduler, and Bayfront\MultiLogger\Log must exist)
-# Manage API tenant
-php bones api:manage:tenant
-# Manage API user
-php bones api:manage:user
-
 # Clear cache
 php bones cache:clear
 # Clear specific types of cache
@@ -87,7 +81,7 @@ php bones install:key
 ## Install an optional service
 php bones install:service --[OPTION]
 ## Service options include:
---api --db --router --scheduler --veil
+--db --router --scheduler --veil
 
 # Create a new console command
 php bones make:command NAME

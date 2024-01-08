@@ -12,11 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [4.0.0]- Upcoming
+## [4.0.0]- 2024.01.08
 
 ### Added
 
-- Added `API` service.
 - Added `php bones up` and `php bones down` console commands for managing maintenance mode.
 - Added recursive lookup of all events, filters and commands. 
 - Added caching for console commands, config files, events and filters.

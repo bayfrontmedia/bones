@@ -93,12 +93,13 @@ Depending on your installation configuration, Bones may use these place addition
 
 Other commonly used helpful services you may wish to bootstrap into your app include:
 
-- [Flysystem](https://flysystem.thephpleague.com/docs/)
-- [Monolog](https://seldaek.github.io/monolog/)
+- [Multi-Filesystem](https://github.com/bayfrontmedia/multi-filesystem): An easy-to-use library used to manage multiple Flysystem adapters from a single class.
+- [Multi-Logger](https://github.com/bayfrontmedia/multi-logger): An easy-to-use library used to manage multiple Monolog channels from a single class.
+The [exception handler](usage/exceptions.md#report) looks for this class when reporting exceptions.
 
 The following services are included with Bones:
 
-- [API](services/api/README.md)
+- None.
 
 ### Utilities
 
