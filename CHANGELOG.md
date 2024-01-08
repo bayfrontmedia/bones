@@ -16,13 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `php bones up` and `php bones down` console commands for managing maintenance mode.
+- Added `php bones down` and `php bones up` console commands for managing maintenance mode.
+- Added the `app.dispatch` event in the `RouterDispatcher` class.
 - Added recursive lookup of all events, filters and commands. 
 - Added caching for console commands, config files, events and filters.
 
+## Changed
+
+- Updated the `ExceptionHandler` to look for a `Bayfront\MultiLogger\Log` instead of a `Monolog\Logger` instance.
+- Updated all dependencies.
+
 ### Removed
 
-- Removed commands, events and filters from the app configuration array.
+- Removed commands, events and filters from being loaded via the app configuration array.
 
 ### Fixed
 

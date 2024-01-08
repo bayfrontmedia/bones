@@ -9,7 +9,7 @@ use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Bayfront\RouteIt\Router;
 
 /**
- * RouterEvents subscriber.
+ * Actions to perform when the router service exists in the container.
  *
  * Created with Bones v_bones_version_
  */
