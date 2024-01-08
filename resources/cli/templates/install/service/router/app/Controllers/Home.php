@@ -33,7 +33,7 @@ class Home extends Controller
         parent::__construct($events);
     }
 
-    public function index(array $params)
+    public function index(array $params): void
     {
 
         $body = '<h1>Controller: Home</h1><h2>Method: index</h2><h2>Parameters:</h2><ul>';

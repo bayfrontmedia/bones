@@ -41,7 +41,7 @@ class VeilExample extends Controller
      * @throws FileNotFoundException
      */
 
-    public function index(array $params)
+    public function index(array $params): void
     {
 
         $data = $this->filters->doFilter('veil.data', [
