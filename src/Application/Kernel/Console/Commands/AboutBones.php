@@ -53,6 +53,7 @@ class AboutBones extends Command
             'Environment' => App::getConfig('app.environment'),
             'Timezone' => date_default_timezone_get(),
             'Base path' => App::basePath(),
+            'Cached config' => is_file(App::storagePath('/bones/cache/config')) ? 'True' : 'False',
             'Cached commands' => is_file(App::storagePath('/bones/cache/commands.json')) ? 'True' : 'False',
             'Cached events' => is_file(App::storagePath('/bones/cache/events.json')) ? 'True' : 'False',
             'Cached filters' => is_file(App::storagePath('/bones/cache/filters.json')) ? 'True' : 'False'
