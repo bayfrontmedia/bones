@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MakeEvent extends Command
 {
 
-     /**
+    /**
      * @return void
      */
 

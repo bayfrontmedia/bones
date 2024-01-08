@@ -12,6 +12,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [4.0.0]- 2024.01.08
+
+### Added
+
+- Added `php bones down` and `php bones up` console commands for managing maintenance mode.
+- Added the `app.dispatch` event in the `RouterDispatcher` class.
+- Added recursive lookup of all events, filters and commands. 
+- Added caching for console commands, config files, events and filters.
+
+## Changed
+
+- Updated the `ExceptionHandler` to look for a `Bayfront\MultiLogger\Log` instead of a `Monolog\Logger` instance.
+- Updated `EventService` and `FilterService` locations, and added the `EventSubscription` and `FilterSubscription` classes to be used within subscribers.
+- Updated all dependencies.
+
+### Removed
+
+- Removed commands, events and filters from being loaded via the app configuration array.
+
+### Fixed
+
+- Fixed bug where the `bones.end` event was not being executed after `bones.exception`.
+
 ## [3.2.0]- 2023.05.11
 
 ### Added

@@ -6,21 +6,10 @@ interface EventSubscriberInterface
 {
 
     /**
-     * Event(s) to subscribe to in which the key = event name
-     * and value is an array of subscriptions in which each contains
-     * the keys "method" (to execute) and "priority" (int)
+     * Array of EventSubscription instances.
      *
      * [
-     *   'app.bootstrap' => [
-     *     [
-     *       'method' => 'methodName',
-     *       'priority' => 5
-     *     ],
-     *     [
-     *       'method'  => 'anotherMethodName',
-     *       'priority' => 5
-     *     ]
-     *   ]
+     *   new EventSubscription('event.name', [$this, 'methodName'], 10),
      * ]
      *
      * @return array

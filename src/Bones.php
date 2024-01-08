@@ -6,17 +6,20 @@ use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Kernel\Bridge\RouterDispatcher;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AboutBones;
 use Bayfront\Bones\Application\Kernel\Console\Commands\AliasList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheClear;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheList;
+use Bayfront\Bones\Application\Kernel\Console\Commands\CacheSave;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ContainerList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\EventList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\FilterList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\InstallService;
-use Bayfront\Bones\Application\Kernel\Console\Commands\MakeKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeCommand;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeController;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeEvent;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeException;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeFilter;
+use Bayfront\Bones\Application\Kernel\Console\Commands\MakeKey;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeMigration;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeModel;
 use Bayfront\Bones\Application\Kernel\Console\Commands\MakeService;
@@ -26,8 +29,8 @@ use Bayfront\Bones\Application\Kernel\Console\Commands\MigrationList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\RouteList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleList;
 use Bayfront\Bones\Application\Kernel\Console\Commands\ScheduleRun;
-use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Application\Utilities\Constants;
 use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
@@ -42,7 +45,9 @@ use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
+use Bayfront\Encryptor\Encryptor;
 use Bayfront\Hooks\Hooks;
+use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\PDO\DbFactory;
@@ -53,9 +58,10 @@ use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Veil\Veil;
-use DirectoryIterator;
 use Dotenv\Dotenv;
 use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Application;
 
 class Bones
@@ -142,7 +148,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '3.2.0');
+        Constants::define('BONES_VERSION', '4.0.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -150,10 +156,24 @@ class Bones
             Dotenv::createImmutable(App::basePath())->load();
         }
 
+        // ------------------------- Encryptor -------------------------
+
+        /*
+         * NOTE:
+         *
+         * This must be created and added to the container before the first
+         * time App::getConfig() is used, as it may be needed to decrypt
+         * cached config values.
+         */
+
+        $encryptor = new Encryptor(App::getEnv('APP_KEY'));
+
+        self::$container->set(get_class($encryptor), $encryptor);
+        self::$container->setAlias('encryptor', get_class($encryptor));
+
         // ------------------------- Set timezone -------------------------
 
-        if (Time::isTimezone(App::getConfig('app.timezone'))) {
-            date_default_timezone_set(App::getConfig('app.timezone'));
+        if (Time::isTimezone(App::getConfig('app.timezone', ''))) {
             date_default_timezone_set(App::getConfig('app.timezone'));
         } else {
             date_default_timezone_set('UTC');
@@ -202,10 +222,10 @@ class Bones
              * Pass the exception and response as arguments to the event.
              */
 
-            if (self::$container->has('Bayfront\Bones\Application\Services\EventService')) {
+            if (self::$container->has('Bayfront\Bones\Application\Services\Events\EventService')) {
 
                 /** @var EventService $events */
-                $events = self::$container->get('Bayfront\Bones\Application\Services\EventService');
+                $events = self::$container->get('Bayfront\Bones\Application\Services\Events\EventService');
 
                 $events->doEvent('bones.exception', $response, $e);
 
@@ -241,6 +261,10 @@ class Bones
 
                     $handler->respond($response, $e);
 
+                    if (isset($events)) {
+                        $events->doEvent('bones.end');
+                    }
+
                     return; // Stop iteration
 
                 }
@@ -254,6 +278,10 @@ class Bones
              */
 
             echo '<h1>Error: ' . $e->getMessage() . '</h1>';
+
+            if (isset($events)) {
+                $events->doEvent('bones.end');
+            }
 
         });
 
@@ -297,10 +325,7 @@ class Bones
             'key',
             'debug',
             'environment',
-            'timezone',
-            'events',
-            'filters',
-            'commands'
+            'timezone'
         ])) {
             throw new InvalidConfigurationException('Unable to start app: invalid configuration');
         }
@@ -390,11 +415,11 @@ class Bones
 
         $this->safeInclude(App::resourcesPath('/bootstrap.php'), self::$container);
 
-        // ------------------------- Load event and filter subscribers -------------------------
+        // ------------------------- Load event and filter subscriptions -------------------------
 
-        $this->loadEventSubscribers($events);
+        $this->loadEventSubscriptions($events);
 
-        $this->loadFilterSubscribers($filters);
+        $this->loadFilterSubscriptions($filters);
 
         // ------------------------- Bootstrap app -------------------------
 
@@ -403,7 +428,7 @@ class Bones
         if (App::getInterface() == App::INTERFACE_HTTP) {
             $this->startHttp($response, $events, $filters);
         } else if (App::getInterface() == App::INTERFACE_CLI) {
-            $this->startCli($events, $filters);
+            $this->startCli($encryptor, $events, $filters);
         }
 
         // ------------------------- Shutdown -------------------------
@@ -419,9 +444,10 @@ class Bones
      * @return void
      * @throws ContainerException
      * @throws DispatchException
+     * @throws HttpException
      * @throws InvalidStatusCodeException
-     * @throws ServiceException
      * @throws NotFoundException
+     * @throws ServiceException
      */
 
     protected function startHttp(Response $response, EventService $events, FilterService $filters): void
@@ -429,9 +455,23 @@ class Bones
 
         $events->doEvent('app.http');
 
+        // Check maintenance mode
+
+        if (App::isDown()) {
+
+            $down = json_decode(file_get_contents(App::storagePath('/bones/down.json')), true);
+
+            if (!in_array(Request::getIp(), Arr::get($down, 'allow', []))) {
+                App::abort(503, Arr::get($down, 'message', ''));
+            }
+
+        }
+
+        // Dispatch route
+
         if (isset($this->interface_services['router'])) {
 
-            $dispatcher = new RouterDispatcher(self::$container, $filters, $response, $this->interface_services['router']->resolve());
+            $dispatcher = new RouterDispatcher(self::$container, $events, $filters, $response, $this->interface_services['router']->resolve());
             $dispatcher->dispatchRoute();
 
         }
@@ -439,13 +479,16 @@ class Bones
     }
 
     /**
+     * @param Encryptor $encryptor
      * @param EventService $events
      * @param FilterService $filters
      * @return void
+     * @throws ContainerException
+     * @throws NotFoundException
      * @throws Exception
      */
 
-    protected function startCli(EventService $events, FilterService $filters): void
+    protected function startCli(Encryptor $encryptor, EventService $events, FilterService $filters): void
     {
 
         $console = new Application();
@@ -461,7 +504,11 @@ class Bones
 
         $console->add(new AboutBones($filters));
         $console->add(new AliasList(self::$container));
+        $console->add(new CacheClear());
+        $console->add(new CacheList($encryptor));
+        $console->add(new CacheSave($encryptor));
         $console->add(new ContainerList(self::$container));
+        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
         $console->add(new EventList($events));
         $console->add(new FilterList($filters));
         $console->add(new InstallKey());
@@ -474,6 +521,7 @@ class Bones
         $console->add(new MakeKey());
         $console->add(new MakeModel());
         $console->add(new MakeService());
+        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Up'));
 
         // Optional services
 
@@ -513,7 +561,7 @@ class Bones
     }
 
     /**
-     * Load event subscribers from the app config array.
+     * Load event subscriptions from all event subscribers.
      *
      * @param EventService $events
      * @return void
@@ -522,34 +570,43 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadEventSubscribers(EventService $events): void
+    protected function loadEventSubscriptions(EventService $events): void
     {
 
         $dir = App::basePath('/app/Events');
 
-        if (App::getConfig('app.events.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/events.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/events.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Events\\' . basename($item->getFileName(), '.php');
-
-                    $events->addSubscriber(self::$container->make($class));
-
+                foreach ($cache as $class) {
+                    $events->addSubscriptions(self::$container->make($class));
                 }
-            }
 
-        } else {
+            } else {
 
-            $list = App::getConfig('app.events.load', []);
-
-            if (!empty($list)) {
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
 
                 foreach ($list as $item) {
-                    $events->addSubscriber(self::$container->make($item));
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Events\\' . $namespace;
+
+                        $events->addSubscriptions(self::$container->make($class));
+
+                    }
+
                 }
 
             }
@@ -559,7 +616,7 @@ class Bones
     }
 
     /**
-     * Load filter subscribers from the app config array.
+     * Load filter subscriptions from all filter subscribers.
      *
      * @param FilterService $filters
      * @return void
@@ -568,34 +625,43 @@ class Bones
      * @throws NotFoundException
      */
 
-    protected function loadFilterSubscribers(FilterService $filters): void
+    protected function loadFilterSubscriptions(FilterService $filters): void
     {
 
         $dir = App::basePath('/app/Filters');
 
-        if (App::getConfig('app.filters.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/filters.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/filters.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Filters\\' . basename($item->getFileName(), '.php');
-
-                    $filters->addSubscriber(self::$container->make($class));
-
+                foreach ($cache as $class) {
+                    $filters->addSubscriptions(self::$container->make($class));
                 }
-            }
 
-        } else {
+            } else {
 
-            $list = App::getConfig('app.filters.load', []);
-
-            if (!empty($list)) {
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
 
                 foreach ($list as $item) {
-                    $filters->addSubscriber(self::$container->make($item));
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Filters\\' . $namespace;
+
+                        $filters->addSubscriptions(self::$container->make($class));
+
+                    }
+
                 }
 
             }
@@ -618,30 +684,42 @@ class Bones
 
         $dir = App::basePath('/app/Console/Commands');
 
-        if (App::getConfig('app.commands.autoload', false) && is_dir($dir)) {
+        if (is_dir($dir)) {
 
-            $list = new DirectoryIterator($dir);
+            if (is_file(App::storagePath('/bones/cache/commands.json'))) {
 
-            foreach ($list as $item) {
+                $cache = json_decode(file_get_contents(App::storagePath('/bones/cache/commands.json')), true);
 
-                if ($item->isFile() && $item->getExtension() == 'php') {
-
-                    $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . basename($item->getFileName(), '.php');
+                foreach ($cache as $class) {
 
                     $command = self::$container->make($class);
                     $console->add($command);
 
                 }
-            }
 
-        } else {
+            } else {
 
-            $list = App::getConfig('app.commands.load', []);
-
-            if (!empty($list)) {
+                $list = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
 
                 foreach ($list as $item) {
-                    $console->add($item);
+
+                    if ($item->isFile() && $item->getExtension() == 'php') {
+
+                        $namespace = ltrim(str_replace([
+                            '.php',
+                            '/'
+                        ], [
+                            '',
+                            '\\'
+                        ], str_replace($dir, '', $item->getPathName())), '\\');
+
+                        $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . $namespace;
+
+                        $command = self::$container->make($class);
+                        $console->add($command);
+
+                    }
+
                 }
 
             }

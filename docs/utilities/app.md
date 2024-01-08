@@ -40,6 +40,7 @@ The following constants can be used to check against the [interface](#getinterfa
 - [make](#make)
 - [has](#has)
 - [abort](#abort)
+- [isDown](#isdown)
 
 <hr />
 
@@ -172,6 +173,15 @@ if (App::envHas('EXAMPLE_VAR')) {
 
 Returns value from a configuration array key using dot notation,
 with the first segment being the filename. (e.g.: filename.key)
+
+**Note:**
+
+Performance can be improved by caching config files.
+This should only be done in a production environment, where the configuration files will remain unchanged.
+
+Config files can be cached with the `php bones cache:save --config` console command.
+
+For more information, see [console commands](../usage/console.md).
 
 **Parameters:**
 
@@ -548,3 +558,21 @@ If no message is provided, the phrase for the HTTP status code will be used.
 ```php
 App::abort(403);
 ```
+
+<hr />
+
+### isDown
+
+**Description:**
+
+Is Bones down?
+
+See: `php bones down` [console command](../usage/console.md)
+
+**Parameters:**
+
+- None
+
+**Returns:**
+
+- (bool)

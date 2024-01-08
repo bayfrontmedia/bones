@@ -3,6 +3,7 @@
 namespace _namespace_\Events;
 
 use Bayfront\Bones\Abstracts\EventSubscriber;
+use Bayfront\Bones\Application\Services\Events\EventSubscription;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 
 /**
@@ -28,14 +29,11 @@ class _subscriber_name_ extends EventSubscriber implements EventSubscriberInterf
 
     public function getSubscriptions(): array
     {
+
         return [
-            'app.bootstrap' => [
-                [
-                    'method' => 'sampleMethod',
-                    'priority' => 5
-                ]
-            ]
+            new EventSubscription('app.bootstrap', [$this, 'sampleMethod'], 10)
         ];
+
     }
 
     /**

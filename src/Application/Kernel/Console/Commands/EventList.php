@@ -3,7 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -86,7 +86,7 @@ class EventList extends Command
                     }
 
                     $return[] = [
-                        'subscriber' => $function,
+                        'subscription' => $function,
                         'event' => $event,
                         'priority' => Arr::get($queue, 'priority')
                     ];
@@ -105,8 +105,8 @@ class EventList extends Command
             $return = Arr::multisort($return, 'event');
         } else if ($sort == 'priority') {
             $return = Arr::multisort($return, 'priority');
-        } else { // Subscriber
-            $return = Arr::multisort($return, 'subscriber');
+        } else { // Subscription
+            $return = Arr::multisort($return, 'subscription');
         }
 
         // Return
@@ -124,7 +124,7 @@ class EventList extends Command
                 foreach ($return as $v) {
 
                     $rows[] = [
-                        $v['subscriber'],
+                        $v['subscription'],
                         $v['event'],
                         $v['priority']
                     ];
@@ -132,7 +132,7 @@ class EventList extends Command
                 }
 
                 $table = new Table($output);
-                $table->setHeaders(['Subscriber', 'Event', 'Priority'])->setRows($rows);
+                $table->setHeaders(['Subscription', 'Event', 'Priority'])->setRows($rows);
                 $table->render();
 
             }

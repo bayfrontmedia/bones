@@ -92,11 +92,11 @@ abstract class ExceptionHandler
 
         $container = App::getContainer();
 
-        if ($container->has('Monolog\Logger')) {
+        if ($container->has('Bayfront\MultiLogger\Log')) {
 
             $data = $this->getDataArray($response, $e);
 
-            $log = $container->get('Monolog\Logger');
+            $log = $container->get('Bayfront\MultiLogger\Log');
 
             $log->critical('Exception (' . get_class($e) . '): ' . $e->getMessage(), [
                 'data' => $data

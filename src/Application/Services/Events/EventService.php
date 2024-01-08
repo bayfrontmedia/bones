@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Application\Services;
+namespace Bayfront\Bones\Application\Services\Events;
 
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Bones\Interfaces\EventSubscriberInterface;
@@ -27,38 +27,29 @@ class EventService
     }
 
     /**
-     * Add event subscriber.
+     * Add event subscriptions from an event subscriber.
      *
      * @param EventSubscriberInterface $subscriber
      * @return void
      * @throws ServiceException
      */
 
-    public function addSubscriber(EventSubscriberInterface $subscriber): void
+    public function addSubscriptions(EventSubscriberInterface $subscriber): void
     {
 
-        $events = $subscriber->getSubscriptions();
+        $subscriptions = $subscriber->getSubscriptions();
 
-        foreach ($events as $event => $subscriptions) {
+        foreach ($subscriptions as $subscription) {
 
             // Validate subscriptions
 
-            if (!is_array($subscriptions)) {
-                throw new ServiceException('Unable to add event (' . get_class($subscriber) . '): Invalid subscriptions array');
+            if (!$subscription instanceof EventSubscription) {
+                throw new ServiceException('Unable to add event (' . get_class($subscriber) . '): Invalid event subscription');
             }
 
-            foreach ($subscriptions as $subscription) {
+            // Add
 
-                if (!isset($subscription['method'])
-                    || !isset($subscription['priority'])) {
-                    throw new ServiceException('Unable to add event (' . get_class($subscriber) . '): Invalid subscription array');
-                }
-
-                // Add
-
-                $this->hooks->addEvent($event, [$subscriber, (string)$subscription['method']], (int)$subscription['priority']);
-
-            }
+            $this->hooks->addEvent($subscription->getName(), $subscription->getFunction(), $subscription->getPriority());
 
         }
 

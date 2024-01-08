@@ -3,7 +3,8 @@
 namespace Bayfront\Bones\Application\Kernel\Bridge;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Container\Container;
@@ -22,12 +23,14 @@ class RouterDispatcher
 
     protected Container $container;
     protected FilterService $filters;
+    protected EventService $events;
     protected Response $response;
     protected array $route;
 
-    public function __construct(Container $container, FilterService $filters, Response $response, array $route)
+    public function __construct(Container $container, EventService $events, FilterService $filters, Response $response, array $route)
     {
         $this->container = $container;
+        $this->events = $events;
         $this->filters = $filters;
         $this->response = $response;
         $this->route = $route;
@@ -59,39 +62,49 @@ class RouterDispatcher
     public function dispatchRoute(): mixed
     {
 
-        // Define everything here for continuity
+        $route = Arr::only($this->route, [
+            'type',
+            'destination',
+            'status',
+            'params'
+        ]);
 
-        $type = Arr::get($this->route, 'type', '');
-        $destination = Arr::get($this->route, 'destination', '');
-        $params = $this->filters->doFilter('router.parameters', Arr::get($this->route, 'params', []));
-        $status = Arr::get($this->route, 'status', 302); // Only used for redirects
+        if (Arr::get($route, 'type') == 'redirect') {
 
-        if ($type == 'redirect') {
+            $this->events->doEvent('app.dispatch', $route);
 
-            $this->response->redirect($destination, $status);
+            $this->response->redirect(Arr::get($route, 'destination', ''), Arr::get($route, 'status', 302));
+
             return true;
 
         }
 
-        if ($type == 'route' || $type == 'automap' || $type == 'fallback') {
+        if (Arr::get($route, 'type') == 'route' || Arr::get($route, 'type') == 'automap' || Arr::get($route, 'type') == 'fallback') {
 
             // ------------------------- Dispatch -------------------------
 
             // Callable
 
-            if (is_callable($destination)) {
-                return call_user_func($destination, $params);
+            if (is_callable(Arr::get($route, 'destination'))) {
+
+                $this->events->doEvent('app.dispatch', $route);
+
+                return call_user_func(Arr::get($route, 'destination', ''), Arr::get($route, 'params', []));
+
             }
 
             // File
 
-            if (Str::startsWith($destination, '@')) {
+            if (Str::startsWith(Arr::get($route, 'destination', ''), '@')) {
 
-                $file = App::getConfig('router.files_root_path') . '/' . ltrim($destination, '@');
+                $file = App::getConfig('router.files_root_path') . '/' . ltrim(Arr::get($route, 'destination', ''), '@');
 
                 if (is_file($file)) {
 
+                    $this->events->doEvent('app.dispatch', $route);
+
                     $this->safeInclude($file);
+
                     return true;
 
                 }
@@ -102,7 +115,7 @@ class RouterDispatcher
 
             // Class:method
 
-            $loc = explode(':', $destination, 2);
+            $loc = explode(':', Arr::get($route, 'destination', ''), 2);
 
             if (isset($loc[1])) { // Dispatch to Class:method
 
@@ -117,11 +130,13 @@ class RouterDispatcher
 
                 }
 
+                $this->events->doEvent('app.dispatch', $route);
+
                 $method = $loc[1];
 
                 $controller = $this->container->make($class_name);
 
-                return $controller->$method($params);
+                return $controller->$method(Arr::get($route, 'params', []));
 
             }
 

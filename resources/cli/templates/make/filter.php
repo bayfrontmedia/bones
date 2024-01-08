@@ -3,6 +3,7 @@
 namespace _namespace_\Filters;
 
 use Bayfront\Bones\Abstracts\FilterSubscriber;
+use Bayfront\Bones\Application\Services\Filters\FilterSubscription;
 use Bayfront\Bones\Interfaces\FilterSubscriberInterface;
 
 /**
@@ -30,13 +31,9 @@ class _filter_name_ extends FilterSubscriber implements FilterSubscriberInterfac
     {
 
         return [
-            'filter.name' => [
-                [
-                    'method' => 'capitalizeString',
-                    'priority' => 5
-                ]
-            ]
+            new FilterSubscription('filter.name', [$this, 'capitalizeString'], 10)
         ];
+        
     }
 
     /**

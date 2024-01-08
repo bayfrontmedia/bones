@@ -3,7 +3,7 @@
 namespace _namespace_\Services;
 
 use Bayfront\Bones\Abstracts\Service;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 
 /**
  * _service_name_ service.

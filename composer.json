@@ -34,17 +34,18 @@
     "ext-json": "*",
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
+    "bayfrontmedia/encryptor": "^2.0",
+    "bayfrontmedia/multi-logger": "^1.1",
     "bayfrontmedia/php-array-helpers": "^2.0",
     "bayfrontmedia/php-hooks": "^2.0",
     "bayfrontmedia/php-http-request": "^v3.0",
     "bayfrontmedia/php-http-response": "^2.0",
     "bayfrontmedia/php-time-helpers": "^2.0",
-    "bayfrontmedia/php-validator": "^2.1",
-    "bayfrontmedia/route-it": "^3.0",
+    "bayfrontmedia/route-it": "^3.1",
     "bayfrontmedia/simple-pdo": "^3.0",
     "bayfrontmedia/veil": "^2.1",
     "filp/whoops": "^2.15",
-    "symfony/console": "^6.2",
-    "vlucas/phpdotenv": "^5.5"
+    "symfony/console": "^7.0",
+    "vlucas/phpdotenv": "^5.6"
   }
 }

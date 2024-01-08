@@ -3,7 +3,6 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\PDO\Db;
 use Exception;
 use Symfony\Component\Console\Command\Command;

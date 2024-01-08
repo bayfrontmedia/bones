@@ -85,7 +85,7 @@ class Handler extends ExceptionHandler implements ExceptionHandlerInterface
 
 ### Report
 
-If a `Monolog\Logger` instance exists in the container, it will be used to log a critical message 
+If a `Bayfront\MultiLogger\Log` instance exists in the container, it will be used to log a critical message 
 pertaining to the exception.
 
 ### Respond

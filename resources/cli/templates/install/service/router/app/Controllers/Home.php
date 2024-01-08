@@ -3,8 +3,8 @@
 namespace _namespace_\Controllers;
 
 use Bayfront\Bones\Abstracts\Controller;
-use Bayfront\Bones\Application\Services\EventService;
-use Bayfront\Bones\Application\Services\FilterService;
+use Bayfront\Bones\Application\Services\Events\EventService;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\HttpResponse\Response;
 
 /**
@@ -33,7 +33,7 @@ class Home extends Controller
         parent::__construct($events);
     }
 
-    public function index(array $params)
+    public function index(array $params): void
     {
 
         $body = '<h1>Controller: Home</h1><h2>Method: index</h2><h2>Parameters:</h2><ul>';

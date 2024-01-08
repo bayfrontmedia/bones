@@ -16,6 +16,16 @@ The Symfony Console application is passed as a parameter to this event.
 Command line functionality includes:
 
 ```shell
+# Put Bones into maintenance mode
+php bones down
+# Comma-separated IP's to allow
+php bones down --allow=1.1.1.1,2.2.2.2
+# Message to be returned
+php bones down --message="Message to be returned"
+
+# Take Bones out of maintenance mode
+php bones up
+
 # Information about this Bones application
 php bones about:bones
 # Return as JSON
@@ -28,6 +38,23 @@ php bones alias:list --sort=class
 # Return as JSON
 php bones alias:list --json
 
+# Clear cache
+php bones cache:clear
+# Clear specific types of cache
+php bones cache:clear --config --commands --events --filters
+
+# List contents of cache
+php bones cache:list
+# List specific types of cache
+php bones cache:list --type=config --type=commands --type=events --type=filters
+# Return as JSON
+php bones cache:list --json
+
+# Save cache
+php bones cache:save
+# Save specific types of cache
+php bones cache:save --config --commands --events --filters
+
 # List contents of the service container
 php bones container:list
 # Return as JSON
@@ -37,7 +64,7 @@ php bones container:list --json
 php bones event:list
 # Subscriptions can be returned for specific events
 php bones event:list --event=app.bootstrap --event=app.controller
-# Subscriptions can be sorted by "event", "priority", or "subscriber" (default)
+# Subscriptions can be sorted by "event", "priority", or "subscription" (default)
 php bones event:list --sort=event
 # Return as JSON
 php bones event:list --json
@@ -46,12 +73,12 @@ php bones event:list --json
 php bones filter:list
 # Subscriptions can be returned for specific values
 php bones filter:list --value=router.parameters
-# Subscriptions can be sorted by "filter", "priority", or "subscriber" (default)
+# Subscriptions can be sorted by "filter", "priority", or "subscription" (default)
 php bones filter:list --sort=filter
 # Return as JSON
 php bones filter:list --json
 
-# Set the APP_KEY environment variable to a cryptographically secure key
+# Set the APP_KEY environment variable to a cryptographically secure key if not already existing
 php bones install:key
 
 ## Install an optional service
@@ -128,7 +155,7 @@ php bones schedule:list --json
 php bones schedule:run
 ```
 
-### Creating a new command
+## Creating a new command
 
 The easiest way of creating a new custom console command is from the command line:
 
@@ -136,6 +163,13 @@ The easiest way of creating a new custom console command is from the command lin
 php bones make:command NAME
 ```
 
-How commands are loaded depends on the [app config settings](config.md#commands).
-
 For more information, see: [https://symfony.com/doc/current/console#creating-a-command](https://symfony.com/doc/current/console#creating-a-command)
+
+### Caching commands
+
+Performance can be improved by caching commands.
+This should only be done in a production environment, where custom commands will remain unchanged.
+
+Commands can be cached with the `php bones cache:save --commands` console command.
+
+For more information, the command line documentation above.

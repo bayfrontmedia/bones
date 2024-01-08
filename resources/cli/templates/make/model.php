@@ -3,7 +3,7 @@
 namespace _namespace_\Models;
 
 use Bayfront\Bones\Abstracts\Model;
-use Bayfront\Bones\Application\Services\EventService;
+use Bayfront\Bones\Application\Services\Events\EventService;
 
 /**
  * _model_name_ model.
