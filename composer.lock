@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "556e11739bbb19bd672eae409405f33d",
+    "content-hash": "1529742e0d4550fe919133c53a77d01c",
     "packages": [
         {
             "name": "bayfrontmedia/container",
@@ -2183,8 +2183,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0",
-        "ext-json": "*",
-        "ext-pdo": "*"
+        "ext-json": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

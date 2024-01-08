@@ -32,7 +32,6 @@
   "require": {
     "php": "^8.0",
     "ext-json": "*",
-    "ext-pdo": "*",
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
     "bayfrontmedia/encryptor": "^2.0",
