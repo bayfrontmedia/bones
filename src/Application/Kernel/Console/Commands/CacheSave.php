@@ -107,7 +107,7 @@ class CacheSave extends Command
                     return Command::FAILURE;
                 }
 
-            } else {
+            } else if (is_file($cache_dest)) {
                 unlink($cache_dest);
             }
 
@@ -160,7 +160,7 @@ class CacheSave extends Command
                     return Command::FAILURE;
                 }
 
-            } else {
+            } else if (is_file($cache_dest)) {
                 unlink($cache_dest);
             }
 
@@ -215,7 +215,7 @@ class CacheSave extends Command
                     return Command::FAILURE;
                 }
 
-            } else {
+            } else if (is_file($cache_dest)) {
                 unlink($cache_dest);
             }
 
@@ -270,7 +270,7 @@ class CacheSave extends Command
                     return Command::FAILURE;
                 }
 
-            } else {
+            } else if (is_file($cache_dest)) {
                 unlink($cache_dest);
             }
 
