@@ -49,6 +49,7 @@ class AboutBones extends Command
             'Bones version' => App::getBonesVersion(),
             'PHP version' => phpversion(),
             'POST max size' => ini_get('post_max_size'),
+            'Maintenance mode' => App::isDown() ? 'On' : 'Off',
             'Debug mode' => App::getConfig('app.debug') ? 'True' : 'False',
             'Environment' => App::getConfig('app.environment'),
             'Timezone' => date_default_timezone_get(),

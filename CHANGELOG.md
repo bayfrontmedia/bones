@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.1]- 2024.01.08
 
+### Added
+
+- Added maintenance mode status in `php bones about:bones` console command.
+
 ### Fixed
 
 - Fixed bug in `CacheSave` class when using `unlink`.
