@@ -12,7 +12,7 @@ use Bayfront\HttpResponse\Response;
  *
  * Created with Bones v_bones_version_
  */
-class Home extends Controller
+class HomeController extends Controller
 {
 
     protected EventService $events;

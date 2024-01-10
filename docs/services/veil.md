@@ -30,14 +30,14 @@ A config file will be added to `/config/veil.php` (See above example)
 
 ### Create controller
 
-The `/app/Controllers/VeilExample` controller will be added, which provides an example of how to use Veil.
+The `/app/Controllers/VeilController` controller will be added, which provides an example of how to use Veil.
 
 The `veil.data` filter is used from within this file to filter the value of the `$data` array passed to the view.
 
 The `response.body` filter is used from within this file to filter the value of the response body.
 
-> **NOTE:** Once Veil is installed, create a route which resolves to `VeilExample:index` to see it in action.
+> **NOTE:** Once Veil is installed, create a route which resolves to `VeilController:index` to see it in action.
 
 ### Create views
 
-Sample views are created at `/resources/views/examples`. These are used from within the `VeilExample` controller.
+Sample views are created at `/resources/views/examples`. These are used from within the `VeilController` controller.
