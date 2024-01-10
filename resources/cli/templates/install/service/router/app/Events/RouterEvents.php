@@ -62,7 +62,7 @@ class RouterEvents extends EventSubscriber implements EventSubscriberInterface
             ->addFallback('ANY', function() {
                 App::abort(404);
             })
-            ->get('/', 'Home:index', [], 'home');
+            ->get('/', 'HomeController:index', [], 'home');
 
     }
 
