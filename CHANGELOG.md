@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated names of router and Veil resources when installing service via the command line.
+- Updated `App::abort()` method.
 
 ## [4.0.1]- 2024.01.08
 
