@@ -55,7 +55,7 @@ A config file will be added to `/config/router.php` (See above example)
 
 ### Create event subscriber
 
-The `/app/Events/Routes` event subscriber will be added, 
+The `/app/Events/RouterEvents` event subscriber will be added, 
 which allows for all the routes for your application to be defined.
 Some examples are provided to help get you started.
 
@@ -63,7 +63,7 @@ The `router.route_prefix` filter is used from within this file to filter the val
 
 ### Create controller
 
-The `/app/Controllers/Home` controller will be added, which is used by the event subscriber which was created (see above).
+The `/app/Controllers/HomeController` controller will be added, which is used by the event subscriber which was created (see above).
 
 The `response.body` filter is used from within this file to filter the value of the response body.
 

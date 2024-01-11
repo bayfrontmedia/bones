@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [4.1.0]- 2024.01.11
+
+### Added
+
+- Added `InvalidArgumentException`.
+
+### Changed
+
+- Updated names of router and Veil resources when installing service via the command line.
+- Updated `App::abort()` method.
+
 ## [4.0.1]- 2024.01.08
 
 ### Added

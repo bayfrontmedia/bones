@@ -198,15 +198,15 @@ class InstallService extends Command
 
             }
 
-            // Routes event
+            // Router events
 
-            $name = 'Routes event';
+            $name = 'Router events';
 
             ConsoleUtilities::msgInstalling($name, $output);
 
-            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/app/Events/Routes.php';
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/app/Events/RouterEvents.php';
 
-            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Events/Routes.php');
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Events/RouterEvents.php');
 
             try {
 
@@ -233,9 +233,9 @@ class InstallService extends Command
 
             ConsoleUtilities::msgInstalling($name, $output);
 
-            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/app/Controllers/Home.php';
+            $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/router/app/Controllers/HomeController.php';
 
-            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Controllers/Home.php');
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Controllers/HomeController.php');
 
             try {
 
@@ -433,9 +433,9 @@ class InstallService extends Command
 
                 ConsoleUtilities::msgInstalling($name, $output);
 
-                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/veil/app/Controllers/VeilExample.php';
+                $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/install/service/veil/app/Controllers/VeilController.php';
 
-                $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Controllers') . '/VeilExample.php';
+                $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Controllers') . '/VeilController.php';
 
                 ConsoleUtilities::copyFile($src_file, $dest_file);
 

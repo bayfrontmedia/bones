@@ -12,7 +12,7 @@ use Bayfront\HttpResponse\Response;
  *
  * Created with Bones v_bones_version_
  */
-class Home extends Controller
+class HomeController extends Controller
 {
 
     protected EventService $events;
@@ -36,7 +36,7 @@ class Home extends Controller
     public function index(array $params): void
     {
 
-        $body = '<h1>Controller: Home</h1><h2>Method: index</h2><h2>Parameters:</h2><ul>';
+        $body = '<h1>HomeController</h1><h2>Method: index</h2><h2>Parameters:</h2><ul>';
 
         if (empty($params)) {
             $body .= '<li><strong>None</strong>';

@@ -14,7 +14,7 @@ use Bayfront\Veil\Veil;
  *
  * Created with Bones v_bones_version_
  */
-class VeilExample extends Controller
+class VeilController extends Controller
 {
 
     protected EventService $events;

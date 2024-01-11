@@ -14,7 +14,7 @@ use Bayfront\RouteIt\Router;
  *
  * Created with Bones v_bones_version_
  */
-class Routes extends EventSubscriber implements EventSubscriberInterface
+class RouterEvents extends EventSubscriber implements EventSubscriberInterface
 {
 
     protected Router $router;
@@ -62,7 +62,7 @@ class Routes extends EventSubscriber implements EventSubscriberInterface
             ->addFallback('ANY', function() {
                 App::abort(404);
             })
-            ->get('/', 'Home:index', [], 'home');
+            ->get('/', 'HomeController:index', [], 'home');
 
     }
 
