@@ -64,6 +64,7 @@ class ApiService
              */
 
             $this->events->doEvent('api.exception', $this->response, $e);
+            $this->events->doEvent('api.end', $this->response);
 
             throw $e;
 
