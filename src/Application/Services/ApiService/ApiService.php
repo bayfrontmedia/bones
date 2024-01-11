@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Services\ApiService;
 
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSchemaInterface;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
@@ -31,12 +32,16 @@ class ApiService
      * Send API response.
      *
      * @param array $data
+     * @param ApiSchemaInterface $schema
+     * @param array $schema_config
      * @return void
      */
-    public function respond(array $data): void
+    public function respond(array $data, ApiSchemaInterface $schema, array $schema_config = []): void
     {
 
-        $response = $this->filters->doFilter('api.response', $data);
+        $response = (array)$this->filters->doFilter('api.response', $data); // Ensure returned from filter as an array
+
+        $response = $schema::create($response, $schema_config);
 
         $this->events->doEvent('api.end', $response);
 

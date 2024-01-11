@@ -213,7 +213,7 @@ class Bones
              * set status code to default of 500.
              */
 
-            if ($response->getStatusCode()['code'] <= 400) {
+            if ($response->getStatusCode()['code'] < 400) {
                 $response->setStatusCode(500); // Default status code
             }
 
