@@ -209,11 +209,11 @@ class Bones
             }
 
             /*
-             * If an HttpException, the status code has already been set by App::abort().
-             * Otherwise, set status code to 500.
+             * If an error status code has not yet been set,
+             * set status code to default of 500.
              */
 
-            if (!$e instanceof HttpException) {
+            if ($response->getStatusCode()['code'] <= 400) {
                 $response->setStatusCode(500); // Default status code
             }
 
