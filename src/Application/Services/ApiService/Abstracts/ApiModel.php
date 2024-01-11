@@ -30,16 +30,15 @@ abstract class ApiModel extends Model implements ApiModelInterface
     public const ACTION_DELETE = 'delete';
 
     /**
-     * Handle the results of a model and return its original value.
+     * Handle the results of an action-related method and return its original value.
      *
      * @param mixed $result
-     * @param string $model_identifier
      * @param string $action
      * @return mixed
      */
-    public function returnResult(mixed $result, string $model_identifier, string $action): mixed
+    public function returnActionResult(mixed $result, string $action): mixed
     {
-        $this->apiService->events->doEvent('api.model.result', $result, $model_identifier, $action);
+        $this->apiService->events->doEvent('api.model.result', $result, $this->getModelIdentifier(), $action);
         return $result;
     }
 
