@@ -36,6 +36,7 @@ use Bayfront\Bones\Application\Utilities\Constants;
 use Bayfront\Bones\Exceptions\ConstantAlreadyDefinedException;
 use Bayfront\Bones\Exceptions\ErrorException;
 use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\Bones\Exceptions\InvalidArgumentException;
 use Bayfront\Bones\Exceptions\InvalidConfigurationException;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Bones\Exceptions\UndefinedConstantException;
@@ -448,6 +449,7 @@ class Bones
      * @throws InvalidStatusCodeException
      * @throws NotFoundException
      * @throws ServiceException
+     * @throws InvalidArgumentException
      */
 
     protected function startHttp(Response $response, EventService $events, FilterService $filters): void

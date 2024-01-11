@@ -5,6 +5,7 @@ namespace Bayfront\Bones\Application\Utilities;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Bones;
 use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\Bones\Exceptions\InvalidArgumentException;
 use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
@@ -406,6 +407,7 @@ class App
      * @return void
      * @return never-return
      * @throws HttpException
+     * @throws InvalidArgumentException
      */
 
     public static function abort(int $status_code, string $message = '', array $headers = [], int $code = 0): void
@@ -417,7 +419,7 @@ class App
             $response = self::getContainer()->get('Bayfront\HttpResponse\Response');
             $response->setStatusCode($status_code)->setHeaders($headers);
         } catch (NotFoundException|InvalidStatusCodeException) {
-            throw new HttpException('Unable to abort');
+            throw new InvalidArgumentException('Unable to abort: invalid status code or response not found');
         }
 
         if ($message == '') {

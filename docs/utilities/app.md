@@ -550,6 +550,7 @@ If no message is provided, the phrase for the HTTP status code will be used.
 **Throws:**
 
 - `Bayfront\Bones\Exceptions\HttpException`
+- `Bayfront\Bones\Exceptions\InvalidArgumentException`
 
 **Example:**
 
