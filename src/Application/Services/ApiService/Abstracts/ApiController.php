@@ -13,9 +13,13 @@ abstract class ApiController extends Controller implements ApiControllerInterfac
 
     public function __construct(ApiService $apiService)
     {
+
         $this->apiService = $apiService;
 
+        $this->apiService->events->doEvent('api.controller', $this);
+
         parent::__construct($this->apiService->events);
+
     }
 
 }

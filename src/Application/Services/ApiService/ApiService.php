@@ -22,6 +22,9 @@ class ApiService
         $this->filters = $filters;
         $this->response = $response;
         $this->config = $config;
+
+        $this->events->doEvent('api.start', $this);
+
     }
 
     /**
@@ -32,7 +35,13 @@ class ApiService
      */
     public function respond(array $data): void
     {
-        $this->response->sendJson($this->filters->doFilter('api.response', $data));
+
+        $response = $this->filters->doFilter('api.response', $data);
+
+        $this->events->doEvent('api.end', $response);
+
+        $this->response->sendJson($response);
+
     }
 
     /**
@@ -45,8 +54,19 @@ class ApiService
     {
 
         try {
+
             $this->response->setStatusCode($e->getHttpStatusCode());
+
+            /*
+             * Do api.exception event
+             *
+             * Pass the exception and response as arguments to the event.
+             */
+
+            $this->events->doEvent('api.exception', $this->response, $e);
+
             throw $e;
+
         } catch (InvalidStatusCodeException) {
             throw $e;
         }
