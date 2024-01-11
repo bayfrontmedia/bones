@@ -2,8 +2,10 @@
 
 namespace Bayfront\Bones\Application\Services\ApiService;
 
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 
 class ApiService
@@ -31,6 +33,24 @@ class ApiService
     public function respond(array $data): void
     {
         $this->response->sendJson($this->filters->doFilter('api.response', $data));
+    }
+
+    /**
+     * Handle an API exception and abort script execution.
+     *
+     * @param ApiExceptionInterface $e
+     * @return never-return
+     */
+    public function abort(ApiExceptionInterface $e): void
+    {
+
+        try {
+            $this->response->setStatusCode($e->getHttpStatusCode());
+            throw $e;
+        } catch (InvalidStatusCodeException) {
+            throw $e;
+        }
+
     }
 
 }
