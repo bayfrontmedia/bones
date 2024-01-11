@@ -6,6 +6,13 @@ interface ApiModelInterface
 {
 
     /**
+     * Get unique identifier for this model.
+     *
+     * @return string
+     */
+    public function getModelIdentifier(): string;
+
+    /**
      * Get allowed resource attributes.
      *
      * @return array
