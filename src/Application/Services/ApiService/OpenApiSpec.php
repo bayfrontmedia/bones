@@ -4,6 +4,7 @@ namespace Bayfront\Bones\Application\Services\ApiService;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSpecificationInterface;
+use Bayfront\Bones\Exceptions\InvalidArgumentException;
 
 class OpenApiSpec implements ApiSpecificationInterface
 {
@@ -38,6 +39,26 @@ class OpenApiSpec implements ApiSpecificationInterface
     public function getInfo(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->spec, 'info.' . $key, $default);
+    }
+
+    /**
+     * Get path.
+     *
+     * @param string $path
+     * @return array
+     * @throws InvalidArgumentException
+     */
+    public function getPath(string $path): array
+    {
+
+        $path = Arr::get($this->spec, 'paths.' . $path);
+
+        if (!$path) {
+            throw new InvalidArgumentException('Unable to get path: path does not exist');
+        }
+
+        return $path;
+
     }
 
 }
