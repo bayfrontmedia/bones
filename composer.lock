@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1529742e0d4550fe919133c53a77d01c",
+    "content-hash": "694dd44d8fbcc129001c249fb48fcaaa",
     "packages": [
         {
             "name": "bayfrontmedia/container",

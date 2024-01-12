@@ -2,7 +2,7 @@
 
 namespace Bayfront\Bones\Application\Services\ApiService\Interfaces;
 
-interface ApiSchemaInterface
+interface ApiPathInterface
 {
 
 }
