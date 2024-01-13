@@ -263,7 +263,7 @@ class Bones
                     $handler->respond($response, $e);
 
                     if (isset($events)) {
-                        $events->doEvent('bones.end');
+                        $events->doEvent('bones.end', $response);
                     }
 
                     return; // Stop iteration
@@ -281,7 +281,7 @@ class Bones
             echo '<h1>Error: ' . $e->getMessage() . '</h1>';
 
             if (isset($events)) {
-                $events->doEvent('bones.end');
+                $events->doEvent('bones.end', $response);
             }
 
         });
@@ -434,7 +434,7 @@ class Bones
 
         // ------------------------- Shutdown -------------------------
 
-        $events->doEvent('bones.end');
+        $events->doEvent('bones.end', $response);
 
     }
 
