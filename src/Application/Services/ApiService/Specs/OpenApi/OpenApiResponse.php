@@ -4,7 +4,7 @@ namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseInterface;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSchemaObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseSchemaInterface;
 
 /**
  * See: See: https://swagger.io/specification/#response-object
@@ -58,9 +58,9 @@ class OpenApiResponse implements ApiResponseInterface
     /**
      * @inheritDoc
      */
-    public function getSchema(): ApiSchemaObjectInterface
+    public function getResponseSchema(): ApiResponseSchemaInterface
     {
-        return new OpenApiSchemaObject($this->getSchemaName(), (array)Arr::get($this->definition, 'content.application/json.schema.' . $this->getSchemaName()));
+        return new OpenApiResponseSchema($this->getSchemaName(), (array)Arr::get($this->definition, 'content.application/json.schema.' . $this->getSchemaName()));
     }
 
 }

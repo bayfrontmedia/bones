@@ -3,12 +3,12 @@
 namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSchemaObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseSchemaInterface;
 
 /**
  * See: https://swagger.io/specification/#schema-object
  */
-class OpenApiSchemaObject implements ApiSchemaObjectInterface
+class OpenApiResponseSchema implements ApiResponseSchemaInterface
 {
 
     protected string $name;

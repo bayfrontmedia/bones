@@ -34,10 +34,10 @@ interface ApiResponseInterface
     public function getSchemaName(): string;
 
     /**
-     * Get schema object.
+     * Get response schema.
      *
-     * @return ApiSchemaObjectInterface
+     * @return ApiResponseSchemaInterface
      */
-    public function getSchema(): ApiSchemaObjectInterface;
+    public function getResponseSchema(): ApiResponseSchemaInterface;
 
 }

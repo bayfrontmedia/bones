@@ -98,7 +98,7 @@ class ApiService
 
         $path = $this->spec->getPath($path, $http_method);
         $response = $path->getResponse($http_status);
-        $schema = $response->getSchema();
+        $schema = $response->getResponseSchema();
 
         // ------------------------- Filter -------------------------
 
