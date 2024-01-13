@@ -83,7 +83,7 @@ class OpenApiSpec implements ApiSpecInterface
 
         }
 
-        return new OpenApiOperationObject(Arr::undot($path));
+        return new OpenApiPath(Arr::undot($path));
 
     }
 

@@ -10,7 +10,7 @@ use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseO
 /**
  * See: https://swagger.io/specification/#operation-object
  */
-class OpenApiOperationObject implements ApiPathInterface
+class OpenApiPath implements ApiPathInterface
 {
 
     protected array $definition;
