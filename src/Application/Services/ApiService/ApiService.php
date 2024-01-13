@@ -5,12 +5,14 @@ namespace Bayfront\Bones\Application\Services\ApiService;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiServiceException;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\Http\BadRequestException;
+use Bayfront\Bones\Application\Services\ApiService\Filters\ApiFilters;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSchemaInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSpecificationInterface;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -48,6 +50,14 @@ class ApiService
             throw new ApiServiceException('Unable to start ApiService: invalid configuration');
         }
 
+        // Enqueue filters
+
+        try {
+            $this->filters->addSubscriptions(new ApiFilters($this));
+        } catch (ServiceException $e) {
+            throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
+
         // Do event
 
         $this->events->doEvent('api.start', $this);
@@ -77,15 +87,17 @@ class ApiService
     public function respond(array $data, string $path, string $http_method, string $http_status): void
     {
 
-        // ------------------------- Filter -------------------------
-
-        $data = (array)$this->filters->doFilter('api.response', $data); // Ensure returned from filter as an array
-
-        // ------------------------- Validate data against spec -------------------------
-
         $operation = $this->spec->getOperationObject($path, $http_method);
         $response = $operation->getResponseObject($http_status);
         $schema = $response->getSchemaObject();
+
+        // ------------------------- Filter -------------------------
+
+        // Predefined meta: this can be filtered out later
+        $data['meta']['schema'] = $schema->getName();
+        $data = (array)$this->filters->doFilter('api.response', $data); // Ensure returned from filter as an array
+
+        // ------------------------- Validate data against spec -------------------------
 
         $schema_properties = $schema->getProperties();
 
@@ -133,6 +145,8 @@ class ApiService
 
         }
 
+        $data = (array)$this->filters->doFilter('api.response.raw', $data); // Ensure returned from filter as an array
+
         // ------------------------- Create API schema -------------------------
 
         $schema_class = App::getConfig('app.namespace', '') . 'Schemas\\' . $schema->getName();
@@ -148,7 +162,7 @@ class ApiService
         }
 
         /** @var ApiSchemaInterface $schema_class */
-        $response = $schema_class::create($data);
+        $response = $schema_class::create($operation, $response, $schema, $data);
 
         $this->events->doEvent('api.end', $response);
 
