@@ -24,14 +24,14 @@ interface ApiSpecInterface
     public function getInfo(string $key, mixed $default = null): mixed;
 
     /**
-     * Get operation object.
+     * Get path.
      *
      * @param string $path
      * @param string $request_method
-     * @return ApiOperationObjectInterface
+     * @return ApiPathInterface
      * @throws ApiExceptionInterface
      */
-    public function getOperationObject(string $path, string $request_method): ApiOperationObjectInterface;
+    public function getPath(string $path, string $request_method): ApiPathInterface;
 
     /**
      * Get schema definition.

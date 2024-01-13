@@ -4,7 +4,7 @@ namespace Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs;
 
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 
-interface ApiOperationObjectInterface
+interface ApiPathInterface
 {
 
     /**

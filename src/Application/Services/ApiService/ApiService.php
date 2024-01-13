@@ -96,8 +96,8 @@ class ApiService
     public function respond(array $data, string $path, string $http_method, string $http_status): void
     {
 
-        $operation = $this->spec->getOperationObject($path, $http_method);
-        $response = $operation->getResponseObject($http_status);
+        $path = $this->spec->getPath($path, $http_method);
+        $response = $path->getResponseObject($http_status);
         $schema = $response->getSchemaObject();
 
         // ------------------------- Filter -------------------------
@@ -171,7 +171,7 @@ class ApiService
         }
 
         /** @var ApiSchemaInterface $schema_class */
-        $response = $schema_class::create($operation, $response, $schema, $data);
+        $response = $schema_class::create($path, $response, $schema, $data);
 
         $this->events->doEvent('api.end', $response);
 
