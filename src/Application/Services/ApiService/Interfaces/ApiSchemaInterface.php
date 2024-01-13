@@ -2,6 +2,10 @@
 
 namespace Bayfront\Bones\Application\Services\ApiService\Interfaces;
 
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiOperationObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSchemaObjectInterface;
+
 interface ApiSchemaInterface
 {
 

@@ -3,7 +3,7 @@
 namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSchemaObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSchemaObjectInterface;
 
 /**
  * See: https://swagger.io/specification/#schema-object

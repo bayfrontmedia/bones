@@ -1,6 +1,6 @@
 <?php
 
-namespace Bayfront\Bones\Application\Services\ApiService\Interfaces;
+namespace Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs;
 
 interface ApiPropertyInterface
 {

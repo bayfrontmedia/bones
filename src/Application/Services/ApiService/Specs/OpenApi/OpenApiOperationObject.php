@@ -5,8 +5,8 @@ namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiSpecificationException;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiOperationObjectInterface;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiResponseObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiOperationObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseObjectInterface;
 
 /**
  * See: https://swagger.io/specification/#operation-object

@@ -9,7 +9,7 @@ use Bayfront\Bones\Application\Services\ApiService\Exceptions\Http\BadRequestExc
 use Bayfront\Bones\Application\Services\ApiService\Filters\ApiFilters;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSchemaInterface;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSpecificationInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSpecInterface;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
@@ -24,13 +24,13 @@ class ApiService
     public EventService $events; // Needed by the Bones abstract controller (public)
     protected FilterService $filters;
     protected Response $response;
-    public ApiSpecificationInterface $spec;
+    public ApiSpecInterface $spec;
     protected array $config;
 
     /**
      * @throws ApiExceptionInterface
      */
-    public function __construct(ApiSpecificationInterface $spec, array $config)
+    public function __construct(ApiSpecInterface $spec, array $config)
     {
 
         try {
