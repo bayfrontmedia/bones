@@ -5,7 +5,7 @@ namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiSpecificationException;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiPathInterface;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseInterface;
 
 /**
  * See: https://swagger.io/specification/#operation-object
@@ -48,14 +48,14 @@ class OpenApiPath implements ApiPathInterface
     /**
      * @inheritDoc
      */
-    public function getResponseObject(string $name): ApiResponseObjectInterface
+    public function getResponseObject(string $name): ApiResponseInterface
     {
 
         if (!Arr::has($this->definition, 'responses.' . $name)) {
             throw new ApiSpecificationException('Unable to get response object: name does not exist');
         }
 
-        return new OpenApiResponseObject(Arr::get($this->definition, 'responses.' . $name));
+        return new OpenApiResponse(Arr::get($this->definition, 'responses.' . $name));
 
     }
 

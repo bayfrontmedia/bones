@@ -3,13 +3,13 @@
 namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseObjectInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSchemaObjectInterface;
 
 /**
  * See: See: https://swagger.io/specification/#response-object
  */
-class OpenApiResponseObject implements ApiResponseObjectInterface
+class OpenApiResponse implements ApiResponseInterface
 {
 
     protected array $definition;

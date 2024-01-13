@@ -25,8 +25,8 @@ interface ApiPathInterface
      * Get response object.
      *
      * @param string $name
-     * @return ApiResponseObjectInterface
+     * @return ApiResponseInterface
      * @throws ApiExceptionInterface
      */
-    public function getResponseObject(string $name): ApiResponseObjectInterface;
+    public function getResponseObject(string $name): ApiResponseInterface;
 }
