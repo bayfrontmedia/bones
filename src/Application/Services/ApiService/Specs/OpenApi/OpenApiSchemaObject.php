@@ -20,29 +20,41 @@ class OpenApiSchemaObject implements ApiSchemaObjectInterface
         $this->definition = $definition;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getDefinition(): array
     {
         return $this->definition;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getProperties(): array
     {
         return (array)Arr::get($this->definition, 'properties', []);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getRequiredProperties(): array
     {
         return (array)Arr::get($this->definition, 'required', []);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isRequired(string $property): bool
     {
         return in_array($property, $this->getRequiredProperties());

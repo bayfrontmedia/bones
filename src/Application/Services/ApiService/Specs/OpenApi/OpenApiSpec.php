@@ -4,7 +4,6 @@ namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiSpecificationException;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiOperationObjectInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiSpecInterface;
 
@@ -22,9 +21,7 @@ class OpenApiSpec implements ApiSpecInterface
     }
 
     /**
-     * Get entire specification array.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getSpec(): array
     {
@@ -32,11 +29,7 @@ class OpenApiSpec implements ApiSpecInterface
     }
 
     /**
-     * Get info.
-     *
-     * @param string $key (In dot notation))
-     * @param mixed|null $default
-     * @return mixed
+     * @inheritDoc
      */
     public function getInfo(string $key, mixed $default = null): mixed
     {
@@ -44,12 +37,7 @@ class OpenApiSpec implements ApiSpecInterface
     }
 
     /**
-     * Get operation object.
-     *
-     * @param string $path
-     * @param string $request_method
-     * @return ApiOperationObjectInterface
-     * @throws ApiExceptionInterface
+     * @inheritDoc
      */
     public function getOperationObject(string $path, string $request_method): ApiOperationObjectInterface
     {
@@ -100,11 +88,7 @@ class OpenApiSpec implements ApiSpecInterface
     }
 
     /**
-     * Get schema.
-     *
-     * @param string $name (Case-sensitive schema name)
-     * @return array
-     * @throws ApiExceptionInterface
+     * @inheritDoc
      */
     public function getSchema(string $name): array
     {

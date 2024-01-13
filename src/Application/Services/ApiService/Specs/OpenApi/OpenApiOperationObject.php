@@ -4,7 +4,6 @@ namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiSpecificationException;
-use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiOperationObjectInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\Specs\ApiResponseObjectInterface;
 
@@ -25,9 +24,7 @@ class OpenApiOperationObject implements ApiOperationObjectInterface
     }
 
     /**
-     * Get entire operation definition.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getDefinition(): array
     {
@@ -35,8 +32,7 @@ class OpenApiOperationObject implements ApiOperationObjectInterface
     }
 
     /**
-     * Get description.
-     * @return string
+     * @inheritDoc
      */
     public function getDescription(): string
     {
@@ -50,11 +46,7 @@ class OpenApiOperationObject implements ApiOperationObjectInterface
      */
 
     /**
-     * Get response object.
-     *
-     * @param string $name
-     * @return ApiResponseObjectInterface
-     * @throws ApiExceptionInterface
+     * @inheritDoc
      */
     public function getResponseObject(string $name): ApiResponseObjectInterface
     {
