@@ -8,25 +8,25 @@ interface ApiPathInterface
 {
 
     /**
-     * Get entire operation definition.
+     * Get entire path definition.
      *
      * @return array
      */
     public function getDefinition(): array;
 
     /**
-     * Get description.
+     * Get description of path.
      *
      * @return string
      */
     public function getDescription(): string;
 
     /**
-     * Get response object.
+     * Get response for path.
      *
      * @param string $name
      * @return ApiResponseInterface
      * @throws ApiExceptionInterface
      */
-    public function getResponseObject(string $name): ApiResponseInterface;
+    public function getResponse(string $name): ApiResponseInterface;
 }

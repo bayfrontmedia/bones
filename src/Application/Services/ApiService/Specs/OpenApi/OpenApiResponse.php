@@ -58,7 +58,7 @@ class OpenApiResponse implements ApiResponseInterface
     /**
      * @inheritDoc
      */
-    public function getSchemaObject(): ApiSchemaObjectInterface
+    public function getSchema(): ApiSchemaObjectInterface
     {
         return new OpenApiSchemaObject($this->getSchemaName(), (array)Arr::get($this->definition, 'content.application/json.schema.' . $this->getSchemaName()));
     }

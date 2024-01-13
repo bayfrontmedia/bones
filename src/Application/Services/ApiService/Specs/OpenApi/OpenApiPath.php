@@ -48,7 +48,7 @@ class OpenApiPath implements ApiPathInterface
     /**
      * @inheritDoc
      */
-    public function getResponseObject(string $name): ApiResponseInterface
+    public function getResponse(string $name): ApiResponseInterface
     {
 
         if (!Arr::has($this->definition, 'responses.' . $name)) {

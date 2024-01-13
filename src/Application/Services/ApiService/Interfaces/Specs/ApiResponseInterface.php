@@ -6,14 +6,14 @@ interface ApiResponseInterface
 {
 
     /**
-     * Get entire response object definition.
+     * Get entire response definition.
      *
      * @return array
      */
     public function getDefinition(): array;
 
     /**
-     * Get description.
+     * Get description of response.
      *
      * @return string
      */
@@ -27,7 +27,7 @@ interface ApiResponseInterface
     public function getHeaders(): array;
 
     /**
-     * Get schema name.
+     * Get schema name used for response.
      *
      * @return string
      */
@@ -38,6 +38,6 @@ interface ApiResponseInterface
      *
      * @return ApiSchemaObjectInterface
      */
-    public function getSchemaObject(): ApiSchemaObjectInterface;
+    public function getSchema(): ApiSchemaObjectInterface;
 
 }
