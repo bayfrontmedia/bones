@@ -1,10 +1,12 @@
 <?php
 
-namespace Bayfront\Bones\Application\Services\ApiService\OpenApi;
+namespace Bayfront\Bones\Application\Services\ApiService\Specs\OpenApi;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiSpecificationException;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiOperationObjectInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSpecificationInterface;
-use Bayfront\Bones\Exceptions\InvalidArgumentException;
 
 class OpenApiSpec implements ApiSpecificationInterface
 {
@@ -42,29 +44,27 @@ class OpenApiSpec implements ApiSpecificationInterface
     }
 
     /**
-     * Get path.
+     * Get operation object.
      *
      * @param string $path
-     * @param string|null $request_method
-     * @return array
-     * @throws InvalidArgumentException
+     * @param string $request_method
+     * @return ApiOperationObjectInterface
+     * @throws ApiExceptionInterface
      */
-    public function getPath(string $path, ?string $request_method = null): array
+    public function getOperationObject(string $path, string $request_method): ApiOperationObjectInterface
     {
 
-        if ($request_method) {
-            $path = $path . '.' . $request_method;
-        }
-
-        $path = Arr::get($this->spec, 'paths.' . $path);
+        $path = Arr::get($this->spec, 'paths.' . $path . '.' . $request_method);
 
         if (!$path) {
-            throw new InvalidArgumentException('Unable to get path: path does not exist');
+            throw new ApiSpecificationException('Unable to get path: path does not exist');
         }
 
         $path = Arr::dot($path);
 
         foreach ($path as $k => $v) { // Fetch references
+
+            // Populate references
 
             if (str_ends_with($k, '$ref') && str_starts_with($v, '#/')) {
 
@@ -79,7 +79,7 @@ class OpenApiSpec implements ApiSpecificationInterface
                 $ref_value = Arr::get($this->spec, $ref_key); // Value of reference
 
                 if (!$ref_value) {
-                    throw new InvalidArgumentException('Unable to get path: reference not found');
+                    throw new ApiSpecificationException('Unable to get path: reference not found');
                 }
 
                 $path[$k] = $ref_value;
@@ -95,24 +95,24 @@ class OpenApiSpec implements ApiSpecificationInterface
 
         }
 
-        return Arr::undot($path);
+        return new OpenApiOperationObject(Arr::undot($path));
 
     }
 
     /**
      * Get schema.
      *
-     * @param string $schema (Case-sensitive schema name)
+     * @param string $name (Case-sensitive schema name)
      * @return array
-     * @throws InvalidArgumentException
+     * @throws ApiExceptionInterface
      */
-    public function getSchema(string $schema): array
+    public function getSchema(string $name): array
     {
 
-        $schema = Arr::get($this->spec, 'components.schemas.' . $schema);
+        $schema = Arr::get($this->spec, 'components.schemas.' . $name);
 
         if (!$schema) {
-            throw new InvalidArgumentException('Unable to get schema: schema does not exist');
+            throw new ApiSpecificationException('Unable to get schema: schema name does not exist');
         }
 
         return (array)$schema;

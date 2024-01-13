@@ -2,9 +2,9 @@
 
 namespace Bayfront\Bones\Application\Services\ApiService\Exceptions;
 
-use Bayfront\Bones\Exceptions\HttpException;
+use Bayfront\Bones\Exceptions\BonesException;
 
-class ApiException extends HttpException
+class ApiException extends BonesException
 {
 
 }

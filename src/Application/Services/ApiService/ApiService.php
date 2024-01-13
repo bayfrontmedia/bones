@@ -3,13 +3,14 @@
 namespace Bayfront\Bones\Application\Services\ApiService;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiServiceException;
+use Bayfront\Bones\Application\Services\ApiService\Exceptions\Http\BadRequestException;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiExceptionInterface;
+use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSchemaInterface;
 use Bayfront\Bones\Application\Services\ApiService\Interfaces\ApiSpecificationInterface;
 use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Application\Utilities\App;
-use Bayfront\Bones\Exceptions\InvalidArgumentException;
-use Bayfront\Bones\Exceptions\InvalidConfigurationException;
 use Bayfront\Container\NotFoundException;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
@@ -24,14 +25,18 @@ class ApiService
     protected array $config;
 
     /**
-     * @throws InvalidConfigurationException
-     * @throws NotFoundException
+     * @throws ApiExceptionInterface
      */
     public function __construct(ApiSpecificationInterface $spec, array $config)
     {
-        $this->events = App::get('events');
-        $this->filters = App::get('filters');
-        $this->response = App::get('response');
+
+        try {
+            $this->events = App::get('events');
+            $this->filters = App::get('filters');
+            $this->response = App::get('response');
+        } catch (NotFoundException $e) {
+            throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
 
         $this->spec = $spec;
         $this->config = $config;
@@ -40,7 +45,7 @@ class ApiService
 
         if (Arr::isMissing(Arr::dot($this->config), [
         ])) {
-            throw new InvalidConfigurationException('Unable to start ApiService: invalid configuration');
+            throw new ApiServiceException('Unable to start ApiService: invalid configuration');
         }
 
         // Do event
@@ -63,28 +68,87 @@ class ApiService
      * Send API response.
      *
      * @param array $data
-     * @param array $spec (Api specification): TODO: Needs to accept interface
-     * @param string $response
+     * @param string $path
+     * @param string $http_method
+     * @param string $http_status
      * @return void
-     * @throws InvalidArgumentException
+     * @throws APiExceptionInterface
      */
-    public function respond(array $data, array $spec, string $response): void
+    public function respond(array $data, string $path, string $http_method, string $http_status): void
     {
+
+        // ------------------------- Filter -------------------------
 
         $data = (array)$this->filters->doFilter('api.response', $data); // Ensure returned from filter as an array
 
-        // Check properties and required
+        // ------------------------- Validate data against spec -------------------------
 
-        //$schema = $this->spec->getSchema($schema_name);
+        $operation = $this->spec->getOperationObject($path, $http_method);
+        $response = $operation->getResponseObject($http_status);
+        $schema = $response->getSchemaObject();
 
-        //$properties = (array)Arr::get($schema, 'properties', []);
-        //$required = (array)Arr::get($schema, 'required', []);
+        $schema_properties = $schema->getProperties();
 
-        print_r($data);
-        die;
+        // Allowed properties
 
+        if (!empty(Arr::except($data, array_keys($schema_properties)))) {
+            throw new BadRequestException('Unacceptable properties');
+        }
 
-        $response = $schema::create($response, $schema_config);
+        // Required properties
+
+        if (Arr::isMissing($data, $schema->getRequiredProperties())) {
+            throw new BadRequestException('Missing required properties');
+        }
+
+        // Validate properties
+
+        foreach ($data as $k => $v) {
+
+            if (Arr::has($schema_properties, $k . '.type')) {
+
+                // Expected type
+
+                $property_type = gettype($v);
+
+                if ($property_type !== (string)Arr::get($schema_properties, $k . '.type')) {
+                    throw new BadRequestException('Invalid property type');
+                }
+
+                // Integer: minimum/maximum
+
+                if ($property_type == 'integer') {
+
+                    if (Arr::has($schema_properties, $k . '.minimum') && $v < (int)Arr::get($schema_properties, $k . '.minimum')) {
+                        throw new BadRequestException('Property (' . $k . ') value (' . $v . ') is below the minimum permitted (' . (int)Arr::get($schema_properties, $k . '.minimum') . ')');
+                    }
+
+                    if (Arr::has($schema_properties, $k . '.maximum') && $v > (int)Arr::get($schema_properties, $k . '.maximum')) {
+                        throw new BadRequestException('Property (' . $k . ') value (' . $v . ') is above the maximum permitted (' . (int)Arr::get($schema_properties, $k . '.maximum') . ')');
+                    }
+
+                }
+
+            }
+
+        }
+
+        // ------------------------- Create API schema -------------------------
+
+        $schema_class = App::getConfig('app.namespace', '') . 'Schemas\\' . $schema->getName();
+
+        if (!class_exists($schema_class)) {
+            throw new ApiServiceException('Unable to respond: missing schema (' . $schema->getName() . ')');
+        }
+
+        $sc = new $schema_class;
+
+        if (!$sc instanceof ApiSchemaInterface) {
+            throw new ApiServiceException('Unable to respond: schema (' . $schema->getName() . ') does not inherit required interface (ApiSchemaInterface)');
+        }
+
+        /** @var ApiSchemaInterface $schema_class */
+        $response = $schema_class::create($data);
 
         $this->events->doEvent('api.end', $response);
 
