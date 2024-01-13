@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Services\ApiService;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Services\ApiService\Events\ApiEvents;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\ApiServiceException;
 use Bayfront\Bones\Application\Services\ApiService\Exceptions\Http\BadRequestException;
 use Bayfront\Bones\Application\Services\ApiService\Filters\ApiFilters;
@@ -48,6 +49,14 @@ class ApiService
         if (Arr::isMissing(Arr::dot($this->config), [
         ])) {
             throw new ApiServiceException('Unable to start ApiService: invalid configuration');
+        }
+
+        // Enqueue events
+
+        try {
+            $this->events->addSubscriptions(new ApiEvents());
+        } catch (ServiceException $e) {
+            throw new ApiServiceException('Unable to start ApiService: ' . $e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
         // Enqueue filters

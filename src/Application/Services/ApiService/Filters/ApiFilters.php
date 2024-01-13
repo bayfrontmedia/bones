@@ -14,16 +14,16 @@ class ApiFilters extends FilterSubscriber implements FilterSubscriberInterface
 
     protected ApiService $apiService;
 
-    /**
-     * The container will resolve any dependencies.
-     */
-
     public function __construct(ApiService $apiService)
     {
         $this->apiService = $apiService;
     }
 
     /**
+     * NOTE:
+     * These subscriptions will not show in the filter:list console command,
+     * as only locally installed filters are loaded in CLI mode.
+     *
      * @inheritDoc
      */
 
