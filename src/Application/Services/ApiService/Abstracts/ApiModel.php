@@ -36,7 +36,7 @@ abstract class ApiModel extends Model implements ApiModelInterface
      * @param string $action
      * @return mixed
      */
-    public function returnActionResult(mixed $result, string $action): mixed
+    public function tookAction(mixed $result, string $action): mixed
     {
         $this->apiService->events->doEvent('api.model.action', $result, $this->getModelIdentifier(), $action);
         return $result;
