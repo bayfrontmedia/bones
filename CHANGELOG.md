@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [4.1.1]- 2024.01.28
+
+### Added
+
+- Added the `Response` service to be passed as a parameter to the `bones.end` event.
+
 ## [4.1.0]- 2024.01.11
 
 ### Added
