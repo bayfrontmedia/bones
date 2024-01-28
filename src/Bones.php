@@ -209,11 +209,11 @@ class Bones
             }
 
             /*
-             * If an error status code has not yet been set,
-             * set status code to default of 500.
+             * If an HttpException, the status code has already been set by App::abort().
+             * Otherwise, set status code to 500.
              */
 
-            if ($response->getStatusCode()['code'] < 400) {
+            if (!$e instanceof HttpException) {
                 $response->setStatusCode(500); // Default status code
             }
 
@@ -263,7 +263,7 @@ class Bones
                     $handler->respond($response, $e);
 
                     if (isset($events)) {
-                        $events->doEvent('bones.end', $response);
+                        $events->doEvent('bones.end');
                     }
 
                     return; // Stop iteration
@@ -281,7 +281,7 @@ class Bones
             echo '<h1>Error: ' . $e->getMessage() . '</h1>';
 
             if (isset($events)) {
-                $events->doEvent('bones.end', $response);
+                $events->doEvent('bones.end');
             }
 
         });
@@ -434,7 +434,7 @@ class Bones
 
         // ------------------------- Shutdown -------------------------
 
-        $events->doEvent('bones.end', $response);
+        $events->doEvent('bones.end');
 
     }
 
