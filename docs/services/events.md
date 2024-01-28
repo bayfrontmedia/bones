@@ -120,7 +120,7 @@ using `php bones schedule:run`. The response of the scheduler's [run method](htt
 - `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter.
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. 
 This event accepts two parameters: the [Response](response.md) service and the [thrown exception](../usage/exceptions.md).
-- `bones.end`: Executes as the last event.
+- `bones.end`: Executes as the last event. The [Response](response.md) service is passed as a parameter.
 
 The underlying PHP Hooks library also has its own default events:
 
