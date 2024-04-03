@@ -16,11 +16,10 @@ You can customize how exceptions will be handled by creating a `Handler` class i
 directory which can extend `Bayfront\Bones\Abstracts\ExceptionHandler` (if you also want Bones to handle the exception)
 and must implement `Bayfront\Bones\Interfaces\ExceptionHandlerInterface`.
 
-If this class exists, it will override the default `Bayfront\Bones\Exceptions\Handler` class.
-
-Bones will automatically respond to exceptions via the `Bayfront\Bones\Abstracts\ExceptionHandler`.
-
 The `respond` method allows you to customize how the application responds to the exception.
+
+If this class exists, it will override the default `Bayfront\Bones\Exceptions\Handler` class,
+which utilizes `Bayfront\Bones\Abstracts\ExceptionHandler` to respond to the exception.
 
 Example:
 
