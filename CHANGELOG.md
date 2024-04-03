@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated...
+- Updated `Bayfront\Bones\Interfaces\ExceptionHandlerInterface` to exclude the `report` method.
 
 ## [4.1.1]- 2024.01.28
 

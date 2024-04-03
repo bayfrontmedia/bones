@@ -253,10 +253,6 @@ class Bones
 
                     if ($handler instanceof ExceptionHandlerInterface) {
 
-                        // Report exception
-
-                        $handler->report($response, $e);
-
                         // Respond to exception
 
                         $handler->respond($response, $e);
