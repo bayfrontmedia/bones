@@ -78,31 +78,31 @@ abstract class ExceptionHandler
     }
 
     /**
-     * Report exception.
+     * Create response body.
      *
-     * @param Response $response
-     * @param Throwable $e
+     * @param $data
      *
-     * @return void
-     * @throws NotFoundException
+     * @return string
      */
 
-    public function report(Response $response, Throwable $e): void
+    protected function bodyAsText($data): string
     {
 
-        $container = App::getContainer();
+        $body = '<h1>&#x1F6A7; Error: ' . Arr::get($data, 'error.message') . '</h1><ul>';
 
-        if ($container->has('Bayfront\MultiLogger\Log')) {
+        $body .= '<li><strong>Status:</strong> ' . Arr::get($data, 'error.status') . '</li>';
 
-            $data = $this->getDataArray($response, $e);
+        $body .= '<li><strong>Phrase:</strong> ' . Arr::get($data, 'error.error') . '</li>';
 
-            $log = $container->get('Bayfront\MultiLogger\Log');
+        $body .= '<li><strong>Message:</strong> ' . Arr::get($data, 'error.message') . '</li>';
 
-            $log->critical('Exception (' . get_class($e) . '): ' . $e->getMessage(), [
-                'data' => $data
-            ]);
+        $body .= '<li><strong>Code:</strong> ' . Arr::get($data, 'error.code') . '</li>';
 
-        }
+        $body .= '<li><strong>Timestamp:</strong> ' . Arr::get($data, 'error.timestamp') . '</li>';
+
+        $body .= '</ul>';
+
+        return $body;
 
     }
 
@@ -201,35 +201,6 @@ abstract class ExceptionHandler
             }
 
         }
-
-    }
-
-    /**
-     * Create response body.
-     *
-     * @param $data
-     *
-     * @return string
-     */
-
-    protected function bodyAsText($data): string
-    {
-
-        $body = '<h1>&#x1F6A7; Error: ' . Arr::get($data, 'error.message') . '</h1><ul>';
-
-        $body .= '<li><strong>Status:</strong> ' . Arr::get($data, 'error.status') . '</li>';
-
-        $body .= '<li><strong>Phrase:</strong> ' . Arr::get($data, 'error.error') . '</li>';
-
-        $body .= '<li><strong>Message:</strong> ' . Arr::get($data, 'error.message') . '</li>';
-
-        $body .= '<li><strong>Code:</strong> ' . Arr::get($data, 'error.code') . '</li>';
-
-        $body .= '<li><strong>Timestamp:</strong> ' . Arr::get($data, 'error.timestamp') . '</li>';
-
-        $body .= '</ul>';
-
-        return $body;
 
     }
 

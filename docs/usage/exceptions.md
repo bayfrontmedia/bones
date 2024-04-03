@@ -18,12 +18,9 @@ and must implement `Bayfront\Bones\Interfaces\ExceptionHandlerInterface`.
 
 If this class exists, it will override the default `Bayfront\Bones\Exceptions\Handler` class.
 
-Bones will automatically report and respond to exceptions via the `Bayfront\Bones\Abstracts\ExceptionHandler`.
+Bones will automatically respond to exceptions via the `Bayfront\Bones\Abstracts\ExceptionHandler`.
 
-The `report` method allows you to customize how the exception will be reported (e.g., logged),
-and the `respond` method allows you to customize the exception's response.
-
-Adding classes to the `$excluded_classes` array prevents them from being reported.
+The `respond` method allows you to customize how the application responds to the exception.
 
 Example:
 
@@ -44,34 +41,6 @@ class Handler extends ExceptionHandler implements ExceptionHandlerInterface
 {
 
     /**
-     * Fully namespaced exception classes to exclude from reporting.
-     *
-     * @var array $excluded_classes
-     */
-
-    protected $excluded_classes = [
-        'Bayfront\Bones\Exceptions\HttpException'
-    ];
-
-    /**
-     * @inheritDoc
-     */
-
-    public function getExcludedClasses(): array
-    {
-        return $this->excluded_classes;
-    }
-
-    /**
-     * @inheritDoc
-     */
-
-    public function report(Response $response, Throwable $e): void
-    {
-        parent::report($response, $e);
-    }
-
-    /**
      * @inheritDoc
      */
 
@@ -83,15 +52,10 @@ class Handler extends ExceptionHandler implements ExceptionHandlerInterface
 }
 ```
 
-### Report
-
-If a `Bayfront\MultiLogger\Log` instance exists in the container, it will be used to log a critical message 
-pertaining to the exception.
-
 ### Respond
 
-Bones uses the [whoops](https://github.com/filp/whoops) library to respond to exceptions when the app is in debug mode, 
-or when running from the command line.
+Bones `Bayfront\Bones\Abstracts\ExceptionHandler` uses the [whoops](https://github.com/filp/whoops) library to respond to exceptions 
+when the app is in debug mode, or when running from the command line.
 
 If an `Errors` controller exists, Bones will attempt to resolve the `errorNUM` method, where `NUM` corresponds 
 to the HTTP status code of the exception. A `$data` array containing information related to the exception 

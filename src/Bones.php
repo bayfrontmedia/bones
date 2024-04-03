@@ -41,6 +41,7 @@ use Bayfront\Bones\Exceptions\InvalidConfigurationException;
 use Bayfront\Bones\Exceptions\ServiceException;
 use Bayfront\Bones\Exceptions\UndefinedConstantException;
 use Bayfront\Bones\Interfaces\BonesConstructorInterface;
+use Bayfront\Bones\Interfaces\ExceptionHandlerInterface;
 use Bayfront\Container\Container;
 use Bayfront\Container\ContainerException;
 use Bayfront\Container\NotFoundException;
@@ -149,7 +150,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '4.1.1');
+        Constants::define('BONES_VERSION', '4.2.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -250,23 +251,23 @@ class Bones
 
                     $handler = new $class();
 
-                    // Report exception
+                    if ($handler instanceof ExceptionHandlerInterface) {
 
-                    if (!in_array(get_class($e), $handler->getExcludedClasses())) {
+                        // Report exception
 
                         $handler->report($response, $e);
 
+                        // Respond to exception
+
+                        $handler->respond($response, $e);
+
+                        if (isset($events)) {
+                            $events->doEvent('bones.end', $response);
+                        }
+
+                        return; // Stop iteration
+
                     }
-
-                    // Respond to exception
-
-                    $handler->respond($response, $e);
-
-                    if (isset($events)) {
-                        $events->doEvent('bones.end', $response);
-                    }
-
-                    return; // Stop iteration
 
                 }
 
