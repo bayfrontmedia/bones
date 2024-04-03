@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [4.2.0]- 2024.04.03
+
+### Changed
+
+- Updated `Bayfront\Bones\Interfaces\ExceptionHandlerInterface` to exclude the `report` method.
+
 ## [4.1.1]- 2024.01.28
 
 ### Added
