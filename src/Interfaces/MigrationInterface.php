@@ -6,7 +6,7 @@ interface MigrationInterface
 {
 
     /**
-     * Get unique migration identifier name.
+     * Get globally unique migration identifier name.
      *
      * @return string
      */

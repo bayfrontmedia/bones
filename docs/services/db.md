@@ -71,7 +71,7 @@ A config file will be added to `/config/database.php`. (See above example)
 ## Migrations
 
 Database migrations act as a version control system for the database schema of your application.
-Migrations should be placed in the `/app/Migrations` directory and 
+Migrations should be placed in the `app/Migrations` directory and 
 must implement `Bayfront\Bones\Interfaces\MigrationInterface`.
 
 Migrations can be created with the `php bones make:migration` command.
@@ -82,6 +82,24 @@ In order for a migration to run, an instance of the class must be added to the `
 Example `FilterSubscriberInterface`:
 
 ```php
+namespace App\Filters;
+
+use App\Migrations\CreateInitialTables;
+use Bayfront\Bones\Abstracts\FilterSubscriber;
+use Bayfront\Bones\Application\Services\Filters\FilterSubscription;
+use Bayfront\Bones\Interfaces\FilterSubscriberInterface;
+use Bayfront\PDO\Db;
+
+class ExampleAppFilters extends FilterSubscriber implements FilterSubscriberInterface
+{
+
+    protected Db $db;
+
+    public function __construct(Db $db)
+    {
+        $this->db = $db;
+    }
+    
     public function getSubscriptions(): array
     {
 
@@ -97,6 +115,8 @@ Example `FilterSubscriberInterface`:
             new CreateInitialTables($this->db) // MigrationInterface
         ]);
     }
+
+}
 ```
 
 The required `migrations` database table will be created the first time the `php bones migrate:up` command is used.

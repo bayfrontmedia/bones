@@ -37,7 +37,7 @@ The file structure for a Bones application is as follows:
 ```
 
 - `/app` - All of your app's namespaced classes reside here.
-- `/app/Migrations` - Optional location for any [database migrations](services/db.md#migrations).
+- `/app/Migrations` - Optional location of any [database migrations](services/db.md#migrations).
 - `/config` - All of your app's configuration files reside here.
 - `/public` - Public web root of the application.
 - `/public/storage` - Symlink to `/storage/public`.
