@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [4.2.1]- 2024.09.04
+
+### Added
+
+- Added the `createHash`, `createPasswordHash` and `isPasswordHashValid` methods to the `App` utility class.
+
+### Changed
+
+- Updated all dependencies.
+
 ## [4.2.0]- 2024.04.03
 
 ### Changed

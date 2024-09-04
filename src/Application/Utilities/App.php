@@ -288,6 +288,66 @@ class App
     }
 
     /**
+     * Create a reproducible keyed hash value.
+     *
+     * @param string $data (Data to be hashed)
+     * @param string $key (Secret key)
+     * @param string $algo (Any valid hash algorithm)
+     * @param bool $binary
+     * @return string
+     */
+    public static function createHash(string $data, string $key, string $algo = 'sha256', bool $binary = false): string
+    {
+        return hash_hmac($algo, $data, $key, $binary);
+    }
+
+    /**
+     * Return a one-way password hash using plaintext data and user-specific key.
+     *
+     * The hash created from this method utilizes the Bones app key
+     * to essentially create a password hash using data supplied by
+     * the user, database and server.
+     *
+     * @param string $data (Plaintext input/password)
+     * @param string $key (User-specific secret/salt)
+     * @param string $algo (Any valid hash algorithm)
+     * @param string $password_algo (Any valid password algorithm constant)
+     * @param array $options (Any valid algorithm constant options)
+     *
+     * @return string (Hashed password)
+     */
+    public static function createPasswordHash(string $data, string $key, string $algo = 'sha256', string $password_algo = PASSWORD_DEFAULT, array $options = []): string
+    {
+
+        $key = hash_hmac($algo, $key, App::getConfig('app.key', '')); // Database & server supplied
+
+        $key = hash_hmac($algo, $key, $data); // User supplied
+
+        return password_hash($key . $data, $password_algo, $options); // Create a one-way hash, verified using password_verify
+
+    }
+
+    /**
+     * Verify a one-way password hash using plaintext data and user-specific key.
+     *
+     * @param string $data (Plaintext input/password)
+     * @param string $key (User-specific secret/salt)
+     * @param string $hashed_password
+     * @param string $algo (Any valid hash algorithm)
+     * @return bool
+     */
+    public static function isPasswordHashValid(string $data, string $key, string $hashed_password, string $algo = 'sha256'): bool
+    {
+
+        $key = hash_hmac($algo, $key, App::getConfig('app.key', '')); // Database & server supplied
+
+        $key = hash_hmac($algo, $key, $data); // User supplied
+
+        return password_verify($key . $data, $hashed_password); // Verify one-way hash
+
+    }
+
+    /**
      * Return elapsed time in seconds since Bones was instantiated.
      *
      * @param float $timestamp (Uses current time if 0)
