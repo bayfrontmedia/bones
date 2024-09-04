@@ -71,43 +71,37 @@ A config file will be added to `/config/database.php`. (See above example)
 ## Migrations
 
 Database migrations act as a version control system for the database schema of your application.
-Migrations must be placed in the `/resources/database/migrations` directory and 
-extend `Bayfront\Bones\Interfaces\MigrationInterface`.
-
-In order for Composer to autoload the migration classes, you must add a `classmap` array to the `autoload` field
-of your `composer.json` file:
-
-```
-"classmap": [
-  "resources/database/migrations/"
-]
-```
-
-The entire `autoload` field may look something like this:
-
-```
-"autoload": {
-  "psr-4": {
-    "App\\": "app/"
-  },
-  "classmap": [
-    "resources/database/migrations/"
-  ]
-}
-```
-
-Since the service container is used to instantiate the migration, 
-you can type-hint any dependencies in its constructor, 
-and the container will use dependency injection to resolve them for you.
+Migrations should be placed in the `/app/Migrations` directory and 
+must implement `Bayfront\Bones\Interfaces\MigrationInterface`.
 
 Migrations can be created with the `php bones make:migration` command.
-A timestamp will be added to the filename to ensure migrations run in the proper order.
+In order for a migration to run, an instance of the class must be added to the `bones.migrations` filter.
 
-Be sure to run `composer install` after creating or removing a migration file.
+### Example
 
-> **NOTE:** Be sure to back up your database before running any migrations
+Example `FilterSubscriberInterface`:
+
+```php
+    public function getSubscriptions(): array
+    {
+
+        return [
+            new FilterSubscription('bones.migrations', [$this, 'createInitialTables'], 10)
+        ];
+
+    }
+
+    public function createInitialTables(array $array): array
+    {
+        return array_merge($array, [
+            new CreateInitialTables($this->db) // MigrationInterface
+        ]);
+    }
+```
 
 The required `migrations` database table will be created the first time the `php bones migrate:up` command is used.
+
+> **NOTE:** Be sure to back up your database before running any migrations
 
 ## Console commands
 

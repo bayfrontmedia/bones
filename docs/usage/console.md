@@ -127,7 +127,7 @@ php bones migrate:up --force
 
 # List all migrations which have ran
 php bones migration:list
-# Migrations can be sorted by "id", "migration", or "batch" (default)
+# Migrations can be sorted by "id", "name", or "batch" (default)
 php bones migration:list --sort=id
 # Return as JSON
 php bones migration:list --json
