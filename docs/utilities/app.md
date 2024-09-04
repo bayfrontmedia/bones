@@ -32,6 +32,9 @@ The following constants can be used to check against the [interface](#getinterfa
 - [resourcesPath](#resourcespath)
 - [storagePath](#storagepath)
 - [createKey](#createkey)
+- [createHash](#createhash)
+- [createPasswordHash](#createpasswordhash)
+- [isPasswordHashValid](#ispasswordhashvalid)
 - [getElapsedTime](#getelapsedtime)
 - [getBonesVersion](#getbonesversion)
 - [getContainer](#getcontainer)
@@ -339,6 +342,76 @@ $key = App::createKey();
 **Console command:**
 
 A key can also be created using the [console command](../usage/console.md) `php bones make:key`.
+
+<hr />
+
+### createHash
+
+**Description:**
+
+Create a reproducible keyed hash value.
+
+**Parameters:**
+
+- `$data` (string): Data to be hashed
+- `$key` (string): Secret key
+- `$algo = 'sha256'` (string): Any valid [hash algorithm](https://www.php.net/manual/en/function.hash-hmac-algos.php)
+- `$binary = false` (bool)
+
+**Example:**
+
+```php
+$hash = App::createHash('user_api_key', 'user_secret');
+```
+
+<hr />
+
+### createPasswordHash
+
+**Description:**
+
+Return a one-way password hash using plaintext data and user-specific key.
+
+The hash created from this method utilizes the Bones app key
+to essentially create a password hash using data supplied by
+the user, database and server.
+
+**Parameters:**
+
+- `$data` (string): Plaintext input/password
+- `$key` (string): User-specific secret/salt
+- `$algo = 'sha256'` (string): Any valid [hash algorithm](https://www.php.net/manual/en/function.hash-hmac-algos.php)
+- `$password_algo = PASSWORD_DEFAULT` (string): Any valid [password algorithm constant](https://www.php.net/manual/en/password.constants.php)
+- `$options = []` (array): Any valid [algorithm constant options](https://www.php.net/manual/en/password.constants.php)
+
+**Example:**
+
+```php
+$password_hash = App::createPasswordHash('plaintext_password', 'user_secret');
+```
+
+<hr />
+
+### isPasswordHashValid
+
+**Description:**
+
+Verify a one-way password hash using plaintext data and user-specific key.
+
+**Parameters:**
+
+- `$data` (string): Plaintext input/password
+- `$key` (string): User-specific secret/salt
+- `$hashed_password` (string): Password hash created with [createPasswordHash](#createpasswordhash)
+- `$algo = 'sha256'` (string): Any valid [hash algorithm](https://www.php.net/manual/en/function.hash-hmac-algos.php)
+
+**Example:**
+
+```php
+if (!App::isPasswordHashValid('plaintext_password', 'user_secret', 'hashed_password')) {
+    // Do something
+}
+```
 
 <hr />
 

@@ -6,6 +6,13 @@ interface MigrationInterface
 {
 
     /**
+     * Get globally unique migration identifier name.
+     *
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * Run migration.
      *
      * @return void

@@ -150,7 +150,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '4.2.0');
+        Constants::define('BONES_VERSION', '5.0.0');
 
         // ------------------------- Load environment variables -------------------------
 
@@ -533,8 +533,8 @@ class Bones
         if (isset($this->interface_services['db'])) {
 
             $console->add(new MakeMigration());
-            $console->add(new MigrateDown(self::$container, $this->interface_services['db']));
-            $console->add(new MigrateUp(self::$container, $this->interface_services['db']));
+            $console->add(new MigrateDown(self::$container, $filters, $this->interface_services['db']));
+            $console->add(new MigrateUp(self::$container, $filters, $this->interface_services['db']));
             $console->add(new MigrationList($this->interface_services['db']));
 
         }

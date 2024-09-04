@@ -40,22 +40,9 @@ class MakeMigration extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $name = strtolower($input->getArgument('name'));
+        $name = ucfirst($input->getArgument('name'));
 
-        $date_name = date('Y-m-d-His') . '_' . $name;
-
-        $util_name = 'Migration (' . $date_name . ')';
-
-        if (is_dir(App::resourcesPath('/database/migrations/'))) {
-
-            $matches = glob(App::resourcesPath('/database/migrations/*_' . $name . '.php'));
-
-            if (!empty($matches)) {
-                $output->writeln('<error>Unable to make migration: Migration name already exists</error>');
-                return Command::FAILURE;
-            }
-
-        }
+        $util_name = 'Migration (' . $name . ')';
 
         ConsoleUtilities::msgInstalling($util_name, $output);
 
@@ -63,18 +50,18 @@ class MakeMigration extends Command
 
             $src_file = Constants::get('BONES_RESOURCES_PATH') . '/cli/templates/make/migration.php';
 
-            $dest_file = App::resourcesPath('/database/migrations/' . $date_name . '.php');
+            $dest_file = App::basePath('/' . strtolower(rtrim(App::getConfig('app.namespace'), '\\')) . '/Migrations/' . $name . '.php');
 
             ConsoleUtilities::copyFile($src_file, $dest_file);
 
             ConsoleUtilities::replaceFileContents($dest_file, [
+                '_namespace_' => rtrim(App::getConfig('app.namespace'), '\\'),
                 '_migration_name_' => $name,
                 '_bones_version_' => App::getBonesVersion()
             ]);
 
             ConsoleUtilities::msgInstalled($util_name, $output);
 
-            $output->writeln('<info>*** NOTE: Be sure to run "composer install" to complete migration installation ***</info>');
             $output->writeln('<info>For more info, see: https://github.com/bayfrontmedia/bones/blob/master/docs/services/db.md#migrations</info>');
 
             return Command::SUCCESS;

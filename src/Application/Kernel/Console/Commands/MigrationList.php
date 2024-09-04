@@ -47,7 +47,7 @@ class MigrationList extends Command
     {
 
         try {
-            $return = $this->db->select("SELECT id, migration, batch FROM `migrations` ORDER BY batch, migration");
+            $return = $this->db->select("SELECT id, name, batch FROM `migrations` ORDER BY batch, name");
         } catch (Exception) {
             $output->writeln('<info>No migrations found: Valid migrations table does not exist.</info>');
             return Command::SUCCESS;
@@ -57,8 +57,8 @@ class MigrationList extends Command
 
         if ($sort == 'id') {
             $return = Arr::multisort($return, 'id');
-        } else if ($sort == 'migration') {
-            $return = Arr::multisort($return, 'migration');
+        } else if ($sort == 'name') {
+            $return = Arr::multisort($return, 'name');
         }
 
         // Return
@@ -77,14 +77,14 @@ class MigrationList extends Command
 
                     $rows[] = [
                         $v['id'],
-                        $v['migration'],
+                        $v['name'],
                         $v['batch']
                     ];
 
                 }
 
                 $table = new Table($output);
-                $table->setHeaders(['ID', 'Migration', 'Batch'])->setRows($rows);
+                $table->setHeaders(['ID', 'Name', 'Batch'])->setRows($rows);
                 $table->render();
 
             }

@@ -1,5 +1,7 @@
 <?php
 
+namespace _namespace_\Migrations;
+
 use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\PDO\Db;
 
@@ -25,6 +27,14 @@ class _migration_name_ implements MigrationInterface
     /**
      * @inheritDoc
      */
+    public function getName(): string
+    {
+        return '_migration_name_';
+    }
+
+    /**
+     * @inheritDoc
+     */
 
     public function up(): void
     {
@@ -43,4 +53,5 @@ class _migration_name_ implements MigrationInterface
     {
         $this->db->query("DROP TABLE IF EXISTS `TABLE_NAME`");
     }
+
 }
