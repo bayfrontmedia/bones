@@ -65,8 +65,9 @@ class MigrateUp extends Command
         $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
             `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `name` varchar(255) NOT NULL,
-            `batch` int NOT NULL
-            )");
+            `batch` int NOT NULL,
+            UNIQUE (`name`)
+            ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
         // Get all migrations which have not yet run
 

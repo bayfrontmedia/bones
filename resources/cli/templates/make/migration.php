@@ -29,7 +29,7 @@ class _migration_name_ implements MigrationInterface
      */
     public function getName(): string
     {
-        return 'Create initial tables';
+        return '_migration_name_';
     }
 
     /**
