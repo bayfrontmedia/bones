@@ -2,7 +2,8 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\Container\Container;
 use Bayfront\PDO\Db;
 use Exception;
@@ -17,11 +18,13 @@ class MigrateUp extends Command
 {
 
     protected Container $container;
+    protected FilterService $filters;
     protected Db $db;
 
-    public function __construct(Container $container, Db $db)
+    public function __construct(Container $container, FilterService $filters, Db $db)
     {
         $this->container = $container;
+        $this->filters = $filters;
         $this->db = $db;
 
         parent::__construct();
@@ -50,122 +53,106 @@ class MigrateUp extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        $dir = App::resourcesPath('/database/migrations');
+        $migrations = $this->filters->doFilter('bones.migrations', []);
 
-        if (is_dir($dir)) {
+        if (empty($migrations)) {
+            $output->writeln('<info>No migrations found.</info>');
+            return Command::SUCCESS;
+        }
 
-            $migrations = glob($dir . '/*.php');
+        // Migration files exist. Ensure database table exists.
 
-            if (empty($migrations)) {
-                $output->writeln('<info>No migrations found.</info>');
-                return Command::SUCCESS;
-            }
-
-            foreach ($migrations as $k => $v) {
-                $migrations[$k] = basename($v, '.php');
-            }
-
-            // Migration files exist. Ensure database table exists.
-
-            $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
+        $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
             `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `migration` varchar(255) NOT NULL,
+            `name` varchar(255) NOT NULL,
             `batch` int NOT NULL
             )");
 
-            // Get all migrations which have not yet run
+        // Get all migrations which have not yet run
 
-            foreach ($migrations as $k => $migration) {
+        /**
+         * @var MigrationInterface $migration
+         */
+        foreach ($migrations as $k => $migration) {
 
-                if ($this->db->exists('migrations', [
-                    'migration' => $migration
-                ])) {
-                    unset($migrations[$k]);
-                }
-
+            if (!$migration instanceof MigrationInterface) {
+                $output->writeln('<error>All migrations must implement MigrationInterface</error>');
+                return Command::FAILURE;
             }
 
-            // $migrations contain only migrations which have not yet run
-
-            if (empty($migrations)) {
-                $output->writeln('<info>No migrations to run.</info>');
-                return Command::SUCCESS;
+            if ($this->db->exists('migrations', [
+                'name' => $migration->getName()
+            ])) {
+                unset($migrations[$k]);
             }
-
-            // Get next batch number
-
-            $batch_num = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
-
-            if (!$batch_num) {
-                $batch_num = 1;
-            } else {
-                $batch_num = $batch_num + 1;
-            }
-
-            $rows = [];
-
-            foreach ($migrations as $migration) {
-
-                $rows[] = [
-                    $migration
-                ];
-
-            }
-
-            $output->writeln('<info>Preparing to run the following migrations:</info>');
-
-            $table = new Table($output);
-            $table->setHeaders(['Migration'])->setRows($rows);
-            $table->render();
-
-            if (!$input->getOption('force')) {
-
-                $helper = $this->getHelper('question');
-                $question = new ConfirmationQuestion('Continue with this action? [y/n]', false);
-
-                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                if (!$helper->ask($input, $output, $question)) {
-
-                    $output->writeln('<info>Migration aborted!</info>');
-                    return Command::SUCCESS;
-                }
-
-            }
-
-            // Run migrations
-
-            sort($migrations); // Ensure ordered by filename
-
-            foreach ($migrations as $migration) {
-
-                $file_exp = explode('_', $migration, 2);
-
-                if (isset($file_exp[1])) { // Valid filename format
-
-                    $output->writeln('Running migration: ' . $migration);
-
-                    // Run migration
-
-                    $class = $this->container->make($file_exp[1]);
-                    $class->up();
-
-                    // Add to migrations table
-
-                    $this->db->insert('migrations', [
-                        'migration' => $migration,
-                        'batch' => $batch_num
-                    ]);
-
-                }
-
-            }
-
-            $output->writeln('<info>Migration complete!</info>');
-            return Command::SUCCESS;
 
         }
 
-        $output->writeln('<info>Migrations directory does not exist. No migrations found.</info>');
+        // $migrations contain only migrations which have not yet run
+
+        if (empty($migrations)) {
+            $output->writeln('<info>No migrations to run.</info>');
+            return Command::SUCCESS;
+        }
+
+        // Get next batch number
+
+        $batch_num = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
+
+        if (!$batch_num) {
+            $batch_num = 1;
+        } else {
+            $batch_num = $batch_num + 1;
+        }
+
+        $rows = [];
+
+        foreach ($migrations as $migration) {
+
+            $rows[] = [
+                $migration->getName()
+            ];
+
+        }
+
+        $output->writeln('<info>Preparing to run the following migrations:</info>');
+
+        $table = new Table($output);
+        $table->setHeaders(['Name'])->setRows($rows);
+        $table->render();
+
+        if (!$input->getOption('force')) {
+
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('Continue with this action? [y/n]', false);
+
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+            if (!$helper->ask($input, $output, $question)) {
+
+                $output->writeln('<info>Migration aborted!</info>');
+                return Command::SUCCESS;
+            }
+
+        }
+
+        foreach ($migrations as $migration) {
+
+            $output->writeln('Running migration: ' . $migration->getName());
+
+            // Run migration
+
+            $migration->up();
+
+            // Add to migrations table
+
+            $this->db->insert('migrations', [
+                'name' => $migration->getName(),
+                'batch' => $batch_num
+            ]);
+
+        }
+
+        $output->writeln('<info>Migration complete!</info>');
         return Command::SUCCESS;
 
     }

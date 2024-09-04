@@ -2,7 +2,8 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\Container\Container;
 use Bayfront\PDO\Db;
 use Exception;
@@ -17,11 +18,13 @@ class MigrateDown extends Command
 {
 
     protected Container $container;
+    protected FilterService $filters;
     protected Db $db;
 
-    public function __construct(Container $container, Db $db)
+    public function __construct(Container $container, FilterService $filters, Db $db)
     {
         $this->container = $container;
+        $this->filters = $filters;
         $this->db = $db;
 
         parent::__construct();
@@ -68,22 +71,22 @@ class MigrateDown extends Command
 
         }
 
-        $migrations = $this->db->select("SELECT id, migration, batch FROM `migrations` WHERE batch >= :batch", [
+        $ran_migrations = $this->db->select("SELECT id, name, batch FROM `migrations` WHERE batch >= :batch ORDER BY id DESC", [
             'batch' => $batch
         ]);
 
-        if (empty($migrations)) {
+        if (empty($ran_migrations)) {
             $output->writeln('<info>No migrations to run.</info>');
             return Command::SUCCESS;
         }
 
         $rows = [];
 
-        foreach ($migrations as $v) {
+        foreach ($ran_migrations as $v) {
 
             $rows[] = [
                 $v['id'],
-                $v['migration'],
+                $v['name'],
                 $v['batch']
             ];
 
@@ -92,7 +95,7 @@ class MigrateDown extends Command
         $output->writeln('<info>Preparing to roll back the following migrations:</info>');
 
         $table = new Table($output);
-        $table->setHeaders(['ID', 'Migration', 'Batch'])->setRows($rows);
+        $table->setHeaders(['ID', 'Name', 'Batch'])->setRows($rows);
         $table->render();
 
         if (!$input->getOption('force')) {
@@ -111,39 +114,51 @@ class MigrateDown extends Command
 
         // Run migrations
 
-        sort($migrations); // Ensure ordered by filename
+        $known_migrations = $this->filters->doFilter('bones.migrations', []);
 
-        foreach ($migrations as $migration) {
+        if (empty($known_migrations)) {
+            $output->writeln('<info>No known migrations found.</info>');
+            return Command::SUCCESS;
+        }
 
-            $file_exp = explode('_', $migration['migration'], 2);
+        /**
+         * Array key = name of migration
+         * @var MigrationInterface $known_migration
+         */
+        foreach ($known_migrations as $k => $known_migration) {
 
-            if (isset($file_exp[1])) { // Valid filename format
-
-                if (!file_exists(App::resourcesPath('/database/migrations/' . $migration['migration'] . '.php'))) {
-
-                    $output->writeln('<error>Unable to perform migration: File does not exist (' . $migration['migration'] . ')</error>');
-                    continue;
-
-                }
-
-                $output->writeln('Running migration: ' . $migration['migration']);
-
-                // Run migration
-
-                $class = $this->container->make($file_exp[1]);
-                $class->down();
-
-                // Remove from migrations table
-
-                $this->db->delete('migrations', [
-                    'id' => $migration['id']
-                ]);
-
+            if (!$known_migration instanceof MigrationInterface) {
+                $output->writeln('<error>All migrations must implement MigrationInterface</error>');
+                return Command::FAILURE;
             }
+
+            $known_migrations[$known_migration->getName()] = $known_migration;
+            unset($known_migrations[$k]);
 
         }
 
-        $output->writeln('<info>*** NOTE: To completely remove a migration, remove the migration file and run "composer install" ***</info>');
+        foreach ($ran_migrations as $ran) {
+
+            if (!isset($known_migrations[$ran['name']])) {
+                $output->writeln('<error>Unable to perform migration: Migration does not exist (' . $ran['name'] . ')</error>');
+                continue;
+            }
+
+            $output->writeln('Running migration: ' . $ran['name']);
+
+            // Run migration
+
+            $known_migrations[$ran['name']]->down();
+
+            // Remove from migrations table
+
+            $this->db->delete('migrations', [
+                'id' => $ran['id']
+            ]);
+
+        }
+
+        $output->writeln('<info>*** NOTE: To prevent a migration from running in the future, it must be removed from the bones.migrations filter ***</info>');
         $output->writeln('<info>Migration complete!</info>');
         return Command::SUCCESS;
 
