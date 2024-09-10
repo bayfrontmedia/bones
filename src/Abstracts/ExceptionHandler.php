@@ -36,7 +36,7 @@ abstract class ExceptionHandler
                 'message' => $message,
                 'type' => get_class($e),
                 'code' => (string)$e->getCode(),
-                'path' => (App::getInterface() == App::INTERFACE_HTTP) ? Request::getRequest('path') : '',
+                'path' => (App::getInterface() == App::INTERFACE_HTTP) ? Request::getRequest(Request::PART_PATH) : '',
                 'timestamp' => date('c')
             ]
         ];
