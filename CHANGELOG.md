@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.1.0]- 2024.09.10
+
+### Changed
+
+- Updated `simple-pdo` dependency to v4.0.0
+
 ## [5.0.1]- 2024.09.09
 
 ### Changed

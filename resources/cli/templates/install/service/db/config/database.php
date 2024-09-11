@@ -2,7 +2,7 @@
 
 /*
  * For more information, see:
- * https://github.com/bayfrontmedia/simple-pdo#usage
+ * https://github.com/bayfrontmedia/simple-pdo/blob/master/docs/getting-started.md#factory-setup
  */
 
 use Bayfront\Bones\Application\Utilities\App;

@@ -3,7 +3,7 @@
 The [Simple PDO](https://github.com/bayfrontmedia/simple-pdo) library is used
 to manage database connections.
 
-This library will be added to the service container with alias `db` if a [Simple PDO factory](https://github.com/bayfrontmedia/simple-pdo#factory-usage) 
+This library will be added to the service container with alias `db` if a [Simple PDO factory](https://github.com/bayfrontmedia/simple-pdo/blob/master/docs/getting-started.md#factory-setup) 
 configuration array exists at `/config/database.php`.
 
 **Example:**
