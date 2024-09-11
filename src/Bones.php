@@ -52,12 +52,12 @@ use Bayfront\Hooks\Hooks;
 use Bayfront\HttpRequest\Request;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
-use Bayfront\PDO\DbFactory;
-use Bayfront\PDO\Exceptions\ConfigurationException;
-use Bayfront\PDO\Exceptions\InvalidDatabaseException;
-use Bayfront\PDO\Exceptions\UnableToConnectException;
 use Bayfront\RouteIt\DispatchException;
 use Bayfront\RouteIt\Router;
+use Bayfront\SimplePdo\DbFactory;
+use Bayfront\SimplePdo\Exceptions\ConfigurationException;
+use Bayfront\SimplePdo\Exceptions\InvalidDatabaseException;
+use Bayfront\SimplePdo\Exceptions\UnableToConnectException;
 use Bayfront\TimeHelpers\Time;
 use Bayfront\Veil\Veil;
 use Dotenv\Dotenv;
@@ -150,7 +150,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '5.0.1');
+        Constants::define('BONES_VERSION', '5.1.0');
 
         // ------------------------- Load environment variables -------------------------
 

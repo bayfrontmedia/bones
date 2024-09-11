@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83fdf93322e3276f2f711b641938f950",
+    "content-hash": "c8328344fb0029a90de40bb1056addc2",
     "packages": [
         {
             "name": "bayfrontmedia/container",
@@ -581,28 +581,27 @@
         },
         {
             "name": "bayfrontmedia/simple-pdo",
-            "version": "v3.0.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/simple-pdo.git",
-                "reference": "1b590538b04331969b367b32559e477aa730a222"
+                "reference": "5842cdadd80b41dbd72925aaf1eda77cf51cfa44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/1b590538b04331969b367b32559e477aa730a222",
-                "reference": "1b590538b04331969b367b32559e477aa730a222",
+                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/5842cdadd80b41dbd72925aaf1eda77cf51cfa44",
+                "reference": "5842cdadd80b41dbd72925aaf1eda77cf51cfa44",
                 "shasum": ""
             },
             "require": {
                 "bayfrontmedia/php-array-helpers": "^2.0",
-                "bayfrontmedia/php-string-helpers": "^2.0",
                 "ext-pdo": "*",
                 "php": "^8.0"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Bayfront\\PDO\\": "src/"
+                    "Bayfront\\SimplePdo\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -627,9 +626,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/simple-pdo/issues",
-                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v3.0.0"
+                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v4.0.0"
             },
-            "time": "2023-05-10T15:15:37+00:00"
+            "time": "2024-09-11T01:21:48+00:00"
         },
         {
             "name": "bayfrontmedia/veil",
