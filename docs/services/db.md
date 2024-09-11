@@ -88,7 +88,7 @@ use App\Migrations\CreateInitialTables;
 use Bayfront\Bones\Abstracts\FilterSubscriber;
 use Bayfront\Bones\Application\Services\Filters\FilterSubscription;
 use Bayfront\Bones\Interfaces\FilterSubscriberInterface;
-use Bayfront\PDO\Db;
+use Bayfront\SimplePdo\Db;
 
 class ExampleAppFilters extends FilterSubscriber implements FilterSubscriberInterface
 {

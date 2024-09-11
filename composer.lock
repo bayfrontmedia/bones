@@ -581,16 +581,16 @@
         },
         {
             "name": "bayfrontmedia/simple-pdo",
-            "version": "v4.0.0",
+            "version": "v4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/simple-pdo.git",
-                "reference": "5842cdadd80b41dbd72925aaf1eda77cf51cfa44"
+                "reference": "5a6256324dced1e441d0c5bb825a0b3e09a38672"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/5842cdadd80b41dbd72925aaf1eda77cf51cfa44",
-                "reference": "5842cdadd80b41dbd72925aaf1eda77cf51cfa44",
+                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/5a6256324dced1e441d0c5bb825a0b3e09a38672",
+                "reference": "5a6256324dced1e441d0c5bb825a0b3e09a38672",
                 "shasum": ""
             },
             "require": {
@@ -626,9 +626,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/simple-pdo/issues",
-                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v4.0.0"
+                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v4.0.1"
             },
-            "time": "2024-09-11T01:21:48+00:00"
+            "time": "2024-09-11T01:48:06+00:00"
         },
         {
             "name": "bayfrontmedia/veil",

@@ -5,7 +5,7 @@ namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 use Bayfront\Bones\Application\Services\Filters\FilterService;
 use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\Container\Container;
-use Bayfront\PDO\Db;
+use Bayfront\SimplePdo\Db;
 use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;

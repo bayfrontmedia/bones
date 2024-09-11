@@ -3,7 +3,7 @@
 namespace _namespace_\Migrations;
 
 use Bayfront\Bones\Interfaces\MigrationInterface;
-use Bayfront\PDO\Db;
+use Bayfront\SimplePdo\Db;
 
 /**
  * _migration_name_ Migration.
