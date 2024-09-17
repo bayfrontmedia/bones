@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8328344fb0029a90de40bb1056addc2",
+    "content-hash": "317e475c4c23a00eebde65bc397435e6",
     "packages": [
         {
             "name": "bayfrontmedia/container",
@@ -581,16 +581,16 @@
         },
         {
             "name": "bayfrontmedia/simple-pdo",
-            "version": "v4.0.1",
+            "version": "v5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/simple-pdo.git",
-                "reference": "5a6256324dced1e441d0c5bb825a0b3e09a38672"
+                "reference": "1e2c9e5039bafcc6927fe29f43440829135e682c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/5a6256324dced1e441d0c5bb825a0b3e09a38672",
-                "reference": "5a6256324dced1e441d0c5bb825a0b3e09a38672",
+                "url": "https://api.github.com/repos/bayfrontmedia/simple-pdo/zipball/1e2c9e5039bafcc6927fe29f43440829135e682c",
+                "reference": "1e2c9e5039bafcc6927fe29f43440829135e682c",
                 "shasum": ""
             },
             "require": {
@@ -626,9 +626,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/simple-pdo/issues",
-                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v4.0.1"
+                "source": "https://github.com/bayfrontmedia/simple-pdo/tree/v5.0.0"
             },
-            "time": "2024-09-11T01:48:06+00:00"
+            "time": "2024-09-17T01:23:17+00:00"
         },
         {
             "name": "bayfrontmedia/veil",
@@ -1104,16 +1104,16 @@
         },
         {
             "name": "psr/log",
-            "version": "3.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "79dff0b268932c640297f5208d6298f71855c03e"
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/79dff0b268932c640297f5208d6298f71855c03e",
-                "reference": "79dff0b268932c640297f5208d6298f71855c03e",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
+                "reference": "f16e1d5863e37f8d8c2a01719f5b34baa2b714d3",
                 "shasum": ""
             },
             "require": {
@@ -1148,9 +1148,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/3.0.1"
+                "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
-            "time": "2024-08-21T13:31:24+00:00"
+            "time": "2024-09-11T13:17:53+00:00"
         },
         {
             "name": "symfony/console",

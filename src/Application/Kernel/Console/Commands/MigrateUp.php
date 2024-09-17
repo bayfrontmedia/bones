@@ -39,6 +39,7 @@ class MigrateUp extends Command
 
         $this->setName('migrate:up')
             ->setDescription('Run all pending database migrations')
+            ->addOption('db', null, InputOption::VALUE_REQUIRED)
             ->addOption('force', null, InputOption::VALUE_NONE);
 
     }
@@ -60,7 +61,15 @@ class MigrateUp extends Command
             return Command::SUCCESS;
         }
 
-        // Migration files exist. Ensure database table exists.
+        // Migration files exist.
+
+        $db = (string)$input->getOption('db');
+
+        if ($db !== '') {
+            $this->db->useConnection($db);
+        }
+
+        // Ensure database table exists.
 
         $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
             `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,

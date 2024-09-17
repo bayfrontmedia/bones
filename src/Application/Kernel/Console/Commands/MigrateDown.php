@@ -39,6 +39,7 @@ class MigrateDown extends Command
 
         $this->setName('migrate:down')
             ->setDescription('Rollback database migrations')
+            ->addOption('db', null, InputOption::VALUE_REQUIRED)
             ->addOption('batch', null, InputOption::VALUE_REQUIRED)
             ->addOption('force', null, InputOption::VALUE_NONE);
 
@@ -53,6 +54,12 @@ class MigrateDown extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        $db = (string)$input->getOption('db');
+
+        if ($db !== '') {
+            $this->db->useConnection($db);
+        }
 
         $batch = (int)$input->getOption('batch');
 

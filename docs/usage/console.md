@@ -115,6 +115,8 @@ php bones make:service NAME
 
 # Rollback database migrations
 php bones migrate:down
+# Migrate down with specific database name
+php bones migrate:down --db=DATABASE_NAME
 # Rollback database migrations to a specific batch
 php bones migrate:down --batch=BATCH
 # Use --force to skip confirmation prompt
@@ -122,11 +124,15 @@ php bones migrate:down --force
 
 # Run all pending database migrations
 php bones migrate:up 
+# Migrate up with specific database name
+php bones migrate:up --db=DATABASE_NAME
 # Use --force to skip confirmation prompt
 php bones migrate:up --force
 
 # List all migrations which have ran
 php bones migration:list
+# List all migrations for a specific database name
+php bones migration:list --db=DATABASE_NAME
 # Migrations can be sorted by "id", "name", or "batch" (default)
 php bones migration:list --sort=id
 # Return as JSON
