@@ -31,6 +31,7 @@ class MigrationList extends Command
 
         $this->setName('migration:list')
             ->setDescription('List all migrations which have ran')
+            ->addOption('db', null, InputOption::VALUE_REQUIRED)
             ->addOption('sort', null, InputOption::VALUE_REQUIRED)
             ->addOption('json', null, InputOption::VALUE_NONE);
 
@@ -45,6 +46,12 @@ class MigrationList extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        $db = (string)$input->getOption('db');
+
+        if ($db !== '') {
+            $this->db->useConnection($db);
+        }
 
         try {
             $return = $this->db->select("SELECT id, name, batch FROM `migrations` ORDER BY batch, name");

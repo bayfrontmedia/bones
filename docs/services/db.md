@@ -10,6 +10,7 @@ configuration array exists at `/config/database.php`.
 
 ```php
 use Bayfront\Bones\Application\Utilities\App;
+use Bayfront\SimplePdo\Db;
 
 $options = [];
 
@@ -21,8 +22,7 @@ if (App::getEnv('DB_SECURE_TRANSPORT')) {
 }
 
 return [
-    'primary' => [ // Connection name
-        'default' => true, // One connection on the array must be defined as default
+    Db::DB_DEFAULT => [ // Connection name
         'adapter' => App::getEnv('DB_ADAPTER'), // Adapter to use
         'host' => App::getEnv('DB_HOST'),
         'port' => App::getEnv('DB_PORT'),

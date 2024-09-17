@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.2.0]- 2024.09.16
+
+### Added
+
+- Added support for using a specific database connection name with `migrate:up`, `migrate:down` and `migration:list` console commands.
+
+### Changed
+
+- Updated `simple-pdo` dependency to v5.0.0.
+
 ## [5.1.1]- 2024.09.10
 
 ### Fixed
