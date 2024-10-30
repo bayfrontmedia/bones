@@ -41,9 +41,9 @@
     "bayfrontmedia/php-http-response": "^2.0",
     "bayfrontmedia/php-time-helpers": "^2.0",
     "bayfrontmedia/route-it": "^3.1",
-    "bayfrontmedia/simple-pdo": "^5.0",
+    "bayfrontmedia/simple-pdo": "^5.3",
     "bayfrontmedia/veil": "^2.1",
-    "filp/whoops": "^2.15",
+    "filp/whoops": "^2.16",
     "symfony/console": "^7.1",
     "vlucas/phpdotenv": "^5.6"
   }
