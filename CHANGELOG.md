@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.3.0]- 2024.10.30
+
+### Added
+
+- Added `Helpers` utility class.
+
 ## [5.2.0]- 2024.09.16
 
 ### Added

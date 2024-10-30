@@ -106,3 +106,4 @@ The following services are included with Bones:
 
 - [App](utilities/app.md)
 - [Constants](utilities/constants.md)
+- [Helpers](utilities/helpers.md)
