@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for route destinations to be defined as an array of class & method.
 
+### Fixed
+
+- Fixed bug where `router.parameters` filter was not defined.
+
 ## [5.3.0]- 2024.10.30
 
 ### Added

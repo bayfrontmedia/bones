@@ -89,7 +89,7 @@ class RouterDispatcher
 
                 $this->events->doEvent('app.dispatch', $route);
 
-                return call_user_func(Arr::get($route, 'destination', ''), Arr::get($route, 'params', []));
+                return call_user_func(Arr::get($route, 'destination', ''), $this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
 
             }
 
@@ -106,7 +106,7 @@ class RouterDispatcher
 
                     $this->events->doEvent('app.dispatch', $route);
 
-                    return $controller->$method(Arr::get($route, 'params', []));
+                    return $controller->$method($this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
 
                 }
 
@@ -157,7 +157,7 @@ class RouterDispatcher
 
                 $this->events->doEvent('app.dispatch', $route);
 
-                return $controller->$method(Arr::get($route, 'params', []));
+                return $controller->$method($this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
 
             }
 
