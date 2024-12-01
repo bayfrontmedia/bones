@@ -95,6 +95,8 @@ class RouteList extends Command
                                 $destination = '';
                             } else if (is_string($dest)) {
                                 $destination = $dest;
+                            } else if (is_array($dest) && isset($dest[0]) && isset($dest[1])) {
+                                $destination = $dest[0] . ':' . $dest[1];
                             } else {
                                 $destination = '[' . strtoupper(gettype($dest)) . ']';
                             }
