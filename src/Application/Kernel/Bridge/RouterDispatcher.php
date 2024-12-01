@@ -93,6 +93,27 @@ class RouterDispatcher
 
             }
 
+            // Array - is_callable returns false when class has a constructor
+
+            if (is_array(Arr::get($route, 'destination'))) {
+
+                $dest = Arr::get($route, 'destination');
+
+                if (isset($dest[0]) && isset($dest[1]) && method_exists($dest[0], $dest[1])) {
+
+                    $controller = $this->container->make($dest[0]);
+                    $method = $dest[1];
+
+                    $this->events->doEvent('app.dispatch', $route);
+
+                    return $controller->$method(Arr::get($route, 'params', []));
+
+                }
+
+                throw new ServiceException('Router unable to dispatch: unknown array destination');
+
+            }
+
             // File
 
             if (Str::startsWith(Arr::get($route, 'destination', ''), '@')) {
@@ -130,11 +151,11 @@ class RouterDispatcher
 
                 }
 
-                $this->events->doEvent('app.dispatch', $route);
-
                 $method = $loc[1];
 
                 $controller = $this->container->make($class_name);
+
+                $this->events->doEvent('app.dispatch', $route);
 
                 return $controller->$method(Arr::get($route, 'params', []));
 

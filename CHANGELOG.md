@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.4.0]- Upcoming
+
+### Added
+
+- Added support for route destinations to be defined as an array of class & method.
+
 ## [5.3.0]- 2024.10.30
 
 ### Added

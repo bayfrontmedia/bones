@@ -30,6 +30,13 @@ which adds the following [filter](filters.md):
 
 - `router.parameters`: Used to filter parameters passed to the route destination when dispatching.
 
+In addition, route destinations can be defined as an array of the fully namespaced classname + method.
+For example:
+
+```php
+$router->get('/', [Home::class, 'index']);
+```
+
 ## Installation
 
 The router service can be installed with the `php bones install:service --router` [console command](../usage/console.md).
