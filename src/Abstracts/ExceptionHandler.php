@@ -47,7 +47,7 @@ abstract class ExceptionHandler
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace_as_string' => $e->getTraceAsString(),
-                //'trace' => print_r($e->getTrace(), true)
+                'trace' => $e->getTrace()
             ];
 
             $previous = $e->getPrevious();
@@ -59,7 +59,7 @@ abstract class ExceptionHandler
                     'file' => $previous->getFile(),
                     'line' => $previous->getLine(),
                     'trace_as_string' => $previous->getTraceAsString(),
-                    'trace' => print_r($previous->getTrace(), true)
+                    'trace' => $e->getTrace()
                 ];
 
             }
@@ -142,11 +142,7 @@ abstract class ExceptionHandler
 
         if (Request::wantsJson()) { // Send response as JSON
 
-            if (App::getConfig('app.debug') === true) {
-                $response->sendJson($data);
-            } else {
-                $response->sendJson(Arr::except($data, 'meta'));
-            }
+            $response->sendJson($data);
 
         } else { // Send response as text
 

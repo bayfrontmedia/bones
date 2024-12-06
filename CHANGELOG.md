@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed bug where `router.parameters` filter was not defined.
+- Fixed bug in `ExceptionHandler` not returning previous trace.
 
 ## [5.3.0]- 2024.10.30
 
