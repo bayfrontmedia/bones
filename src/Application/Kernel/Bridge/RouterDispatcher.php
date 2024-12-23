@@ -89,7 +89,28 @@ class RouterDispatcher
 
                 $this->events->doEvent('app.dispatch', $route);
 
-                return call_user_func(Arr::get($route, 'destination', ''), Arr::get($route, 'params', []));
+                return call_user_func(Arr::get($route, 'destination', ''), $this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
+
+            }
+
+            // Array - is_callable returns false when class has a constructor
+
+            if (is_array(Arr::get($route, 'destination'))) {
+
+                $dest = Arr::get($route, 'destination');
+
+                if (isset($dest[0]) && isset($dest[1]) && method_exists($dest[0], $dest[1])) {
+
+                    $controller = $this->container->make($dest[0]);
+                    $method = $dest[1];
+
+                    $this->events->doEvent('app.dispatch', $route);
+
+                    return $controller->$method($this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
+
+                }
+
+                throw new ServiceException('Router unable to dispatch: unknown array destination');
 
             }
 
@@ -130,13 +151,13 @@ class RouterDispatcher
 
                 }
 
-                $this->events->doEvent('app.dispatch', $route);
-
                 $method = $loc[1];
 
                 $controller = $this->container->make($class_name);
 
-                return $controller->$method(Arr::get($route, 'params', []));
+                $this->events->doEvent('app.dispatch', $route);
+
+                return $controller->$method($this->filters->doFilter('router.parameters', Arr::get($route, 'params', [])));
 
             }
 
