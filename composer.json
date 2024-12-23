@@ -44,7 +44,7 @@
     "bayfrontmedia/simple-pdo": "^5.4",
     "bayfrontmedia/veil": "^2.1",
     "filp/whoops": "^2.16",
-    "symfony/console": "^7.1",
+    "symfony/console": "^7.2",
     "vlucas/phpdotenv": "^5.6"
   }
 }

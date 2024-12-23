@@ -2,7 +2,6 @@
 
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
-
 use Bayfront\Bones\Application\Kernel\Console\ConsoleUtilities;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Application\Utilities\Constants;

@@ -13,7 +13,6 @@ use Bayfront\Container\NotFoundException;
 use Bayfront\HttpResponse\InvalidStatusCodeException;
 use Bayfront\HttpResponse\Response;
 use Bayfront\RouteIt\DispatchException;
-use Bayfront\StringHelpers\Str;
 
 /**
  * Used to dispatch a Route-It route using the service container.
@@ -116,7 +115,7 @@ class RouterDispatcher
 
             // File
 
-            if (Str::startsWith(Arr::get($route, 'destination', ''), '@')) {
+            if (str_starts_with(Arr::get($route, 'destination', ''), '@')) {
 
                 $file = App::getConfig('router.files_root_path') . '/' . ltrim(Arr::get($route, 'destination', ''), '@');
 
@@ -141,7 +140,7 @@ class RouterDispatcher
             if (isset($loc[1])) { // Dispatch to Class:method
 
                 if (App::getConfig('router.class_namespace') == ''
-                    || Str::startsWith($loc[0], App::getConfig('router.class_namespace'))) {
+                    || str_starts_with($loc[0], App::getConfig('router.class_namespace'))) {
 
                     $class_name = $loc[0];
 

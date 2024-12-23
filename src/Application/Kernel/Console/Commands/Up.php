@@ -14,7 +14,7 @@ class Up extends Command
 
     protected EventService $events;
 
-    public function __construct(EventService $events, string $name = null)
+    public function __construct(EventService $events, ?string $name = null)
     {
         $this->events = $events;
         parent::__construct($name);
