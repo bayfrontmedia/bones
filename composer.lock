@@ -261,16 +261,16 @@
         },
         {
             "name": "bayfrontmedia/php-http-request",
-            "version": "v3.1.1",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/php-http-request.git",
-                "reference": "c479adda66f64c8d891812883f6e4ee15133fdc5"
+                "reference": "73ed4ba7b0140548b22db02fe31fbfdb474376cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/php-http-request/zipball/c479adda66f64c8d891812883f6e4ee15133fdc5",
-                "reference": "c479adda66f64c8d891812883f6e4ee15133fdc5",
+                "url": "https://api.github.com/repos/bayfrontmedia/php-http-request/zipball/73ed4ba7b0140548b22db02fe31fbfdb474376cf",
+                "reference": "73ed4ba7b0140548b22db02fe31fbfdb474376cf",
                 "shasum": ""
             },
             "require": {
@@ -316,22 +316,22 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/php-http-request/issues",
-                "source": "https://github.com/bayfrontmedia/php-http-request/tree/v3.1.1"
+                "source": "https://github.com/bayfrontmedia/php-http-request/tree/v3.1.2"
             },
-            "time": "2024-12-23T20:15:15+00:00"
+            "time": "2024-12-25T12:25:19+00:00"
         },
         {
             "name": "bayfrontmedia/php-http-response",
-            "version": "v2.0.2",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bayfrontmedia/php-http-response.git",
-                "reference": "7aaef791b0639907701b9039fb6ff768913dffb6"
+                "reference": "f53df406cf2ed0cf416a56e1abbccf41e16517c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bayfrontmedia/php-http-response/zipball/7aaef791b0639907701b9039fb6ff768913dffb6",
-                "reference": "7aaef791b0639907701b9039fb6ff768913dffb6",
+                "url": "https://api.github.com/repos/bayfrontmedia/php-http-response/zipball/f53df406cf2ed0cf416a56e1abbccf41e16517c7",
+                "reference": "f53df406cf2ed0cf416a56e1abbccf41e16517c7",
                 "shasum": ""
             },
             "require": {
@@ -368,9 +368,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bayfrontmedia/php-http-response/issues",
-                "source": "https://github.com/bayfrontmedia/php-http-response/tree/v2.0.2"
+                "source": "https://github.com/bayfrontmedia/php-http-response/tree/v2.0.3"
             },
-            "time": "2024-12-23T20:17:50+00:00"
+            "time": "2024-12-26T19:24:36+00:00"
         },
         {
             "name": "bayfrontmedia/php-sanitize",
@@ -1267,12 +1267,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -1737,12 +1737,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {

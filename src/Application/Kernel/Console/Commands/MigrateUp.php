@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\Container\Container;
 use Bayfront\SimplePdo\Db;
@@ -54,6 +55,8 @@ class MigrateUp extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $migrations_table = App::getConfig('app.migrations_table', 'migrations');
+
         $migrations = $this->filters->doFilter('bones.migrations', []);
 
         if (empty($migrations)) {
@@ -71,7 +74,7 @@ class MigrateUp extends Command
 
         // Ensure database table exists.
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS `migrations` (
+        $this->db->query("CREATE TABLE IF NOT EXISTS $migrations_table (
             `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `name` varchar(255) NOT NULL,
             `batch` int NOT NULL,
@@ -90,7 +93,7 @@ class MigrateUp extends Command
                 return Command::FAILURE;
             }
 
-            if ($this->db->exists('migrations', [
+            if ($this->db->exists($migrations_table, [
                 'name' => $migration->getName()
             ])) {
                 unset($migrations[$k]);
@@ -107,7 +110,7 @@ class MigrateUp extends Command
 
         // Get next batch number
 
-        $batch_num = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
+        $batch_num = $this->db->single("SELECT MAX(batch) AS max FROM $migrations_table");
 
         if (!$batch_num) {
             $batch_num = 1;
@@ -155,7 +158,7 @@ class MigrateUp extends Command
 
             // Add to migrations table
 
-            $this->db->insert('migrations', [
+            $this->db->insert($migrations_table, [
                 'name' => $migration->getName(),
                 'batch' => $batch_num
             ]);

@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.4.0]- 2025.01.10
+
+### Added
+
+- Added ability to define the name of the database migrations table.
+
+### Changed
+
+- Updated all dependencies.
+- Updated documentation.
+
 ## [5.3.2]- 2024.12.23
 
 ### Added

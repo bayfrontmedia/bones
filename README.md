@@ -34,9 +34,14 @@ This project is open source and available under the [MIT License](LICENSE).
 [Bones App](https://github.com/bayfrontmedia/bones-app) is a simple boilerplate to begin building an application 
 using the Bones framework.
 
+### Bones API
+
+[Bones API](https://github.com/bayfrontmedia/bones-api) is a starter kit to begin building an API using the Bones framework.
+
 ### Bones Web
-[Bones Web](https://github.com/bayfrontmedia/bones-web) is a boilerplate to begin building a web application
-using the Bones framework.
+
+[Bones Web](https://github.com/bayfrontmedia/bones-web) is a starter kit to begin building a web application
+with [Tailwind](https://tailwindcss.com/) using the Bones framework.
 
 ## Documentation
 

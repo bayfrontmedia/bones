@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\Bones\Application\Services\Filters\FilterService;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\Bones\Interfaces\MigrationInterface;
 use Bayfront\Container\Container;
 use Bayfront\SimplePdo\Db;
@@ -55,6 +56,8 @@ class MigrateDown extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $migrations_table = App::getConfig('app.migrations_table', 'migrations');
+
         $db = (string)$input->getOption('db');
 
         if ($db !== '') {
@@ -67,7 +70,7 @@ class MigrateDown extends Command
 
             // No batch provided. Get last batch number.
 
-            $batch = $this->db->single("SELECT MAX(batch) AS max FROM `migrations`");
+            $batch = $this->db->single("SELECT MAX(batch) AS max FROM $migrations_table");
 
             if (!$batch) {
 
@@ -78,7 +81,7 @@ class MigrateDown extends Command
 
         }
 
-        $ran_migrations = $this->db->select("SELECT id, name, batch FROM `migrations` WHERE batch >= :batch ORDER BY id DESC", [
+        $ran_migrations = $this->db->select("SELECT id, name, batch FROM $migrations_table WHERE batch >= :batch ORDER BY id DESC", [
             'batch' => $batch
         ]);
 
@@ -159,7 +162,7 @@ class MigrateDown extends Command
 
             // Remove from migrations table
 
-            $this->db->delete('migrations', [
+            $this->db->delete($migrations_table, [
                 'id' => $ran['id']
             ]);
 

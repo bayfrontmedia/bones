@@ -119,7 +119,8 @@ class ExampleAppFilters extends FilterSubscriber implements FilterSubscriberInte
 }
 ```
 
-The required `migrations` database table will be created the first time the `php bones migrate:up` command is used.
+The name of the table used for migrations can be defined using a `migrations_table` [config value](../usage/config.md).
+If not defined, the table name `migrations` will be used by default.
 
 > **NOTE:** Be sure to back up your database before running any migrations
 
