@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.3.4]- 2025.06.16
+
+### Changed
+
+- Minor updates to console templates.
+
+### Fixed
+
+- Fixed bug in `migraion:list` console command table name.
+
 ## [5.3.3]- 2025.01.10
 
 ### Added

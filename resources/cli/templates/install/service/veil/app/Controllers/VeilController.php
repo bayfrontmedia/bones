@@ -26,7 +26,6 @@ class VeilController extends Controller
      * The container will resolve any dependencies.
      * EventService is required by the abstract controller.
      */
-
     public function __construct(EventService $events, FilterService $filters, Response $response, Veil $veil)
     {
         $this->events = $events;
@@ -40,7 +39,6 @@ class VeilController extends Controller
     /**
      * @throws FileNotFoundException
      */
-
     public function index(array $params): void
     {
 

@@ -22,7 +22,6 @@ class ScheduledJobs extends EventSubscriber implements EventSubscriberInterface
     /**
      * The container will resolve any dependencies.
      */
-
     public function __construct(Cron $scheduler)
     {
         $this->scheduler = $scheduler;
@@ -31,7 +30,6 @@ class ScheduledJobs extends EventSubscriber implements EventSubscriberInterface
     /**
      * @inheritDoc
      */
-
     public function getSubscriptions(): array
     {
 
@@ -48,7 +46,6 @@ class ScheduledJobs extends EventSubscriber implements EventSubscriberInterface
      * @throws LabelExistsException
      * @throws SyntaxException
      */
-
     public function schedule(): void
     {
 

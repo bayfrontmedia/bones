@@ -26,7 +26,6 @@ class _command_name_ extends Command
     /**
      * @return void
      */
-
     protected function configure(): void
     {
 
@@ -41,7 +40,6 @@ class _command_name_ extends Command
      * @return int
      * @throws Exception
      */
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 

@@ -23,7 +23,6 @@ class RouterEvents extends EventSubscriber implements EventSubscriberInterface
     /**
      * The container will resolve any dependencies.
      */
-
     public function __construct(Router $router, FilterService $filter)
     {
         $this->router = $router;
@@ -38,7 +37,6 @@ class RouterEvents extends EventSubscriber implements EventSubscriberInterface
      *
      * @inheritDoc
      */
-
     public function getSubscriptions(): array
     {
 
@@ -51,7 +49,6 @@ class RouterEvents extends EventSubscriber implements EventSubscriberInterface
     /**
      * @return void
      */
-
     public function addRoutes(): void
     {
 
