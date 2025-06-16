@@ -3,6 +3,7 @@
 namespace Bayfront\Bones\Application\Kernel\Console\Commands;
 
 use Bayfront\ArrayHelpers\Arr;
+use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\SimplePdo\Db;
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -47,6 +48,8 @@ class MigrationList extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
+        $migrations_table = App::getConfig('app.migrations_table', 'migrations');
+
         $db = (string)$input->getOption('db');
 
         if ($db !== '') {
@@ -54,7 +57,7 @@ class MigrationList extends Command
         }
 
         try {
-            $return = $this->db->select("SELECT id, name, batch FROM `migrations` ORDER BY batch, name");
+            $return = $this->db->select("SELECT id, name, batch FROM $migrations_table ORDER BY batch, name");
         } catch (Exception) {
             $output->writeln('<info>No migrations found: Valid migrations table does not exist.</info>');
             return Command::SUCCESS;

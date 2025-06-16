@@ -17,7 +17,6 @@ class _subscriber_name_ extends EventSubscriber implements EventSubscriberInterf
     /**
      * The container will resolve any dependencies.
      */
-
     public function __construct()
     {
 
@@ -26,7 +25,6 @@ class _subscriber_name_ extends EventSubscriber implements EventSubscriberInterf
     /**
      * @inheritDoc
      */
-
     public function getSubscriptions(): array
     {
 
@@ -39,7 +37,6 @@ class _subscriber_name_ extends EventSubscriber implements EventSubscriberInterf
     /**
      * @return void
      */
-
     public function sampleMethod(): void
     {
         // Do something amazing

@@ -21,7 +21,6 @@ class _service_name_ extends Service
      *
      * @param EventService $events
      */
-
     public function __construct(EventService $events)
     {
         $this->events = $events;

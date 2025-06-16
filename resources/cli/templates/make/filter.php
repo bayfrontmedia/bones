@@ -17,7 +17,6 @@ class _filter_name_ extends FilterSubscriber implements FilterSubscriberInterfac
     /**
      * The container will resolve any dependencies.
      */
-
     public function __construct()
     {
 
@@ -26,7 +25,6 @@ class _filter_name_ extends FilterSubscriber implements FilterSubscriberInterfac
     /**
      * @inheritDoc
      */
-
     public function getSubscriptions(): array
     {
 
@@ -40,7 +38,6 @@ class _filter_name_ extends FilterSubscriber implements FilterSubscriberInterfac
      * @param string $orig
      * @return string
      */
-
     public function capitalizeString(string $orig): string
     {
         return strtoupper($orig);

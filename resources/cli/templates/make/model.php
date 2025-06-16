@@ -21,7 +21,6 @@ class _model_name_ extends Model
      *
      * @param EventService $events
      */
-
     public function __construct(EventService $events)
     {
         $this->events = $events;

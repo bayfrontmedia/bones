@@ -23,7 +23,6 @@ class HomeController extends Controller
      * The container will resolve any dependencies.
      * EventService is required by the abstract controller.
      */
-
     public function __construct(EventService $events, FilterService $filters, Response $response)
     {
         $this->events = $events;
@@ -33,6 +32,10 @@ class HomeController extends Controller
         parent::__construct($events);
     }
 
+    /**
+     * @param array $params
+     * @return void
+     */
     public function index(array $params): void
     {
 

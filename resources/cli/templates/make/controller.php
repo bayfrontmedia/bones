@@ -21,7 +21,6 @@ class _controller_name_ extends Controller
      * The container will resolve any dependencies.
      * EventService is required by the abstract controller.
      */
-
     public function __construct(EventService $events, Response $response)
     {
         $this->events = $events;

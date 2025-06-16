@@ -18,7 +18,6 @@ class _migration_name_ implements MigrationInterface
     /**
      * The container will resolve any dependencies.
      */
-
     public function __construct(Db $db)
     {
         $this->db = $db;
@@ -35,7 +34,6 @@ class _migration_name_ implements MigrationInterface
     /**
      * @inheritDoc
      */
-
     public function up(): void
     {
         $this->db->query("CREATE TABLE IF NOT EXISTS `TABLE_NAME` (
@@ -48,7 +46,6 @@ class _migration_name_ implements MigrationInterface
     /**
      * @inheritDoc
      */
-
     public function down(): void
     {
         $this->db->query("DROP TABLE IF EXISTS `TABLE_NAME`");
