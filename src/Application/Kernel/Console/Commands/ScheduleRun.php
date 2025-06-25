@@ -7,6 +7,7 @@ use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
+use Bayfront\TimeHelpers\Time;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -82,7 +83,7 @@ class ScheduleRun extends Command
 
         }
 
-        $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
+        $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs at ' . Time::getDateTime() . ' (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
 
         return Command::SUCCESS;
 
