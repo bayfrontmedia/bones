@@ -53,7 +53,7 @@ class ScheduleRun extends Command
             return Command::FAILURE;
         }
 
-        $output->writeln('<info>Begin running scheduled jobs...</info>');
+        $output->writeln('<info>Begin running scheduled jobs at ' . Time::getDateTime() . '...</info>');
 
         $this->events->doEvent('app.schedule.start', $this->scheduler);
 
