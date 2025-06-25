@@ -8,6 +8,7 @@ use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -58,6 +59,28 @@ class ScheduleRun extends Command
         $result = $this->scheduler->run();
 
         $this->events->doEvent('app.schedule.end', $result);
+
+        if (!empty(Arr::get($result, 'jobs', []))) {
+
+            $rows = [];
+
+            foreach (Arr::get($result, 'jobs', []) as $label => $job) {
+
+                $rows[] = [
+                    $label,
+                    Arr::get($job, 'start', 0),
+                    Arr::get($job, 'end', 0),
+                    Arr::get($job, 'elapsed', 0),
+                    Arr::get($job, 'output', '')
+                ];
+
+            }
+
+            $table = new Table($output);
+            $table->setHeaders(['Label', 'Start', 'End', 'Elapsed', 'Output'])->setRows($rows);
+            $table->render();
+
+        }
 
         $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
 

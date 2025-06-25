@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
+## [5.3.5]- 2025.06.25
+
+### Added
+
+- Added job summary for the `schedule:run` console command.
+
 ## [5.3.4]- 2025.06.16
 
 ### Changed
