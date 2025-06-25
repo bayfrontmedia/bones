@@ -7,7 +7,9 @@ use Bayfront\Bones\Application\Services\Events\EventService;
 use Bayfront\Bones\Application\Utilities\App;
 use Bayfront\CronScheduler\Cron;
 use Bayfront\CronScheduler\FilesystemException;
+use Bayfront\TimeHelpers\Time;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -51,7 +53,7 @@ class ScheduleRun extends Command
             return Command::FAILURE;
         }
 
-        $output->writeln('<info>Begin running scheduled jobs...</info>');
+        $output->writeln('<info>Begin running scheduled jobs at ' . Time::getDateTime() . '...</info>');
 
         $this->events->doEvent('app.schedule.start', $this->scheduler);
 
@@ -59,7 +61,29 @@ class ScheduleRun extends Command
 
         $this->events->doEvent('app.schedule.end', $result);
 
-        $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
+        if (!empty(Arr::get($result, 'jobs', []))) {
+
+            $rows = [];
+
+            foreach (Arr::get($result, 'jobs', []) as $label => $job) {
+
+                $rows[] = [
+                    $label,
+                    Arr::get($job, 'start', 0),
+                    Arr::get($job, 'end', 0),
+                    Arr::get($job, 'elapsed', 0),
+                    Arr::get($job, 'output', '')
+                ];
+
+            }
+
+            $table = new Table($output);
+            $table->setHeaders(['Label', 'Start', 'End', 'Elapsed', 'Output'])->setRows($rows);
+            $table->render();
+
+        }
+
+        $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs at ' . Time::getDateTime() . ' (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');
 
         return Command::SUCCESS;
 
