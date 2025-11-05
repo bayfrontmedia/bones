@@ -116,8 +116,8 @@ using `php bones schedule:run`. The response of the scheduler's [run method](htt
 - `app.http`: Executes when the app interface is `HTTP` just before [the router](router.md) (if existing) resolves the request.
 - `app.dispatch`: Executes after the router (if existing) resolves the request, and just before the request is dispatched. An array containing the keys `type`, `destination`, `params` and `status` is passed as a parameter ([more info](https://github.com/bayfrontmedia/route-it#resolve)).
 - `app.controller`: Executes when a [controller](../usage/controllers.md) is constructed. The controller's class instance is passed as a parameter.
-- `app.model`: Executes when a [model](../usage/models.md) is constructed. The model's class instance is passed as a parameter.
-- `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter.
+- `app.model`: Executes when a [model](../usage/models.md) is constructed. The model's class instance is passed as a parameter. (See [subscription succession](#subscription-succession))
+- `app.service`: Executes when a [service](../usage/services.md) is constructed. The service's class instance is passed as a parameter. (See [subscription succession](#subscription-succession))
 - `bones.exception`: Executes when a `Bayfront\Bones\Exceptions\BonesException` is thrown. 
 This event accepts two parameters: the [Response](response.md) service and the [thrown exception](../usage/exceptions.md).
 - `bones.end`: Executes as the last event. The [Response](response.md) service is passed as a parameter.
@@ -126,6 +126,18 @@ The underlying PHP Hooks library also has its own default events:
 
 - `always`: Always executed whenever `doEvent()` is called, regardless of the name.
 - `destruct`: Executes when the PHP Hooks library destructs.
+
+### Subscription succession
+
+Note that the `/resources/bootstrap.php` file is included before loading event and filter subscribers.
+This is done because a class may need to be manually instantiated in order to be created by and/or added to the container,
+and that class may be required in one or more event or filter subscriber class constructors.
+
+For this reason, subscriptions to the `app.model` and `app.service` events will not be executed for models
+and events instantiated in the `/resources/bootstrap.php` file.
+
+To ensure `app.model` and `app.service` subscriptions are executed, add them to the container from within
+an `app.bootstrap` event subscription.
 
 ## Console commands
 
