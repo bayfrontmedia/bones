@@ -130,7 +130,7 @@ The underlying PHP Hooks library also has its own default events:
 ### Subscription succession
 
 Note that the `/resources/bootstrap.php` file is included before loading event and filter subscribers.
-This is done because a class may need to be manually instantiated in order to be created by and/or added to the container,
+This is done because a class may need to be manually instantiated in order to be created by the container,
 and that class may be required in one or more event or filter subscriber class constructors.
 
 For this reason, subscriptions to the `app.model` and `app.service` events will not be executed for models

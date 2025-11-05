@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities
 
-## [5.3.6]- Upcoming
+## [5.3.6]- 2025.11.05
 
 ### Changed
 
