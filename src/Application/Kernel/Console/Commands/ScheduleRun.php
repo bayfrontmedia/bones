@@ -63,6 +63,8 @@ class ScheduleRun extends Command
 
         if (!empty(Arr::get($result, 'jobs', []))) {
 
+            $output->writeln('');
+
             $rows = [];
 
             foreach (Arr::get($result, 'jobs', []) as $label => $job) {
@@ -81,6 +83,10 @@ class ScheduleRun extends Command
             $table->setHeaders(['Label', 'Start', 'End', 'Elapsed', 'Output'])->setRows($rows);
             $table->render();
 
+            $output->writeln('');
+
+        } else {
+            $output->writeln('No scheduled jobs due.');
         }
 
         $output->writeln('<info>Completed running ' . Arr::get($result, 'count', '0') . ' scheduled jobs at ' . Time::getDateTime() . ' (took ' . Arr::get($result, 'elapsed', '0') . ' secs).</info>');

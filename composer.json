@@ -35,16 +35,16 @@
     "bayfrontmedia/container": "^3.0",
     "bayfrontmedia/cron-scheduler": "^2.0",
     "bayfrontmedia/encryptor": "^2.0",
-    "bayfrontmedia/php-array-helpers": "^2.0",
+    "bayfrontmedia/php-array-helpers": "^2.2",
     "bayfrontmedia/php-hooks": "^2.0",
     "bayfrontmedia/php-http-request": "^v3.1",
     "bayfrontmedia/php-http-response": "^2.0",
-    "bayfrontmedia/php-time-helpers": "^2.0",
+    "bayfrontmedia/php-time-helpers": "^2.2",
     "bayfrontmedia/route-it": "^3.1",
     "bayfrontmedia/simple-pdo": "^5.4",
     "bayfrontmedia/veil": "^2.1",
-    "filp/whoops": "^2.16",
-    "symfony/console": "^7.2",
+    "filp/whoops": "^2.18",
+    "symfony/console": "^7.3",
     "vlucas/phpdotenv": "^5.6"
   }
 }
