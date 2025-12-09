@@ -150,7 +150,7 @@ class Bones
         Constants::define('APP_STORAGE_PATH', Constants::get('APP_BASE_PATH') . '/storage');
         Constants::define('BONES_BASE_PATH', rtrim(dirname(__FILE__, 2), '/'));
         Constants::define('BONES_RESOURCES_PATH', Constants::get('BONES_BASE_PATH') . '/resources');
-        Constants::define('BONES_VERSION', '5.3.6');
+        Constants::define('BONES_VERSION', '5.3.7');
         // ------------------------- Load environment variables -------------------------
 
         if (file_exists(App::basePath('/.env'))) {
@@ -500,47 +500,47 @@ class Bones
 
         // ------------------------- Load Bones commands -------------------------
 
-        $console->add(new AboutBones($filters));
-        $console->add(new AliasList(self::$container));
-        $console->add(new CacheClear());
-        $console->add(new CacheList($encryptor));
-        $console->add(new CacheSave($encryptor));
-        $console->add(new ContainerList(self::$container));
-        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
-        $console->add(new EventList($events));
-        $console->add(new FilterList($filters));
-        $console->add(new InstallKey());
-        $console->add(new InstallService());
-        $console->add(new MakeCommand());
-        $console->add(new MakeController());
-        $console->add(new MakeEvent());
-        $console->add(new MakeException());
-        $console->add(new MakeFilter());
-        $console->add(new MakeKey());
-        $console->add(new MakeModel());
-        $console->add(new MakeService());
-        $console->add(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Up'));
+        $console->addCommand(new AboutBones($filters));
+        $console->addCommand(new AliasList(self::$container));
+        $console->addCommand(new CacheClear());
+        $console->addCommand(new CacheList($encryptor));
+        $console->addCommand(new CacheSave($encryptor));
+        $console->addCommand(new ContainerList(self::$container));
+        $console->addCommand(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Down'));
+        $console->addCommand(new EventList($events));
+        $console->addCommand(new FilterList($filters));
+        $console->addCommand(new InstallKey());
+        $console->addCommand(new InstallService());
+        $console->addCommand(new MakeCommand());
+        $console->addCommand(new MakeController());
+        $console->addCommand(new MakeEvent());
+        $console->addCommand(new MakeException());
+        $console->addCommand(new MakeFilter());
+        $console->addCommand(new MakeKey());
+        $console->addCommand(new MakeModel());
+        $console->addCommand(new MakeService());
+        $console->addCommand(App::make('Bayfront\Bones\Application\Kernel\Console\Commands\Up'));
 
         // Optional services
 
         if (isset($this->interface_services['scheduler'])) {
 
-            $console->add(new ScheduleList($this->interface_services['scheduler']));
-            $console->add(new ScheduleRun($this->interface_services['scheduler'], $events));
+            $console->addCommand(new ScheduleList($this->interface_services['scheduler']));
+            $console->addCommand(new ScheduleRun($this->interface_services['scheduler'], $events));
         }
 
         if (isset($this->interface_services['db'])) {
 
-            $console->add(new MakeMigration());
-            $console->add(new MigrateDown(self::$container, $filters, $this->interface_services['db']));
-            $console->add(new MigrateUp(self::$container, $filters, $this->interface_services['db']));
-            $console->add(new MigrationList($this->interface_services['db']));
+            $console->addCommand(new MakeMigration());
+            $console->addCommand(new MigrateDown(self::$container, $filters, $this->interface_services['db']));
+            $console->addCommand(new MigrateUp(self::$container, $filters, $this->interface_services['db']));
+            $console->addCommand(new MigrationList($this->interface_services['db']));
 
         }
 
         if (isset($this->interface_services['router'])) {
 
-            $console->add(new RouteList($this->interface_services['router']));
+            $console->addCommand(new RouteList($this->interface_services['router']));
 
         }
 
@@ -691,7 +691,7 @@ class Bones
                 foreach ($cache as $class) {
 
                     $command = self::$container->make($class);
-                    $console->add($command);
+                    $console->addCommand($command);
 
                 }
 
@@ -714,7 +714,7 @@ class Bones
                         $class = App::getConfig('app.namespace', '') . 'Console\Commands\\' . $namespace;
 
                         $command = self::$container->make($class);
-                        $console->add($command);
+                        $console->addCommand($command);
 
                     }
 
